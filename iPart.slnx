@@ -1,5 +1,7 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/iPart.App/iPart.App.csproj" />
+    <Project Path="src/iPart.Core/iPart.Core.csproj" />
+    <Project Path="src/iPart.Infrastructure/iPart.Infrastructure.csproj" />
   </Folder>
 </Solution>
