@@ -47,7 +47,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         {
             Status = await _checker.CheckAsync() switch
             {
-                DatabaseConnectionStatus.Connected => "Połączono z bazą iPart_Dev",
+                DatabaseConnectionStatus.Connected => "Połączono z bazą dataPart",
                 DatabaseConnectionStatus.TimedOut => "Przekroczono limit czasu połączenia (10 sekund). Sprawdź dostępność SQL Server i spróbuj ponownie.",
                 _ => "Nie udało się połączyć z bazą. Sprawdź, czy SQL Server LocalDB działa, baza istnieje i masz do niej dostęp."
             };
