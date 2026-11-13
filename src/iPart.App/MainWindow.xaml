@@ -5,8 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:iPart.App"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
+        Title="iPart" Height="280" Width="620" MinHeight="260" MinWidth="460">
+    <Grid Margin="24">
+        <StackPanel VerticalAlignment="Center">
+            <TextBlock Text="iPart" FontSize="28" FontWeight="SemiBold" Margin="0,0,0,20" />
+            <Button Content="Sprawdź połączenie z bazą"
+                    Command="{Binding CheckConnectionCommand}"
+                    HorizontalAlignment="Left" Padding="16,10" />
+            <TextBlock Text="{Binding Status}" Margin="0,16,0,0" TextWrapping="Wrap"
+                       AutomationProperties.LiveSetting="Polite" />
+        </StackPanel>
     </Grid>
 </Window>
