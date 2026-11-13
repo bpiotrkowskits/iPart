@@ -72,6 +72,14 @@ public static partial class QuantityParser
 
 public static class QuantityConverter
 {
+    public static decimal PowerToWatts(ParsedQuantity value) => Multiply(value, value.Unit switch
+    {
+        "mW" => .001m, "W" => 1m, "kW" => 1000m, _ => throw Unknown(value.Unit)
+    });
+    public static decimal VoltageToVolts(ParsedQuantity value) => Multiply(value, value.Unit switch
+    {
+        "mV" => .001m, "V" => 1m, "kV" => 1000m, _ => throw Unknown(value.Unit)
+    });
     public static decimal CapacitanceToPf(ParsedQuantity value) => Multiply(value, value.Unit switch
     {
         "pF" => 1m, "nF" => 1000m, "uF" or "µF" or "μF" => 1000000m,
@@ -101,6 +109,8 @@ public static class QuantityConverter
 // Entry points for a future editor/importer: parser -> conversion -> storage validation.
 public static class ParameterInput
 {
+    public static decimal PowerWatts(string input) => Validate(QuantityConverter.PowerToWatts(QuantityParser.Parse(input)), 18, 9, "PowerWatts");
+    public static decimal VoltageV(string input) => Validate(QuantityConverter.VoltageToVolts(QuantityParser.Parse(input)), 18, 6, "RatedVoltageV");
     public static decimal CapacitancePf(string input) => Validate(QuantityConverter.CapacitanceToPf(QuantityParser.Parse(input)), 28, 9, "CapacitancePf");
     public static decimal ResistanceOhms(string input) => Validate(QuantityConverter.ResistanceToOhms(QuantityParser.ParseResistance(input)), 28, 12, "ResistanceOhms");
     public static decimal EsrMilliOhms(string input) => Validate(QuantityConverter.EsrToMilliOhms(QuantityParser.ParseHistoricalEsr(input)), 28, 9, "EsrMilliOhms");

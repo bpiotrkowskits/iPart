@@ -6,7 +6,7 @@
 - `iPart.Infrastructure`: mapowanie SQL Server, krótkotrwałe konteksty, migracje, zapis transakcyjny, historia i lokalny dostawca autora.
 - `iPart.App`: istniejące WPF/MVVM i konfiguracja JSON. Dotychczasowy interfejs sprawdzania połączenia pozostaje bez zmian.
 
-Nie zaimplementowano importera, formularza komponentów, ekranu historii ani funkcji magazynowych. Plik Excel nie jest odczytywany. Nie dodano przykładowych komponentów do bazy.
+Dodano pierwszy etap importera: odczyt XLSX, mapowanie, walidację, podgląd i eksport raportu, bez zapisu do bazy. Opis: [excel-import.md](excel-import.md). Nie zaimplementowano zapisu importu, formularza komponentów, ekranu historii ani funkcji magazynowych. Nie pozostawiono przykładowych komponentów w bazie.
 
 ## Identyfikacja i normalizacja
 
@@ -171,7 +171,7 @@ Przyszłe dane magazynowe obejmą: symbol magazynowy, ilość w opakowaniu, fabr
 
 Istniejące `AdditionalDescription` i `LabelDescription` opisują komponent, ale nie oznaczają jeszcze gotowego mapowania do DESC.part2/ESSEGI. Nie ustalono reguł generowania DESC.part1 ani nomenklatury Nexo. Integracje Nexo/ESSEGI i sposób importu starej historii z Excela pozostają poza bieżącą implementacją.
 
-## Wynik bieżącej weryfikacji
+## Wynik weryfikacji pierwszej migracji
 
 - `dotnet build iPart.slnx`: powodzenie, 0 błędów i 0 ostrzeżeń.
 - `dotnet test` z `IPART_RUN_SQL_TESTS=1` i `IPART_RUN_DATABASE_TESTS=1`: 127/127 testów zakończonych powodzeniem, bez pominięć. Z tego 16 testów korzysta z rzeczywistego SQL Server (4 #temp/odczyt oraz 12 tabel/serwisu).

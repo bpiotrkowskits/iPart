@@ -5,6 +5,7 @@
     <Project Path="src/iPart.Infrastructure/iPart.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/iPart.App.Tests/iPart.App.Tests.csproj" />
     <Project Path="tests/iPart.Tests/iPart.Tests.csproj" />
   </Folder>
 </Solution>

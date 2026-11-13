@@ -2,7 +2,10 @@ using System.IO;
 using System.Windows;
 using iPart.App.ViewModels;
 using iPart.Core;
+using iPart.Core.Import;
 using iPart.Infrastructure;
+using iPart.Infrastructure.Import;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace iPart.App;
@@ -14,6 +17,7 @@ public partial class App : Application
         base.OnStartup(e);
         IDatabaseConnectionChecker? checker = null;
         string? configurationError = null;
+        IImportReferenceReader importReferences = new UnavailableImportReferences();
         try
         {
             var configuration = new ConfigurationBuilder()
@@ -29,6 +33,8 @@ public partial class App : Application
             else
             {
                 checker = new SqlServerConnectionChecker(connectionString);
+                importReferences = new SqlImportReferenceReader(new IPartContextFactory(
+                    new DbContextOptionsBuilder<IPartDbContext>().UseSqlServer(connectionString).Options));
             }
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException
@@ -39,8 +45,15 @@ public partial class App : Application
 
         MainWindow = new MainWindow
         {
-            DataContext = new MainWindowViewModel(checker, configurationError)
+            DataContext = new MainWindowViewModel(checker, configurationError,
+                new ImportExcelViewModel(new ExcelPreviewService(importReferences)))
         };
         MainWindow.Show();
+    }
+
+    private sealed class UnavailableImportReferences : IImportReferenceReader
+    {
+        public Task<ImportReferences> ReadAsync(CancellationToken cancellationToken) =>
+            Task.FromException<ImportReferences>(new InvalidOperationException("Brak poprawnej konfiguracji połączenia z bazą."));
     }
 }

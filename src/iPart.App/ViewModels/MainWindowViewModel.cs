@@ -11,14 +11,16 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private readonly string? _configurationError;
     private string _status = "Nie sprawdzono połączenia";
 
-    public MainWindowViewModel(IDatabaseConnectionChecker? checker, string? configurationError = null)
+    public MainWindowViewModel(IDatabaseConnectionChecker? checker, string? configurationError = null, ImportExcelViewModel? import = null)
     {
         _checker = checker;
         _configurationError = configurationError;
+        Import = import;
         CheckConnectionCommand = new AsyncCommand(CheckConnectionAsync);
     }
 
     public ICommand CheckConnectionCommand { get; }
+    public ImportExcelViewModel? Import { get; }
 
     public string Status
     {

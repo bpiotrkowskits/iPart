@@ -5,15 +5,107 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:iPart.App"
         mc:Ignorable="d"
-        Title="iPart" Height="280" Width="620" MinHeight="260" MinWidth="460">
-    <Grid Margin="24">
-        <StackPanel VerticalAlignment="Center">
-            <TextBlock Text="iPart" FontSize="28" FontWeight="SemiBold" Margin="0,0,0,20" />
-            <Button Content="Sprawdź połączenie z bazą"
-                    Command="{Binding CheckConnectionCommand}"
-                    HorizontalAlignment="Left" Padding="16,10" />
-            <TextBlock Text="{Binding Status}" Margin="0,16,0,0" TextWrapping="Wrap"
-                       AutomationProperties.LiveSetting="Polite" />
-        </StackPanel>
-    </Grid>
+        Title="iPart" Height="820" Width="1280" MinHeight="640" MinWidth="980">
+    <Window.Resources>
+        <Style TargetType="DataGrid">
+            <Setter Property="AutoGenerateColumns" Value="False" />
+            <Setter Property="IsReadOnly" Value="True" />
+            <Setter Property="CanUserAddRows" Value="False" />
+            <Setter Property="EnableRowVirtualization" Value="True" />
+            <Setter Property="EnableColumnVirtualization" Value="True" />
+            <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
+            <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
+            <Setter Property="SelectionMode" Value="Single" />
+            <Setter Property="RowHeight" Value="28" />
+        </Style>
+        <Style TargetType="Button"><Setter Property="Padding" Value="12,6" /><Setter Property="Margin" Value="0,0,8,0" /></Style>
+    </Window.Resources>
+    <TabControl Margin="16">
+        <TabItem Header="Połączenie z bazą">
+            <StackPanel Margin="24" VerticalAlignment="Center">
+                <TextBlock Text="iPart" FontSize="28" FontWeight="SemiBold" Margin="0,0,0,20" />
+                <Button Content="Sprawdź połączenie z bazą" Command="{Binding CheckConnectionCommand}" HorizontalAlignment="Left" />
+                <TextBlock Text="{Binding Status}" Margin="0,16,0,0" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" />
+            </StackPanel>
+        </TabItem>
+        <TabItem Header="Import Excel" DataContext="{Binding Import}">
+            <Grid Margin="12">
+                <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                <DockPanel Margin="0,0,0,10">
+                    <Button Content="Wybierz plik .xlsx" Command="{Binding ChooseFileCommand}" DockPanel.Dock="Left" />
+                    <TextBox Text="{Binding FilePath, Mode=OneWay}" IsReadOnly="True" VerticalContentAlignment="Center" />
+                </DockPanel>
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
+                    <Button Content="Analizuj plik" Command="{Binding AnalyzeCommand}" />
+                    <Button Content="Anuluj" Command="{Binding CancelCommand}" />
+                    <Button Content="Eksportuj raport…" Command="{Binding ExportCommand}" />
+                    <TextBlock Text="Podgląd — bez zapisu do SQL Server" VerticalAlignment="Center" Foreground="#365B75" />
+                </StackPanel>
+                <StackPanel Grid.Row="2" Margin="0,0,0,8">
+                    <ProgressBar Minimum="0" Maximum="100" Value="{Binding Progress, Mode=OneWay}" Height="10" />
+                    <TextBlock Text="{Binding Status}" TextWrapping="Wrap" Margin="0,6,0,0" AutomationProperties.LiveSetting="Polite" />
+                </StackPanel>
+                <TextBlock Grid.Row="3" Text="{Binding Summary}" TextWrapping="Wrap" Margin="0,4,0,12" />
+                <TabControl Grid.Row="4">
+                    <TabItem Header="Podgląd komponentów">
+                        <Grid>
+                            <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="2*" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                            <StackPanel Orientation="Horizontal" Margin="4"><Button Content="Poprzednia" Command="{Binding PreviousRecordsCommand}" /><Button Content="Następna" Command="{Binding NextRecordsCommand}" /><TextBlock Text="{Binding RecordPageLabel}" VerticalAlignment="Center" /></StackPanel>
+                            <DataGrid Grid.Row="1" ItemsSource="{Binding RecordPage}" SelectedItem="{Binding SelectedRecord}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Wiersz" Binding="{Binding SourceRow}" Width="65" />
+                                    <DataGridTextColumn Header="MPN" Binding="{Binding Mpn}" Width="230" />
+                                    <DataGridTextColumn Header="Stan" Binding="{Binding Status}" Width="160" />
+                                    <DataGridTextColumn Header="Montaż" Binding="{Binding Mounting}" Width="85" />
+                                    <DataGridTextColumn Header="Obudowa" Binding="{Binding Component.CaseName}" Width="120" />
+                                    <DataGridTextColumn Header="Footprint" Binding="{Binding Component.Footprint}" Width="120" />
+                                    <DataGridTextColumn Header="Value ze źródła" Binding="{Binding SourceValue}" Width="160" />
+                                    <DataGridTextColumn Header="Value rezystora" Binding="{Binding GeneratedValue}" Width="220" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <TextBlock Grid.Row="2" Text="Proponowane wartości i pochodzenie pól zaznaczonego rekordu (pełna dokładność)" Margin="4,8" />
+                            <DataGrid Grid.Row="3" ItemsSource="{Binding SelectedFields}"><DataGrid.Columns>
+                                <DataGridTextColumn Header="Pole" Binding="{Binding Field}" Width="300" /><DataGridTextColumn Header="Propozycja" Binding="{Binding Value}" Width="220" /><DataGridTextColumn Header="Źródła" Binding="{Binding Sources}" Width="*" />
+                            </DataGrid.Columns></DataGrid>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Problemy">
+                        <Grid><Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                            <StackPanel Orientation="Horizontal" Margin="4"><TextBlock Text="Ważność: " VerticalAlignment="Center" /><ComboBox ItemsSource="{Binding Severities}" SelectedItem="{Binding Severity}" Width="150" Margin="0,0,12,0" /><Button Content="Poprzednia" Command="{Binding PreviousIssuesCommand}" /><Button Content="Następna" Command="{Binding NextIssuesCommand}" /><TextBlock Text="{Binding IssuePageLabel}" VerticalAlignment="Center" /></StackPanel>
+                            <DataGrid Grid.Row="1" ItemsSource="{Binding IssuePage}"><DataGrid.Columns>
+                                <DataGridTextColumn Header="Ważność" Binding="{Binding SeverityLabel}" Width="105" /><DataGridTextColumn Header="Kod" Binding="{Binding Code}" Width="180" /><DataGridTextColumn Header="Wiersz partsData" Binding="{Binding PartRow}" Width="100" /><DataGridTextColumn Header="Komórki" Binding="{Binding Locations}" Width="240" /><DataGridTextColumn Header="Problem" Binding="{Binding Message}" Width="650" />
+                            </DataGrid.Columns></DataGrid>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Źródło (wszystkie arkusze)">
+                        <Grid><Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /><RowDefinition Height="120" /></Grid.RowDefinitions>
+                            <StackPanel Orientation="Horizontal" Margin="4"><CheckBox Content="Tylko niezamapowane" IsChecked="{Binding UnmappedOnly}" VerticalAlignment="Center" Margin="0,0,16,0" /><Button Content="Poprzednia" Command="{Binding PreviousSourcesCommand}" /><Button Content="Następna" Command="{Binding NextSourcesCommand}" /><TextBlock Text="{Binding SourcePageLabel}" VerticalAlignment="Center" /></StackPanel>
+                            <DataGrid Grid.Row="1" ItemsSource="{Binding SourcePage}" SelectedItem="{Binding SelectedSourceCell}"><DataGrid.Columns>
+                                <DataGridTextColumn Header="Arkusz" Binding="{Binding Sheet}" Width="130" /><DataGridTextColumn Header="Komórka" Binding="{Binding Address}" Width="75" /><DataGridTextColumn Header="Nagłówek" Binding="{Binding Header}" Width="155" /><DataGridTextColumn Header="Oryginalna wartość / formuła" Binding="{Binding OriginalValue}" Width="360" /><DataGridTextColumn Header="Zapisany wynik" Binding="{Binding Value}" Width="200" /><DataGridTextColumn Header="Format" Binding="{Binding NumberFormat}" Width="120" /><DataGridTextColumn Header="Mapowanie" Binding="{Binding Mapping}" Width="260" />
+                            </DataGrid.Columns></DataGrid>
+                            <TextBlock Grid.Row="2" Text="Pełna treść zaznaczonej komórki (w tym długie notatki i formuły)" Margin="4,8" />
+                            <TextBox Grid.Row="3" Text="{Binding SourceDetails, Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Mapowanie">
+                        <StackPanel Margin="16" IsEnabled="{Binding CanChangeMapping}">
+                            <TextBlock FontWeight="SemiBold" Text="Jawne decyzje dla starszych nazw PADS" Margin="0,0,0,14" />
+                            <CheckBox Content="Zatwierdzam mapowanie ThP → TP" IsChecked="{Binding ConfirmThP}" Margin="0,0,0,12" />
+                            <CheckBox Content="Zatwierdzam mapowanie NonS → NS" IsChecked="{Binding ConfirmNonS}" Margin="0,0,0,18" />
+                            <TextBlock TextWrapping="Wrap" Text="Po zmianie decyzji analizuj plik ponownie. Bez zatwierdzenia komórki pozostają niezamapowane i widoczne w raporcie." Margin="0,0,0,20" />
+                            <TextBlock TextWrapping="Wrap" Text="partsData: Part Number → MPN; Mounting → sposób montażu; Case → obudowa; Footprint → footprint; Notes → uwagi; Critical → Critical. Alias montażu: MECH → Mech. Producent i klient pozostają NULL; nawiasy w MPN są zachowywane." Margin="0,0,0,14" />
+                            <TextBlock TextWrapping="Wrap" Text="resValue / capValue / ctceValue: parametry łączone według MPN z rozróżnianiem wielkości liter. Liczbowe komórki bez tekstowej jednostki oznaczają jednostkę bazową pola (Ω, W, pF, V, %, ppm/°C, mΩ, h). Tolerancje tekstowe wymagają % albo jednostki pojemności. Value Excela służy wyłącznie porównaniu." />
+                        </StackPanel>
+                    </TabItem>
+                    <TabItem Header="Arkusze i kolumny">
+                        <Grid><Grid.RowDefinitions><RowDefinition Height="*" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                            <DataGrid ItemsSource="{Binding Sheets}"><DataGrid.Columns><DataGridTextColumn Header="Arkusz" Binding="{Binding Name}" Width="200" /><DataGridTextColumn Header="Przeznaczenie" Binding="{Binding Purpose}" Width="300" /><DataGridTextColumn Header="Wiersz nagłówków" Binding="{Binding HeaderRow}" Width="130" /><DataGridTextColumn Header="Wiersze źródłowe" Binding="{Binding DataRows}" Width="130" /><DataGridTextColumn Header="Wiersze samych formuł (pominięte)" Binding="{Binding IgnoredFormulaRows}" Width="220" /></DataGrid.Columns></DataGrid>
+                            <TextBlock Grid.Row="1" Text="Wykryte niezamapowane kolumny — zawartość dostępna w zakładce Źródło" Margin="4,8" />
+                            <ListBox Grid.Row="2" ItemsSource="{Binding UnmappedColumns}" VirtualizingPanel.IsVirtualizing="True" />
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+            </Grid>
+        </TabItem>
+    </TabControl>
 </Window>

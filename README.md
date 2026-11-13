@@ -1,6 +1,6 @@
 # iPart
 
-Aplikacja WPF dla .NET 10. Okno sprawdza dostępność istniejącej bazy SQL Server. Przygotowano również model komponentów, reguły jednostek, serwis zapisu z historią i pierwszą migrację EF Core; formularz komponentów i importer nie są jeszcze wdrożone.
+Aplikacja WPF dla .NET 10. Okno sprawdza dostępność istniejącej bazy SQL Server. Przygotowano model komponentów, reguły jednostek, serwis zapisu z historią i pierwszą migrację EF Core. Zakładka „Import Excel” odczytuje, mapuje i waliduje XLSX oraz pokazuje podgląd i eksport raportu; nie zapisuje importu do bazy. Formularz edycji komponentów nie jest jeszcze wdrożony.
 
 ## Uruchomienie
 
@@ -20,6 +20,14 @@ Sprawdzanie korzysta z `Database.CanConnectAsync`, limitu 10 sekund i osobnego, 
 ## Model, testy i migracja
 
 Opis relacji, jednostek, precyzji, zapisu, historii i przyszłych rozszerzeń: [docs/data-model.md](docs/data-model.md).
+
+Instrukcja zakładki importu, reguły mapowania, liczniki i eksport: [docs/excel-import.md](docs/excel-import.md). Excel nie musi być zainstalowany; odczyt wykorzystuje Open XML SDK 3.5.1 (MIT). Zastosowana migracja pozostaje bez zmian. Testy importera (bez wcześniejszych testów zapisujących SQL):
+
+```powershell
+$env:IPART_RUN_IMPORT_SQL_TESTS = '1'
+dotnet test iPart.slnx --filter 'FullyQualifiedName!~SqlServer'
+Remove-Item Env:IPART_RUN_IMPORT_SQL_TESTS
+```
 
 ```powershell
 dotnet tool restore
@@ -52,7 +60,7 @@ Podczas zmiany konfiguracji sprawdzono LocalDB: `iPart_Dev` nie zawierała tabel
 
 Aplikacja nadal nazywa się iPart, nazwy projektów i klucz `IPartDatabase` pozostają bez zmian. Serwer to nadal `(localdb)\MSSQLLocalDB`. Przyszłe migracje korzystają z połączenia do `dataPart` wskazanego w `appsettings.json`.
 
-Przejrzany skrypt: [artifacts/migrations/dataPart.sql](artifacts/migrations/dataPart.sql). Wyniki wdrożenia i testów: [artifacts/migrations/verification.md](artifacts/migrations/verification.md). Końcowy wynik: kompilacja bez ostrzeżeń i błędów, 127/127 testów, brak oczekujących migracji i zmian modelu poza snapshotem.
+Przejrzany skrypt: [artifacts/migrations/dataPart.sql](artifacts/migrations/dataPart.sql). Wyniki wdrożenia schematu: [artifacts/migrations/verification.md](artifacts/migrations/verification.md) (ówczesny zestaw 127/127 testów). Weryfikacja etapu importera: 137/137 odpowiednich testów, kompilacja bez ostrzeżeń i błędów, brak zmian modelu poza snapshotem.
 
 ## Ręczne sprawdzenie
 
