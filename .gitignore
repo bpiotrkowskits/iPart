@@ -480,3 +480,6 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Pliki zrodlowe Excel (dane firmowe, poza repozytorium)
+zrodla/
