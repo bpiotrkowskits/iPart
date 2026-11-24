@@ -9,6 +9,9 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
+    <!-- Numer wersji widoczny w zakładce „Połączenie z bazą”. Podnoś przy każdej publikacji. -->
+    <Version>0.1.0</Version>
+    <Product>iPart</Product>
     <TargetFramework>net10.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>

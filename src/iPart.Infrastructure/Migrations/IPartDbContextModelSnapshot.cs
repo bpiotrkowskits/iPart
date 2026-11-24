@@ -801,6 +801,194 @@ namespace iPart.Infrastructure.Migrations
                     b.ToTable("Subcategories", (string)null);
                 });
 
+            modelBuilder.Entity("iPart.Core.Packages.BomLine", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BomRevisionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Confirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("Designators")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Footprint")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("LineNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<string>("PartNumber")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("PartTs")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int?>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Value")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BomRevisionId", "LineNumber")
+                        .IsUnique();
+
+                    b.ToTable("BomLines", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_BomLines_LineNumber", "[LineNumber] >= 1");
+
+                            t.HasCheckConstraint("CK_BomLines_Quantity", "[Quantity] >= 0");
+                        });
+                });
+
+            modelBuilder.Entity("iPart.Core.Packages.BomLineDesignator", b =>
+                {
+                    b.Property<Guid>("BomLineId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Designator")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .UseCollation("Latin1_General_100_BIN2");
+
+                    b.Property<Guid>("BomRevisionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("BomLineId", "Designator");
+
+                    b.HasIndex("BomRevisionId", "Designator")
+                        .IsUnique();
+
+                    b.ToTable("BomLineDesignators", (string)null);
+                });
+
+            modelBuilder.Entity("iPart.Core.Packages.BomLineExtraValue", b =>
+                {
+                    b.Property<Guid>("BomLineId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Ordinal")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Header")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.HasKey("BomLineId", "Ordinal");
+
+                    b.ToTable("BomLineExtraValues", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_BomLineExtraValues_Ordinal", "[Ordinal] >= 1");
+                        });
+                });
+
+            modelBuilder.Entity("iPart.Core.Packages.BomRevision", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTimeOffset>("ImportedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ImportedBy")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("PackageId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SourceFileName")
+                        .IsRequired()
+                        .HasMaxLength(260)
+                        .HasColumnType("nvarchar(260)");
+
+                    b.Property<string>("SourceSheet")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PackageId", "Number")
+                        .IsUnique();
+
+                    b.ToTable("BomRevisions", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_BomRevisions_Number", "[Number] >= 1");
+                        });
+                });
+
+            modelBuilder.Entity("iPart.Core.Packages.Package", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<int?>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CustomerRevision")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("Code", "CustomerRevision", "CustomerId")
+                        .IsUnique()
+                        .HasDatabaseName("UX_Packages_CodeRevisionCustomer");
+
+                    b.ToTable("Packages", (string)null);
+                });
+
             modelBuilder.Entity("iPart.Core.Components.CapacitorParameters", b =>
                 {
                     b.HasOne("iPart.Core.Components.Component", null)
@@ -945,6 +1133,56 @@ namespace iPart.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("iPart.Core.Packages.BomLine", b =>
+                {
+                    b.HasOne("iPart.Core.Packages.BomRevision", null)
+                        .WithMany("Lines")
+                        .HasForeignKey("BomRevisionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("iPart.Core.Packages.BomLineDesignator", b =>
+                {
+                    b.HasOne("iPart.Core.Packages.BomLine", null)
+                        .WithMany("ExpandedDesignators")
+                        .HasForeignKey("BomLineId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("iPart.Core.Packages.BomRevision", null)
+                        .WithMany()
+                        .HasForeignKey("BomRevisionId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("iPart.Core.Packages.BomLineExtraValue", b =>
+                {
+                    b.HasOne("iPart.Core.Packages.BomLine", null)
+                        .WithMany("ExtraValues")
+                        .HasForeignKey("BomLineId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("iPart.Core.Packages.BomRevision", b =>
+                {
+                    b.HasOne("iPart.Core.Packages.Package", null)
+                        .WithMany()
+                        .HasForeignKey("PackageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("iPart.Core.Packages.Package", b =>
+                {
+                    b.HasOne("iPart.Core.Components.Customer", null)
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
             modelBuilder.Entity("iPart.Core.Components.Component", b =>
                 {
                     b.Navigation("Capacitor");
@@ -964,6 +1202,18 @@ namespace iPart.Infrastructure.Migrations
                     b.Navigation("Qualifications");
 
                     b.Navigation("Resistor");
+                });
+
+            modelBuilder.Entity("iPart.Core.Packages.BomLine", b =>
+                {
+                    b.Navigation("ExpandedDesignators");
+
+                    b.Navigation("ExtraValues");
+                });
+
+            modelBuilder.Entity("iPart.Core.Packages.BomRevision", b =>
+                {
+                    b.Navigation("Lines");
                 });
 #pragma warning restore 612, 618
         }

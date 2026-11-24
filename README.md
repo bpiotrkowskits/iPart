@@ -1,6 +1,25 @@
 # iPart
 
-Aplikacja WPF dla .NET 10. Okno sprawdza dostępność istniejącej bazy SQL Server. Przygotowano model komponentów, reguły jednostek, serwis zapisu z historią i pierwszą migrację EF Core. Zakładka „Import Excel” odczytuje, mapuje i waliduje XLSX oraz pokazuje podgląd i eksport raportu; nie zapisuje importu do bazy. Formularz edycji komponentów nie jest jeszcze wdrożony.
+Aplikacja WPF dla .NET 10 z bazą SQL Server — następca systemu plików Excel (iPart, sPart, cPart…). Wersja **0.1.0** jest wstępna i służy nauce publikacji oraz wpięcia bazy na serwer firmy, nie pracy produkcyjnej.
+
+Zakładki wersji 0.1.0:
+
+- **Pakiety** — Pakiety Elektroniczne (kod + rewizja Klienta + Klient) i ich kolejne rewizje importu BOM z liniami.
+- **Import BOM** — BOM Klienta z `.xlsx` z ręcznym mapowaniem kolumn: kilka kolumn do jednego pola z priorytetem, kolumny nieprzypisane zachowane jako dodatkowe (bez limitu 15), rozbijanie zakresów desygnatorów (`R1-R5`, `R01-R05`, `C2A-C2D`), stały numer linii, kontrola powtórzonych desygnatorów i zgodności z Quantity.
+- **Komponenty** — przeglądanie bazy komponentów (dataPart).
+- **Połączenie z bazą** — serwer, baza, sposób logowania i zgodność schematu z wersją aplikacji.
+- **Import dataPart (podgląd)** — wcześniejszy podgląd importu dataPart (bez zapisu).
+
+Publikacja i baza na serwerze: **[docs/publikacja.md](docs/publikacja.md)**. Wywiad o obiegu plików: [docs/wywiad-obieg-plikow.md](docs/wywiad-obieg-plikow.md); analiza techniczna plików Excel: [docs/analiza-techniczna/](docs/analiza-techniczna/README.md).
+
+Lokalna baza `dataPart` wymaga zastosowania drugiej migracji (`AddPackagesAndBom`, tylko dodaje 5 tabel) — bez tego zakładki Pakiety i Import BOM pokażą komunikat o nieaktualnym schemacie:
+
+```powershell
+dotnet tool restore
+dotnet ef database update --project src/iPart.Infrastructure --startup-project src/iPart.Infrastructure --context IPartDbContext -- --settings src/iPart.App/appsettings.json
+```
+
+Poniższe sekcje opisują wcześniejsze etapy (model komponentów, pierwsza migracja, podgląd importu dataPart).
 
 ## Uruchomienie
 

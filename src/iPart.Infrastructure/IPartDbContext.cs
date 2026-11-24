@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using System.Reflection;
 using iPart.Core.Components;
+using iPart.Core.Packages;
 
 namespace iPart.Infrastructure;
 
@@ -17,6 +18,11 @@ public sealed class IPartDbContext(DbContextOptions<IPartDbContext> options) : D
     public DbSet<AecQualification> AecQualifications => Set<AecQualification>();
     public DbSet<CasePattern> CasePatterns => Set<CasePattern>();
     public DbSet<ComponentHistoryEntry> ComponentHistory => Set<ComponentHistoryEntry>();
+    public DbSet<Package> Packages => Set<Package>();
+    public DbSet<BomRevision> BomRevisions => Set<BomRevision>();
+    public DbSet<BomLine> BomLines => Set<BomLine>();
+    public DbSet<BomLineDesignator> BomLineDesignators => Set<BomLineDesignator>();
+    public DbSet<BomLineExtraValue> BomLineExtraValues => Set<BomLineExtraValue>();
 
     protected override void OnModelCreating(ModelBuilder model)
     {
@@ -135,6 +141,69 @@ public sealed class IPartDbContext(DbContextOptions<IPartDbContext> options) : D
         model.Entity<ConnectorParameters>().HasIndex(x => x.PitchMm);
         model.Entity<ConnectorParameters>().HasIndex(x => x.PositionCount);
         model.Entity<CrystalParameters>().HasIndex(x => x.FrequencyHz);
+
+        ConfigurePackages(model);
+    }
+
+    // Pakiety Elektroniczne i rewizje BOM. Konfiguracja po pętli długości tekstów, żeby ją nadpisać.
+    private static void ConfigurePackages(ModelBuilder model)
+    {
+        var package = model.Entity<Package>();
+        package.ToTable("Packages");
+        package.HasKey(x => x.Id);
+        package.Property(x => x.Id).ValueGeneratedNever();
+        package.Property(x => x.Code).HasMaxLength(100).IsRequired();
+        package.Property(x => x.CustomerRevision).HasMaxLength(50).IsRequired();
+        package.Property(x => x.Description).HasMaxLength(1000);
+        package.Property(x => x.CreatedBy).HasMaxLength(256).IsRequired();
+        package.HasOne<Customer>().WithMany().HasForeignKey(x => x.CustomerId).OnDelete(DeleteBehavior.Restrict);
+        package.HasIndex(x => new { x.Code, x.CustomerRevision, x.CustomerId }).IsUnique().HasFilter(null)
+            .HasDatabaseName("UX_Packages_CodeRevisionCustomer");
+
+        var revision = model.Entity<BomRevision>();
+        revision.ToTable("BomRevisions", t => t.HasCheckConstraint("CK_BomRevisions_Number", "[Number] >= 1"));
+        revision.HasKey(x => x.Id);
+        revision.Property(x => x.Id).ValueGeneratedNever();
+        revision.Property(x => x.SourceFileName).HasMaxLength(260).IsRequired();
+        revision.Property(x => x.SourceSheet).HasMaxLength(100);
+        revision.Property(x => x.ImportedBy).HasMaxLength(256).IsRequired();
+        revision.Property(x => x.Comment).HasMaxLength(1000);
+        revision.HasOne<Package>().WithMany().HasForeignKey(x => x.PackageId).OnDelete(DeleteBehavior.Restrict);
+        revision.HasIndex(x => new { x.PackageId, x.Number }).IsUnique();
+        revision.HasMany(x => x.Lines).WithOne().HasForeignKey(x => x.BomRevisionId).OnDelete(DeleteBehavior.Cascade);
+
+        var line = model.Entity<BomLine>();
+        line.ToTable("BomLines", t =>
+        {
+            t.HasCheckConstraint("CK_BomLines_LineNumber", "[LineNumber] >= 1");
+            t.HasCheckConstraint("CK_BomLines_Quantity", "[Quantity] >= 0");
+        });
+        line.HasKey(x => x.Id);
+        line.Property(x => x.Id).ValueGeneratedNever();
+        line.Property(x => x.Designators).HasColumnType("nvarchar(max)");
+        line.Property(x => x.PartTs).HasMaxLength(500);
+        line.Property(x => x.Footprint).HasMaxLength(500);
+        line.Property(x => x.Description).HasMaxLength(2000);
+        line.Property(x => x.Value).HasMaxLength(500);
+        line.Property(x => x.PartNumber).HasMaxLength(1000);
+        line.Property(x => x.Notes).HasMaxLength(4000);
+        line.HasIndex(x => new { x.BomRevisionId, x.LineNumber }).IsUnique();
+        line.HasMany(x => x.ExpandedDesignators).WithOne().HasForeignKey(x => x.BomLineId).OnDelete(DeleteBehavior.Cascade);
+        line.HasMany(x => x.ExtraValues).WithOne().HasForeignKey(x => x.BomLineId).OnDelete(DeleteBehavior.Cascade);
+
+        var designator = model.Entity<BomLineDesignator>();
+        designator.ToTable("BomLineDesignators");
+        designator.HasKey(x => new { x.BomLineId, x.Designator });
+        designator.Property(x => x.Designator).HasMaxLength(100).UseCollation("Latin1_General_100_BIN2");
+        // Jeden desygnator może wystąpić tylko raz w danej rewizji BOM.
+        designator.HasIndex(x => new { x.BomRevisionId, x.Designator }).IsUnique();
+        designator.HasOne<BomRevision>().WithMany().HasForeignKey(x => x.BomRevisionId).OnDelete(DeleteBehavior.NoAction);
+
+        var extra = model.Entity<BomLineExtraValue>();
+        extra.ToTable("BomLineExtraValues", t => t.HasCheckConstraint("CK_BomLineExtraValues_Ordinal", "[Ordinal] >= 1"));
+        extra.HasKey(x => new { x.BomLineId, x.Ordinal });
+        extra.Property(x => x.Header).HasMaxLength(500);
+        extra.Property(x => x.Value).HasMaxLength(4000).IsRequired();
     }
 
     private static void Dictionary<T>(ModelBuilder model, string table) where T : class, INamedDictionary

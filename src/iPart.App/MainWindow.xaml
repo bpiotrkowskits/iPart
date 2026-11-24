@@ -21,14 +21,162 @@
         <Style TargetType="Button"><Setter Property="Padding" Value="12,6" /><Setter Property="Margin" Value="0,0,8,0" /></Style>
     </Window.Resources>
     <TabControl Margin="16">
+        <TabItem Header="Pakiety" DataContext="{Binding Packages}">
+            <Grid Margin="12">
+                <Grid.ColumnDefinitions><ColumnDefinition Width="340" /><ColumnDefinition Width="12" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                <Grid.RowDefinitions><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                <DockPanel>
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+                        <Button Content="Odśwież" Command="{Binding RefreshCommand}" DockPanel.Dock="Right" Margin="8,0,0,0" />
+                        <TextBox Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" ToolTip="Szukaj po kodzie pakietu lub nazwie Klienta" />
+                    </DockPanel>
+                    <GroupBox DockPanel.Dock="Bottom" Header="Nowy pakiet" Margin="0,8,0,0" Padding="8">
+                        <StackPanel>
+                            <TextBlock Text="Kod pakietu (np. PCBA1)" />
+                            <TextBox Text="{Binding NewCode, UpdateSourceTrigger=PropertyChanged}" Margin="0,2,0,6" />
+                            <TextBlock Text="Rewizja Klienta (np. C)" />
+                            <TextBox Text="{Binding NewRevision, UpdateSourceTrigger=PropertyChanged}" Margin="0,2,0,6" />
+                            <TextBlock Text="Klient" />
+                            <ComboBox ItemsSource="{Binding Customers}" SelectedItem="{Binding SelectedCustomer}" Margin="0,2,0,4" />
+                            <DockPanel Margin="0,0,0,6">
+                                <Button Content="Dodaj Klienta" Command="{Binding AddCustomerCommand}" DockPanel.Dock="Right" Margin="8,0,0,0" Padding="8,2" />
+                                <TextBox Text="{Binding NewCustomerName, UpdateSourceTrigger=PropertyChanged}" ToolTip="Nazwa nowego Klienta" />
+                            </DockPanel>
+                            <TextBlock Text="Opis (opcjonalnie)" />
+                            <TextBox Text="{Binding NewDescription, UpdateSourceTrigger=PropertyChanged}" Margin="0,2,0,8" />
+                            <Button Content="Utwórz pakiet" Command="{Binding CreatePackageCommand}" HorizontalAlignment="Left" />
+                        </StackPanel>
+                    </GroupBox>
+                    <ListBox ItemsSource="{Binding Packages}" SelectedItem="{Binding SelectedPackage}" DisplayMemberPath="DisplayName" />
+                </DockPanel>
+                <DockPanel Grid.Column="2">
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+                        <TextBlock Text="Rewizja importu BOM: " VerticalAlignment="Center" />
+                        <ComboBox ItemsSource="{Binding Revisions}" SelectedItem="{Binding SelectedRevision}" DisplayMemberPath="DisplayName" MinWidth="320" HorizontalAlignment="Left" />
+                    </DockPanel>
+                    <DataGrid ItemsSource="{Binding Lines}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Linia" Binding="{Binding LineNumber}" Width="50" />
+                            <DataGridTextColumn Header="Designator" Binding="{Binding Designators}" Width="200" />
+                            <DataGridTextColumn Header="Szt. desyg." Binding="{Binding DesignatorCount}" Width="70" />
+                            <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}" Width="65" />
+                            <DataGridTextColumn Header="Part TS" Binding="{Binding PartTs}" Width="140" />
+                            <DataGridTextColumn Header="Footprint" Binding="{Binding Footprint}" Width="120" />
+                            <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="180" />
+                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="100" />
+                            <DataGridTextColumn Header="Part Number" Binding="{Binding PartNumber}" Width="160" />
+                            <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="120" />
+                            <DataGridCheckBoxColumn Header="Confirmed" Binding="{Binding Confirmed}" Width="75" />
+                            <DataGridTextColumn Header="Kolumny dodatkowe" Binding="{Binding Extras}" Width="300" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+                <TextBlock Grid.Row="1" Grid.ColumnSpan="3" Text="{Binding Status}" TextWrapping="Wrap" Margin="0,8,0,0" AutomationProperties.LiveSetting="Polite" />
+            </Grid>
+        </TabItem>
+        <TabItem Header="Import BOM" DataContext="{Binding BomImport}">
+            <Grid Margin="12">
+                <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                    <TextBlock Text="Pakiet: " VerticalAlignment="Center" />
+                    <ComboBox ItemsSource="{Binding PackageList.Packages}" SelectedItem="{Binding SelectedPackage}" DisplayMemberPath="DisplayName" MinWidth="300" Margin="0,0,8,0" />
+                    <Button Content="Odśwież listę pakietów" Command="{Binding PackageList.RefreshCommand}" />
+                </StackPanel>
+                <DockPanel Grid.Row="1" Margin="0,0,0,8">
+                    <Button Content="Wybierz plik BOM (.xlsx)" Command="{Binding ChooseFileCommand}" DockPanel.Dock="Left" />
+                    <TextBox Text="{Binding FilePath, Mode=OneWay}" IsReadOnly="True" VerticalContentAlignment="Center" />
+                </DockPanel>
+                <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,8">
+                    <TextBlock Text="Arkusz: " VerticalAlignment="Center" />
+                    <ComboBox ItemsSource="{Binding Sheets}" SelectedItem="{Binding SelectedSheet}" MinWidth="160" Margin="0,0,16,0" />
+                    <TextBlock Text="Wiersz nagłówków: " VerticalAlignment="Center" />
+                    <TextBox Text="{Binding HeaderRow, UpdateSourceTrigger=LostFocus}" Width="50" VerticalContentAlignment="Center" Margin="0,0,16,0" />
+                    <Button Content="Podpowiedz po nazwach nagłówków" Command="{Binding SuggestCommand}" />
+                    <Button Content="Podgląd" Command="{Binding PreviewCommand}" />
+                </StackPanel>
+                <DataGrid Grid.Row="3" ItemsSource="{Binding Columns}" IsReadOnly="False" SelectionUnit="Cell">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Kol." Binding="{Binding Letter}" IsReadOnly="True" Width="45" />
+                        <DataGridTextColumn Header="Nagłówek Klienta" Binding="{Binding Header}" IsReadOnly="True" Width="200" />
+                        <DataGridTemplateColumn Header="Pole w iPart" Width="280">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox ItemsSource="{Binding DataContext.FieldOptions, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                              SelectedValuePath="Field" DisplayMemberPath="Label"
+                                              SelectedValue="{Binding Field, UpdateSourceTrigger=PropertyChanged}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Priorytet (1 = nadrzędna)" Binding="{Binding Priority, UpdateSourceTrigger=PropertyChanged}" Width="160" />
+                        <DataGridTextColumn Header="Przykładowe wartości" Binding="{Binding Sample}" IsReadOnly="True" Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+                <TextBlock Grid.Row="4" Text="{Binding Summary}" Margin="0,8" FontWeight="SemiBold" />
+                <TabControl Grid.Row="5">
+                    <TabItem Header="Problemy">
+                        <DataGrid ItemsSource="{Binding Issues}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Ważność" Binding="{Binding SeverityLabel}" Width="100" />
+                                <DataGridTextColumn Header="Linia" Binding="{Binding LineNumber}" Width="55" />
+                                <DataGridTextColumn Header="Wiersz Excela" Binding="{Binding SourceRow}" Width="95" />
+                                <DataGridTextColumn Header="Opis" Binding="{Binding Message}" Width="*" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </TabItem>
+                    <TabItem Header="Podgląd linii">
+                        <DataGrid ItemsSource="{Binding PreviewLines}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Linia" Binding="{Binding LineNumber}" Width="50" />
+                                <DataGridTextColumn Header="Designator" Binding="{Binding Designators}" Width="200" />
+                                <DataGridTextColumn Header="Szt. desyg." Binding="{Binding DesignatorCount}" Width="70" />
+                                <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}" Width="65" />
+                                <DataGridTextColumn Header="Part TS" Binding="{Binding PartTs}" Width="140" />
+                                <DataGridTextColumn Header="Footprint" Binding="{Binding Footprint}" Width="120" />
+                                <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="100" />
+                                <DataGridTextColumn Header="Part Number" Binding="{Binding PartNumber}" Width="160" />
+                                <DataGridTextColumn Header="Kolumny dodatkowe" Binding="{Binding Extras}" Width="*" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </TabItem>
+                </TabControl>
+                <DockPanel Grid.Row="6" Margin="0,8,0,0">
+                    <Button Content="Zapisz jako nową rewizję importu" Command="{Binding SaveCommand}" DockPanel.Dock="Left" />
+                    <TextBlock Text="Komentarz: " VerticalAlignment="Center" DockPanel.Dock="Left" />
+                    <TextBox Text="{Binding Comment, UpdateSourceTrigger=PropertyChanged}" Width="300" DockPanel.Dock="Left" Margin="0,0,12,0" />
+                    <TextBlock Text="{Binding Status}" TextWrapping="Wrap" VerticalAlignment="Center" AutomationProperties.LiveSetting="Polite" />
+                </DockPanel>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Komponenty" DataContext="{Binding Components}">
+            <DockPanel Margin="12">
+                <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+                    <TextBlock Text="MPN zawiera: " VerticalAlignment="Center" DockPanel.Dock="Left" />
+                    <Button Content="Szukaj" Command="{Binding SearchCommand}" DockPanel.Dock="Right" Margin="8,0,0,0" IsDefault="False" />
+                    <TextBox Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" />
+                </DockPanel>
+                <TextBlock DockPanel.Dock="Bottom" Text="{Binding Status}" Margin="0,8,0,0" AutomationProperties.LiveSetting="Polite" />
+                <DataGrid ItemsSource="{Binding Items}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="MPN" Binding="{Binding Mpn}" Width="240" />
+                        <DataGridTextColumn Header="Montaż" Binding="{Binding Mounting}" Width="100" />
+                        <DataGridTextColumn Header="Obudowa (Case)" Binding="{Binding CaseName}" Width="160" />
+                        <DataGridTextColumn Header="Footprint" Binding="{Binding Footprint}" Width="160" />
+                        <DataGridTextColumn Header="Uwagi" Binding="{Binding Notes}" Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </TabItem>
         <TabItem Header="Połączenie z bazą">
             <StackPanel Margin="24" VerticalAlignment="Center">
-                <TextBlock Text="iPart" FontSize="28" FontWeight="SemiBold" Margin="0,0,0,20" />
+                <TextBlock Text="iPart" FontSize="28" FontWeight="SemiBold" Margin="0,0,0,4" />
+                <TextBlock Text="{Binding AppVersion}" Margin="0,0,0,4" />
+                <TextBlock Text="{Binding CurrentUser, StringFormat=Zalogowany użytkownik Windows: {0}}" Margin="0,0,0,20" />
                 <Button Content="Sprawdź połączenie z bazą" Command="{Binding CheckConnectionCommand}" HorizontalAlignment="Left" />
                 <TextBlock Text="{Binding Status}" Margin="0,16,0,0" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" />
+                <TextBox Text="{Binding ConnectionDetails, Mode=OneWay}" IsReadOnly="True" BorderThickness="0" Background="Transparent" TextWrapping="Wrap" Margin="0,12,0,0" />
             </StackPanel>
         </TabItem>
-        <TabItem Header="Import Excel" DataContext="{Binding Import}">
+        <TabItem Header="Import dataPart (podgląd)" DataContext="{Binding Import}">
             <Grid Margin="12">
                 <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
                 <DockPanel Margin="0,0,0,10">

@@ -28,10 +28,11 @@ public sealed class SqlServerDatabaseTests
         await using var context = database.CreateDbContext();
         Assert.Empty(await context.Database.GetPendingMigrationsAsync());
         Assert.False(context.Database.HasPendingModelChanges());
-        Assert.Equal(new[] { "20261113125347_InitialComponentModel" }, await context.Database.GetAppliedMigrationsAsync());
+        Assert.Equal(context.Database.GetMigrations(), await context.Database.GetAppliedMigrationsAsync());
         Assert.Equal(DatabaseConnectionStatus.Connected,
             await new SqlServerConnectionChecker(database.Connection.ConnectionString).CheckAsync());
-        Assert.Equal(20L, await database.Scalar("SELECT COUNT_BIG(*) FROM sys.tables WHERE is_ms_shipped=0"));
+        // 19 tabel modelu komponentów + 5 tabel pakietów/BOM + __EFMigrationsHistory.
+        Assert.Equal(25L, await database.Scalar("SELECT COUNT_BIG(*) FROM sys.tables WHERE is_ms_shipped=0"));
         Assert.Equal(0L, await database.Scalar("SELECT COUNT_BIG(*) FROM sys.check_constraints WHERE is_disabled=1 OR is_not_trusted=1"));
         Assert.Equal(0L, await database.Scalar("SELECT COUNT_BIG(*) FROM sys.foreign_keys WHERE is_disabled=1 OR is_not_trusted=1"));
         Assert.Equal(1L, await database.Scalar("SELECT COUNT_BIG(*) FROM sys.indexes WHERE name=N'UX_Components_BusinessKey' AND is_unique=1 AND has_filter=0"));

@@ -21,7 +21,7 @@ public sealed class ImportWindowTests
                 window = new MainWindow { DataContext = new MainWindowViewModel(null, import: new ImportExcelViewModel(new ImmediateService())) };
                 window.Show(); window.UpdateLayout();
                 var tabs = Descendants(window).OfType<TabControl>().First();
-                tabs.SelectedIndex = 1; window.UpdateLayout();
+                tabs.SelectedItem = tabs.Items.OfType<TabItem>().Single(t => Equals(t.Header, "Import dataPart (podgląd)")); window.UpdateLayout();
                 Assert.Contains(Descendants(window).OfType<Button>(), b => Equals(b.Content, "Analizuj plik"));
                 Assert.Contains(Descendants(window).OfType<Button>(), b => Equals(b.Content, "Eksportuj raport…"));
                 Assert.All(Descendants(window).OfType<DataGrid>(), grid => { Assert.True(grid.IsReadOnly); Assert.True(grid.EnableRowVirtualization); });

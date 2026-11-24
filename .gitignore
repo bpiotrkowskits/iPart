@@ -483,3 +483,6 @@ $RECYCLE.BIN/
 
 # Pliki zrodlowe Excel (dane firmowe, poza repozytorium)
 zrodla/
+
+# Wynik publikacji aplikacji (dotnet publish)
+publish/
