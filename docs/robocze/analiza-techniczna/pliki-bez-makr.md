@@ -6,7 +6,7 @@ przegląd: 2026-11-23
 
 # dataPart, scrapPart, entPart — analiza techniczna
 
-Źródło: struktura arkuszy i formuł plików `dataPart.xlsx`, `scrapPart.xlsx`, `entPart.xlsx` (tylko odczyt) oraz miejsca w kodzie VBA innych plików, które z nich korzystają. Formaty flag i Tagów opisano wzorcem — bez przepisywania loginów i nazwisk. Porównanie z [wywiadem](../wywiad-obieg-plikow.md) i [ipart.md](ipart.md).
+Źródło: struktura arkuszy i formuł plików `dataPart.xlsx`, `scrapPart.xlsx`, `entPart.xlsx` (tylko odczyt) oraz miejsca w kodzie VBA innych plików, które z nich korzystają. Formaty flag i Tagów opisano wzorcem — bez przepisywania loginów i nazwisk. Porównanie z [wywiadem](../Wywiad%20obieg%20plików.md) i [ipart.md](ipart.md).
 
 Oznaczenia: **[zgodne z wywiadem]**, **[różnica względem wywiadu]**, **[nowe — nieomawiane]**, **[niepewne]**.
 

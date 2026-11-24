@@ -6,7 +6,7 @@ przegląd: 2026-11-23
 
 # sPart — analiza techniczna kodu VBA
 
-Źródło: kod VBA wyciągnięty (tylko do odczytu) z `sPart_v3.xlsm`: 19 modułów (ok. 4 200 linii) i jeden formularz. Do tego przyciski na arkuszu START, formuły w wierszu wzorcowym, formatowanie warunkowe, listy wyboru i łącza do innych plików. Dokument porównuje kod z ustaleniami z wywiadu ([wywiad-obieg-plikow.md](../wywiad-obieg-plikow.md)) i z analizą iPart ([ipart.md](ipart.md)).
+Źródło: kod VBA wyciągnięty (tylko do odczytu) z `sPart_v3.xlsm`: 19 modułów (ok. 4 200 linii) i jeden formularz. Do tego przyciski na arkuszu START, formuły w wierszu wzorcowym, formatowanie warunkowe, listy wyboru i łącza do innych plików. Dokument porównuje kod z ustaleniami z wywiadu ([Wywiad obieg plików](../Wywiad%20obieg%20plików.md)) i z analizą iPart ([ipart.md](ipart.md)).
 
 Oznaczenia: **[zgodne z wywiadem]**, **[różnica względem wywiadu]**, **[nowe — nieomawiane]**, **[niepewne]** — kod tego nie rozstrzyga.
 

@@ -1,6 +1,12 @@
+---
+status: roboczy
+zakres: analiza techniczna systemu plików Excel (legacy)
+przegląd: 2026-11-23
+---
+
 # Analiza techniczna plików Part
 
-Opis działania makr VBA, formuł i comparatora w obecnym systemie Excel. Materiał do potwierdzenia przez autora plików — przygotowany na podstawie kodu wyciągniętego z plików `.xlsm` (tylko odczyt) i notatek z wywiadu [../wywiad-obieg-plikow.md](../wywiad-obieg-plikow.md).
+Opis działania makr VBA, formuł i comparatora w obecnym systemie Excel. Materiał do potwierdzenia przez autora plików — przygotowany na podstawie kodu wyciągniętego z plików `.xlsm` (tylko odczyt) i notatek z wywiadu [Wywiad obieg plików](../Wywiad%20obieg%20plików.md).
 
 Zacznij od syntezy: **[wspolzaleznosci.md](wspolzaleznosci.md)** — mapa przepływów między plikami, rozbieżności z wywiadem, zbiorcza lista błędów i najważniejsze pytania.
 

@@ -6,7 +6,7 @@ przegląd: 2026-11-23
 
 # comparator — analiza techniczna
 
-Źródło: plik tekstowy z kodem comparatora (ok. 440 linii) — główny mechanizm wczytania i porównania danych. Obsługa ekranów (przyciski akceptacji, eksport do iPart, Wykaz Różnic) nie została dostarczona; autor zdecydował, że będzie budowana od nowa. Dla porównania przejrzano układ pliku wejściowego `BOM_P&P_PCBA1.xlsx` i szablon `Wykaz Różnic Dokumentacyjnych.xlsx`. Porównanie z [wywiadem](../wywiad-obieg-plikow.md).
+Źródło: plik tekstowy z kodem comparatora (ok. 440 linii) — główny mechanizm wczytania i porównania danych. Obsługa ekranów (przyciski akceptacji, eksport do iPart, Wykaz Różnic) nie została dostarczona; autor zdecydował, że będzie budowana od nowa. Dla porównania przejrzano układ pliku wejściowego `BOM_P&P_PCBA1.xlsx` i szablon `Wykaz Różnic Dokumentacyjnych.xlsx`. Porównanie z [wywiadem](../Wywiad%20obieg%20plików.md).
 
 Oznaczenia: **[zgodne z wywiadem]**, **[różnica względem wywiadu]**, **[nowe — nieomawiane]**, **[niepewne]** — kod tego nie rozstrzyga.
 

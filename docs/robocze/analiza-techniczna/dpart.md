@@ -6,7 +6,7 @@ przegląd: 2026-11-23
 
 # dPart — analiza techniczna
 
-Źródło: kod VBA wyciągnięty (tylko do odczytu) z `dPart.xlsm` i `dPart_v3.f.xlsm` — po 10 modułów, ok. 430 linii, dwa formularze — oraz układ arkuszy obu plików. Ponieważ dPart **nie pobiera danych sam**, przejrzano też moduł eksportu w cPart (`cZK_p5_ExportKompletacja`), który tworzy i wypełnia dPart. Pełny opis cPart jest w osobnym dokumencie. Porównanie z ustaleniami z [wywiadu](../wywiad-obieg-plikow.md).
+Źródło: kod VBA wyciągnięty (tylko do odczytu) z `dPart.xlsm` i `dPart_v3.f.xlsm` — po 10 modułów, ok. 430 linii, dwa formularze — oraz układ arkuszy obu plików. Ponieważ dPart **nie pobiera danych sam**, przejrzano też moduł eksportu w cPart (`cZK_p5_ExportKompletacja`), który tworzy i wypełnia dPart. Pełny opis cPart jest w osobnym dokumencie. Porównanie z ustaleniami z [wywiadu](../Wywiad%20obieg%20plików.md).
 
 Oznaczenia: **[zgodne z wywiadem]**, **[różnica względem wywiadu]**, **[nowe — nieomawiane]**, **[niepewne]** — kod tego nie rozstrzyga.
 

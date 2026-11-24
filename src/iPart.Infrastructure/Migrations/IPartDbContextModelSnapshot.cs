@@ -17,6 +17,7 @@ namespace iPart.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("dataPart")
                 .HasAnnotation("ProductVersion", "10.0.15")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
@@ -39,7 +40,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("Name");
 
-                    b.ToTable("AecQualifications", (string)null);
+                    b.ToTable("AecQualifications", "dataPart");
 
                     b.HasData(
                         new
@@ -100,7 +101,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("RatedVoltageV");
 
-                    b.ToTable("CapacitorParameters", null, t =>
+                    b.ToTable("CapacitorParameters", "dataPart", t =>
                         {
                             t.HasCheckConstraint("CK_CapacitorParameters_AbsoluteTolerancePf", "[AbsoluteTolerancePf] >= 0");
 
@@ -141,7 +142,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CasePatterns", (string)null);
+                    b.ToTable("CasePatterns", "dataPart");
                 });
 
             modelBuilder.Entity("iPart.Core.Components.Category", b =>
@@ -161,7 +162,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("Name");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories", "dataPart");
                 });
 
             modelBuilder.Entity("iPart.Core.Components.Component", b =>
@@ -274,7 +275,7 @@ namespace iPart.Infrastructure.Migrations
                         .IsUnique()
                         .HasDatabaseName("UX_Components_BusinessKey");
 
-                    b.ToTable("Components", null, t =>
+                    b.ToTable("Components", "dataPart", t =>
                         {
                             t.HasCheckConstraint("CK_Components_MpnNormalized", "DATALENGTH([Mpn]) > 0 AND UNICODE(LEFT([Mpn], 1)) NOT IN (9,10,11,12,13,32,133,160,5760,8192,8193,8194,8195,8196,8197,8198,8199,8200,8201,8202,8232,8233,8239,8287,12288) AND UNICODE(RIGHT([Mpn], 1)) NOT IN (9,10,11,12,13,32,133,160,5760,8192,8193,8194,8195,8196,8197,8198,8199,8200,8201,8202,8232,8233,8239,8287,12288)");
 
@@ -326,7 +327,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("ComponentId", "OccurredAtUtc");
 
-                    b.ToTable("ComponentHistory", (string)null);
+                    b.ToTable("ComponentHistory", "dataPart");
                 });
 
             modelBuilder.Entity("iPart.Core.Components.ComponentLink", b =>
@@ -353,7 +354,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("ComponentId");
 
-                    b.ToTable("ComponentLinks", null, t =>
+                    b.ToTable("ComponentLinks", "dataPart", t =>
                         {
                             t.HasCheckConstraint("CK_ComponentLinks_Kind", "[Kind] IN (1, 2)");
                         });
@@ -402,7 +403,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasKey("ComponentId");
 
-                    b.ToTable("ComponentPads", null, t =>
+                    b.ToTable("ComponentPads", "dataPart", t =>
                         {
                             t.HasCheckConstraint("CK_Pads_BGA", "[BGA] = 0 OR [BGA] >= 3");
 
@@ -438,7 +439,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("QualificationId");
 
-                    b.ToTable("ComponentQualifications", (string)null);
+                    b.ToTable("ComponentQualifications", "dataPart");
                 });
 
             modelBuilder.Entity("iPart.Core.Components.ConnectorParameters", b =>
@@ -470,7 +471,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("PositionCount");
 
-                    b.ToTable("ConnectorParameters", null, t =>
+                    b.ToTable("ConnectorParameters", "dataPart", t =>
                         {
                             t.HasCheckConstraint("CK_ConnectorParameters_PitchMm", "[PitchMm] >= 0");
 
@@ -497,7 +498,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("FrequencyHz");
 
-                    b.ToTable("CrystalParameters", null, t =>
+                    b.ToTable("CrystalParameters", "dataPart", t =>
                         {
                             t.HasCheckConstraint("CK_CrystalParameters_FrequencyHz", "[FrequencyHz] >= 0");
 
@@ -526,7 +527,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("Name");
 
-                    b.ToTable("Customers", (string)null);
+                    b.ToTable("Customers", "dataPart");
                 });
 
             modelBuilder.Entity("iPart.Core.Components.InductorParameters", b =>
@@ -564,7 +565,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("RatedCurrentA");
 
-                    b.ToTable("InductorParameters", null, t =>
+                    b.ToTable("InductorParameters", "dataPart", t =>
                         {
                             t.HasCheckConstraint("CK_InductorParameters_DcrOhms", "[DcrOhms] >= 0");
 
@@ -609,7 +610,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("Color");
 
-                    b.ToTable("LedParameters", null, t =>
+                    b.ToTable("LedParameters", "dataPart", t =>
                         {
                             t.HasCheckConstraint("CK_LedParameters_DominantWavelengthNm", "[DominantWavelengthNm] >= 0");
 
@@ -640,7 +641,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("Name");
 
-                    b.ToTable("Manufacturers", (string)null);
+                    b.ToTable("Manufacturers", "dataPart");
                 });
 
             modelBuilder.Entity("iPart.Core.Components.MountingMethod", b =>
@@ -660,7 +661,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("Name");
 
-                    b.ToTable("MountingMethods", (string)null);
+                    b.ToTable("MountingMethods", "dataPart");
 
                     b.HasData(
                         new
@@ -712,7 +713,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("Name");
 
-                    b.ToTable("ProductStatuses", (string)null);
+                    b.ToTable("ProductStatuses", "dataPart");
 
                     b.HasData(
                         new
@@ -766,7 +767,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("TolerancePercent");
 
-                    b.ToTable("ResistorParameters", null, t =>
+                    b.ToTable("ResistorParameters", "dataPart", t =>
                         {
                             t.HasCheckConstraint("CK_ResistorParameters_PowerWatts", "[PowerWatts] >= 0");
 
@@ -798,7 +799,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("Name");
 
-                    b.ToTable("Subcategories", (string)null);
+                    b.ToTable("Subcategories", "dataPart");
                 });
 
             modelBuilder.Entity("iPart.Core.Packages.BomLine", b =>
@@ -851,7 +852,7 @@ namespace iPart.Infrastructure.Migrations
                     b.HasIndex("BomRevisionId", "LineNumber")
                         .IsUnique();
 
-                    b.ToTable("BomLines", null, t =>
+                    b.ToTable("BomLines", "dataPart", t =>
                         {
                             t.HasCheckConstraint("CK_BomLines_LineNumber", "[LineNumber] >= 1");
 
@@ -877,7 +878,7 @@ namespace iPart.Infrastructure.Migrations
                     b.HasIndex("BomRevisionId", "Designator")
                         .IsUnique();
 
-                    b.ToTable("BomLineDesignators", (string)null);
+                    b.ToTable("BomLineDesignators", "dataPart");
                 });
 
             modelBuilder.Entity("iPart.Core.Packages.BomLineExtraValue", b =>
@@ -899,7 +900,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasKey("BomLineId", "Ordinal");
 
-                    b.ToTable("BomLineExtraValues", null, t =>
+                    b.ToTable("BomLineExtraValues", "dataPart", t =>
                         {
                             t.HasCheckConstraint("CK_BomLineExtraValues_Ordinal", "[Ordinal] >= 1");
                         });
@@ -942,7 +943,7 @@ namespace iPart.Infrastructure.Migrations
                     b.HasIndex("PackageId", "Number")
                         .IsUnique();
 
-                    b.ToTable("BomRevisions", null, t =>
+                    b.ToTable("BomRevisions", "dataPart", t =>
                         {
                             t.HasCheckConstraint("CK_BomRevisions_Number", "[Number] >= 1");
                         });
@@ -986,7 +987,7 @@ namespace iPart.Infrastructure.Migrations
                         .IsUnique()
                         .HasDatabaseName("UX_Packages_CodeRevisionCustomer");
 
-                    b.ToTable("Packages", (string)null);
+                    b.ToTable("Packages", "dataPart");
                 });
 
             modelBuilder.Entity("iPart.Core.Components.CapacitorParameters", b =>

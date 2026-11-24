@@ -6,7 +6,7 @@ przegląd: 2026-11-23
 
 # cPart — analiza techniczna kodu VBA
 
-Źródło: kod VBA wyciągnięty (tylko do odczytu) z `cPart_v3.xlsm` — 21 modułów (ok. 5 900 linii), 6 formularzy, układ przycisków na arkuszu START, formuły i formatowanie warunkowe szablonu. Dla ustalenia kierunków wymiany danych sprawdzono też wybrane procedury sPart, które zapisują do cPart i czytają z niego (opis szczegółowy — w analizie sPart). Dokument porównuje kod z ustaleniami z wywiadu ([wywiad-obieg-plikow.md](../wywiad-obieg-plikow.md)) i z analizą iPart ([ipart.md](ipart.md)).
+Źródło: kod VBA wyciągnięty (tylko do odczytu) z `cPart_v3.xlsm` — 21 modułów (ok. 5 900 linii), 6 formularzy, układ przycisków na arkuszu START, formuły i formatowanie warunkowe szablonu. Dla ustalenia kierunków wymiany danych sprawdzono też wybrane procedury sPart, które zapisują do cPart i czytają z niego (opis szczegółowy — w analizie sPart). Dokument porównuje kod z ustaleniami z wywiadu ([Wywiad obieg plików](../Wywiad%20obieg%20plików.md)) i z analizą iPart ([ipart.md](ipart.md)).
 
 Oznaczenia: **[zgodne z wywiadem]**, **[różnica względem wywiadu]**, **[nowe — nieomawiane]**, **[niepewne]** — kod tego nie rozstrzyga.
 

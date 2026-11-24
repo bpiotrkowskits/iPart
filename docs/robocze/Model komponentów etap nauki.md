@@ -1,3 +1,9 @@
+---
+status: roboczy
+zakres: wersja wstępna aplikacji (etap nauki) — opis kodu do przeniesienia do karty modułu Komponenty
+przegląd: 2026-11-24
+---
+
 # Model komponentów iPart
 
 ## Granice odpowiedzialności
@@ -6,7 +12,7 @@
 - `iPart.Infrastructure`: mapowanie SQL Server, krótkotrwałe konteksty, migracje, zapis transakcyjny, historia i lokalny dostawca autora.
 - `iPart.App`: istniejące WPF/MVVM i konfiguracja JSON. Dotychczasowy interfejs sprawdzania połączenia pozostaje bez zmian.
 
-Dodano pierwszy etap importera: odczyt XLSX, mapowanie, walidację, podgląd i eksport raportu, bez zapisu do bazy. Opis: [excel-import.md](excel-import.md). Nie zaimplementowano zapisu importu, formularza komponentów, ekranu historii ani funkcji magazynowych. Nie pozostawiono przykładowych komponentów w bazie.
+Dodano pierwszy etap importera: odczyt XLSX, mapowanie, walidację, podgląd i eksport raportu, bez zapisu do bazy. Opis: [Import dataPart etap nauki](Import%20dataPart%20etap%20nauki.md). Nie zaimplementowano zapisu importu, formularza komponentów, ekranu historii ani funkcji magazynowych. Nie pozostawiono przykładowych komponentów w bazie.
 
 ## Identyfikacja i normalizacja
 

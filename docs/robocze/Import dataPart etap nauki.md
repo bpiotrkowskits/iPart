@@ -1,3 +1,9 @@
+---
+status: roboczy
+zakres: wersja wstępna aplikacji (etap nauki) — opis kodu do przeniesienia do karty modułu Komponenty
+przegląd: 2026-11-24
+---
+
 # Import Excel: etap odczytu, mapowania i podglądu
 
 Ten etap nie zapisuje komponentów, historii, słowników ani rekordów importu do SQL Server. Nie zmienia modelu EF, snapshotu ani zastosowanej migracji. Nie ma przycisku zatwierdzania importu do bazy.

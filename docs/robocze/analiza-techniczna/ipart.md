@@ -6,7 +6,7 @@ przegląd: 2026-11-23
 
 # iPart — analiza techniczna kodu VBA
 
-Źródło: kod VBA wyciągnięty (tylko do odczytu) z `iPart.xlsm` — 37 modułów, ok. 9 300 linii, oraz układ przycisków na arkuszach. Dokument porównuje kod z ustaleniami z wywiadu ([wywiad-obieg-plikow.md](../wywiad-obieg-plikow.md)).
+Źródło: kod VBA wyciągnięty (tylko do odczytu) z `iPart.xlsm` — 37 modułów, ok. 9 300 linii, oraz układ przycisków na arkuszach. Dokument porównuje kod z ustaleniami z wywiadu ([Wywiad obieg plików](../Wywiad%20obieg%20plików.md)).
 
 Oznaczenia: **[zgodne z wywiadem]**, **[różnica względem wywiadu]**, **[nowe — nieomawiane]**, **[niepewne]** — kod tego nie rozstrzyga.
 

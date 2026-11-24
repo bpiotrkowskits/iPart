@@ -6,7 +6,7 @@ przegląd: 2026-11-23
 
 # fusePart — analiza techniczna kodu VBA
 
-Źródło: kod VBA wyciągnięty (tylko do odczytu) z `fusePart.xlsm` — 15 modułów (8 z kodem, ok. 3 200 linii; 7 modułów arkuszy pustych), formuły wybranych arkuszy oraz układ przycisków na arkuszach. Dokument porównuje kod z ustaleniami z wywiadu ([wywiad-obieg-plikow.md](../wywiad-obieg-plikow.md)) i z analizą [iPart](ipart.md).
+Źródło: kod VBA wyciągnięty (tylko do odczytu) z `fusePart.xlsm` — 15 modułów (8 z kodem, ok. 3 200 linii; 7 modułów arkuszy pustych), formuły wybranych arkuszy oraz układ przycisków na arkuszach. Dokument porównuje kod z ustaleniami z wywiadu ([Wywiad obieg plików](../Wywiad%20obieg%20plików.md)) i z analizą [iPart](ipart.md).
 
 Oznaczenia: **[zgodne z wywiadem]**, **[różnica względem wywiadu]**, **[nowe — nieomawiane]**, **[niepewne]** — kod tego nie rozstrzyga.
 

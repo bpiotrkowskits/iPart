@@ -24,8 +24,12 @@ public sealed class IPartDbContext(DbContextOptions<IPartDbContext> options) : D
     public DbSet<BomLineDesignator> BomLineDesignators => Set<BomLineDesignator>();
     public DbSet<BomLineExtraValue> BomLineExtraValues => Set<BomLineExtraValue>();
 
+    public const string Schema = "dataPart";
+
     protected override void OnModelCreating(ModelBuilder model)
     {
+        model.HasDefaultSchema(Schema);
+
         var component = model.Entity<Component>();
         component.ToTable("Components", table =>
         {

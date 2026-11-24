@@ -6,7 +6,7 @@ przegląd: 2026-11-23
 
 # qPart (TS_KOSZTORYSANT v1.3) — analiza techniczna
 
-Źródło: kod VBA wyciągnięty (tylko do odczytu) z `TS_KOSZTORYSANT_V1.3.xlsm` — 28 modułów, ok. 1 150 linii (z czego 15 modułów arkuszy i skoroszytu jest pustych), formuły arkuszy, przypisanie przycisków do makr oraz zapytanie Power Query. Plik nie ma formularzy (UserForm). Porównanie z ustaleniami z [wywiadu](../wywiad-obieg-plikow.md).
+Źródło: kod VBA wyciągnięty (tylko do odczytu) z `TS_KOSZTORYSANT_V1.3.xlsm` — 28 modułów, ok. 1 150 linii (z czego 15 modułów arkuszy i skoroszytu jest pustych), formuły arkuszy, przypisanie przycisków do makr oraz zapytanie Power Query. Plik nie ma formularzy (UserForm). Porównanie z ustaleniami z [wywiadu](../Wywiad%20obieg%20plików.md).
 
 Oznaczenia: **[zgodne z wywiadem]**, **[różnica względem wywiadu]**, **[nowe — nieomawiane]**, **[niepewne]** — kod ani arkusze tego nie rozstrzygają.
 

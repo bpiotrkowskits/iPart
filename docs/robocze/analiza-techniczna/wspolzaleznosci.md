@@ -1,6 +1,12 @@
+---
+status: roboczy
+zakres: analiza techniczna systemu plików Excel (legacy)
+przegląd: 2026-11-23
+---
+
 # Współzależności między plikami — synteza analizy technicznej
 
-Data: 2026-11-23. Podstawa: analizy kodu VBA, formuł i comparatora w tym folderze oraz notatki z wywiadu [../wywiad-obieg-plikow.md](../wywiad-obieg-plikow.md). Najważniejsze ustalenia sprawdzono bezpośrednio w kodzie.
+Data: 2026-11-23. Podstawa: analizy kodu VBA, formuł i comparatora w tym folderze oraz notatki z wywiadu [../Wywiad%20obieg%20plików.md](../Wywiad%20obieg%20plików.md). Najważniejsze ustalenia sprawdzono bezpośrednio w kodzie.
 
 Oznaczenia: **[zgodne z wywiadem]**, **[różnica względem wywiadu]**, **[nowe]**, **[niepewne]**.
 

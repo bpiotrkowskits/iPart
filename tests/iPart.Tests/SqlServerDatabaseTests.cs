@@ -92,7 +92,7 @@ public sealed class SqlServerDatabaseTests
         Assert.Null(read.Pads.NS);
         foreach (var (field, value) in new[] { ("RC", 1), ("TT", 1), ("DL", 2), ("QL", 3), ("BGA", 2), ("TP", -1), ("THT", -1), ("PreTHT", -1), ("PressFIT", -1), ("MECH", -1) })
         {
-            var error = await Assert.ThrowsAsync<SqlException>(() => database.Execute($"UPDATE [ComponentPads] SET [{field}]=@value WHERE [ComponentId]=@id", ("@value", value), ("@id", component.Id)));
+            var error = await Assert.ThrowsAsync<SqlException>(() => database.Execute($"UPDATE [dataPart].[ComponentPads] SET [{field}]=@value WHERE [ComponentId]=@id", ("@value", value), ("@id", component.Id)));
             Assert.Equal(547, error.Number);
         }
         read.Pads.BTC = null;
@@ -185,7 +185,7 @@ public sealed class SqlServerDatabaseTests
         Assert.Contains("Injected history write failure", exception.ToString());
         Assert.True(fault.SawInsertedComponent, "Failure must occur AFTER the component INSERT, not before any write.");
         Assert.Null(await database.Service().GetAsync(component.Id));
-        Assert.Equal(0L, await database.Scalar("SELECT COUNT_BIG(*) FROM ComponentHistory WHERE ComponentId=@id", ("@id", component.Id)));
+        Assert.Equal(0L, await database.Scalar("SELECT COUNT_BIG(*) FROM dataPart.ComponentHistory WHERE ComponentId=@id", ("@id", component.Id)));
         Assert.Equal(0L, await database.Scalar("SELECT COUNT_BIG(*) FROM ResistorParameters WHERE ComponentId=@id", ("@id", component.Id)));
     }
 
@@ -201,7 +201,7 @@ public sealed class SqlServerDatabaseTests
         await Assert.ThrowsAsync<DbUpdateException>(() => service.SaveAsync(component, null));
         Assert.True(fault.SawInsertedComponent);
         Assert.Null(await database.Service().GetAsync(component.Id));
-        Assert.Equal(0L, await database.Scalar("SELECT COUNT_BIG(*) FROM ComponentHistory WHERE ComponentId=@id", ("@id", component.Id)));
+        Assert.Equal(0L, await database.Scalar("SELECT COUNT_BIG(*) FROM dataPart.ComponentHistory WHERE ComponentId=@id", ("@id", component.Id)));
     }
 
     [SqlServerDatabaseFact]
@@ -217,7 +217,7 @@ public sealed class SqlServerDatabaseTests
         Assert.True(result.Success, result.Message);
         Assert.True(rollback.SawCompleteAggregate);
         Assert.Null(await database.Service().GetAsync(component.Id));
-        Assert.Equal(0L, await database.Scalar("SELECT COUNT_BIG(*) FROM ComponentHistory WHERE ComponentId=@id", ("@id", component.Id)));
+        Assert.Equal(0L, await database.Scalar("SELECT COUNT_BIG(*) FROM dataPart.ComponentHistory WHERE ComponentId=@id", ("@id", component.Id)));
     }
 
     [SqlServerDatabaseFact]
@@ -236,7 +236,7 @@ public sealed class SqlServerDatabaseTests
             var saved = await service.SaveAsync(first, first.Version);
             Assert.True(saved.Success, saved.Message);
             Assert.NotEqual(second.Version, saved.Version);
-            var historyBefore = await database.Scalar("SELECT COUNT_BIG(*) FROM ComponentHistory WHERE ComponentId=@id", ("@id", component.Id));
+            var historyBefore = await database.Scalar("SELECT COUNT_BIG(*) FROM dataPart.ComponentHistory WHERE ComponentId=@id", ("@id", component.Id));
             var conflict = await service.SaveAsync(second, second.Version);
             Assert.Equal(SaveFailure.ConcurrentEdit, conflict.Failure);
             Assert.False(conflict.Success);
@@ -244,7 +244,7 @@ public sealed class SqlServerDatabaseTests
             var read = (await service.GetAsync(component.Id))!;
             if (parametersOnly) Assert.Equal(1, read.Resistor!.PowerWatts);
             else Assert.Equal("first", read.NamePl);
-            Assert.Equal(historyBefore, await database.Scalar("SELECT COUNT_BIG(*) FROM ComponentHistory WHERE ComponentId=@id", ("@id", component.Id)));
+            Assert.Equal(historyBefore, await database.Scalar("SELECT COUNT_BIG(*) FROM dataPart.ComponentHistory WHERE ComponentId=@id", ("@id", component.Id)));
         }
     }
 
@@ -258,15 +258,15 @@ public sealed class SqlServerDatabaseTests
         var edit = (await normalService.GetAsync(component.Id))!;
         edit.Resistor!.PowerWatts = 2;
         var competingVersion = Guid.NewGuid();
-        var historyCount = await database.Scalar("SELECT COUNT_BIG(*) FROM ComponentHistory WHERE ComponentId=@id", ("@id", component.Id));
+        var historyCount = await database.Scalar("SELECT COUNT_BIG(*) FROM dataPart.ComponentHistory WHERE ComponentId=@id", ("@id", component.Id));
         // Deterministically interleave a competing UPDATE after service load/precheck, before its SaveChanges.
-        var race = new CallbackUser(() => database.ExecuteSync("UPDATE Components SET Version=@version WHERE Id=@id", ("@version", competingVersion), ("@id", edit.Id)));
+        var race = new CallbackUser(() => database.ExecuteSync("UPDATE dataPart.Components SET Version=@version WHERE Id=@id", ("@version", competingVersion), ("@id", edit.Id)));
         var result = await database.Service(race).SaveAsync(edit, edit.Version);
         Assert.Equal(SaveFailure.ConcurrentEdit, result.Failure);
         var read = (await normalService.GetAsync(edit.Id))!;
         Assert.Equal(competingVersion, read.Version);
         Assert.Equal(.25m, read.Resistor!.PowerWatts);
-        Assert.Equal(historyCount, await database.Scalar("SELECT COUNT_BIG(*) FROM ComponentHistory WHERE ComponentId=@id", ("@id", edit.Id)));
+        Assert.Equal(historyCount, await database.Scalar("SELECT COUNT_BIG(*) FROM dataPart.ComponentHistory WHERE ComponentId=@id", ("@id", edit.Id)));
     }
 
     [SqlServerDatabaseFact]
@@ -277,9 +277,9 @@ public sealed class SqlServerDatabaseTests
         var category2 = await database.NewDictionary("Categories");
         var subcategory = (int)await database.Scalar("INSERT Subcategories(Name,CategoryId) OUTPUT INSERTED.Id VALUES(N'Test subcategory',@category)", ("@category", category1));
         var id = await database.InsertComponent("TEST-" + Guid.NewGuid().ToString("N"));
-        var exception = await Assert.ThrowsAsync<SqlException>(() => database.Execute("UPDATE Components SET CategoryId=@category,SubcategoryId=@subcategory WHERE Id=@id", ("@category", category2), ("@subcategory", subcategory), ("@id", id)));
+        var exception = await Assert.ThrowsAsync<SqlException>(() => database.Execute("UPDATE dataPart.Components SET CategoryId=@category,SubcategoryId=@subcategory WHERE Id=@id", ("@category", category2), ("@subcategory", subcategory), ("@id", id)));
         Assert.Equal(547, exception.Number);
-        await database.Execute("UPDATE Components SET CategoryId=@category,SubcategoryId=@subcategory WHERE Id=@id", ("@category", category1), ("@subcategory", subcategory), ("@id", id));
+        await database.Execute("UPDATE dataPart.Components SET CategoryId=@category,SubcategoryId=@subcategory WHERE Id=@id", ("@category", category1), ("@subcategory", subcategory), ("@id", id));
     }
 
     private sealed class CallbackUser(Action? beforeAuthor = null) : ICurrentUser
@@ -293,11 +293,11 @@ public sealed class SqlServerDatabaseTests
         public override async ValueTask<InterceptionResult<DbDataReader>> ReaderExecutingAsync(DbCommand command, CommandEventData eventData,
             InterceptionResult<DbDataReader> result, CancellationToken cancellationToken = default)
         {
-            if (command.CommandText.Contains("INSERT INTO [ComponentHistory]", StringComparison.Ordinal))
+            if (command.CommandText.Contains("INSERT INTO [dataPart].[ComponentHistory]", StringComparison.Ordinal))
             {
                 using var probe = command.Connection!.CreateCommand();
                 probe.Transaction = command.Transaction;
-                probe.CommandText = "SELECT COUNT_BIG(*) FROM Components WHERE Id=@id";
+                probe.CommandText = "SELECT COUNT_BIG(*) FROM dataPart.Components WHERE Id=@id";
                 var parameter = probe.CreateParameter(); parameter.ParameterName = "@id"; parameter.Value = componentId; probe.Parameters.Add(parameter);
                 SawInsertedComponent = Convert.ToInt64(await probe.ExecuteScalarAsync(cancellationToken)) == 1;
                 throw new InvalidOperationException("Injected history write failure");
@@ -314,7 +314,7 @@ public sealed class SqlServerDatabaseTests
         {
             using var probe = transaction.Connection!.CreateCommand();
             probe.Transaction = transaction;
-            probe.CommandText = "SELECT (SELECT COUNT_BIG(*) FROM Components WHERE Id=@id), (SELECT COUNT_BIG(*) FROM ComponentPads WHERE ComponentId=@id), (SELECT COUNT_BIG(*) FROM ComponentHistory WHERE ComponentId=@id)";
+            probe.CommandText = "SELECT (SELECT COUNT_BIG(*) FROM dataPart.Components WHERE Id=@id), (SELECT COUNT_BIG(*) FROM dataPart.ComponentPads WHERE ComponentId=@id), (SELECT COUNT_BIG(*) FROM dataPart.ComponentHistory WHERE ComponentId=@id)";
             var parameter = probe.CreateParameter(); parameter.ParameterName = "@id"; parameter.Value = componentId; probe.Parameters.Add(parameter);
             await using var reader = await probe.ExecuteReaderAsync(cancellationToken);
             Assert.True(await reader.ReadAsync(cancellationToken));
