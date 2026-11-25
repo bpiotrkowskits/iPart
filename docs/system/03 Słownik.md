@@ -1,7 +1,7 @@
 ---
 status: propozycja
 zakres: słownik systemu iPart
-przegląd: 2026-11-24
+przegląd: 2026-11-25
 ---
 
 # Słownik
@@ -48,7 +48,6 @@ Jedno źródło znaczeń pojęć iPart. Obowiązuje w całej dokumentacji i w ro
 | **Zatwierdzenie BOM** | Udostępnienie wersji BOM zakupom i magazynowi po ustaleniu parametrów, Part TS i zamienników dla potwierdzonych linii. Nie jest cofane — zmiana wymaga nowej wersji BOM. |
 | **Wersja BOM** | Zatwierdzony stan BOM pakietu. Nowa wersja powstaje dla ZK (zmiany tymczasowe) albo z nowej rewizji importu. Pakiet może mieć kilka aktywnych wersji; poprzednią można zarchiwizować. |
 | **Sesja edycji** | Praca nad wersją roboczą BOM zakończona jednym zapisem zmian („Zapisz zmiany”): jeden wpis historii, jedno powiadomienie. W czasie sesji inni widzą ostatni zapis. |
-| **Łączenie BOM-ów** | Połączenie kilku BOM-ów pakietów w jedno zapotrzebowanie do wspólnych zakupów i kompletacji. W plikach Excel: fusePart. |
 
 ## Komponenty
 
@@ -77,6 +76,7 @@ Jedno źródło znaczeń pojęć iPart. Obowiązuje w całej dokumentacji i w ro
 | **LT** | Czas dostawy komponentu (lead time). |
 | **Reguła zapasu** | Ilość zamawiana ponad BOM zależnie od Case, osobno dla zakupów i dla towaru powierzonego. W plikach Excel: scrapPart, arkusze supplyPart i entPart. |
 | **Nadwyżka zakupowa** | Komponenty zamówione ponad ilość z BOM. Nie mylić z nadwyżką w ProduMan (dobre wyroby ponad cel). |
+| **Łączenie BOM-ów** | Zestawienie BOM-ów kilku ZK jednego Klienta do wspólnych zakupów i kompletacji. Tworzy je zakupowiec. Nie ma własnych decyzji o BOM: przechowuje ZK, wersje BOM, ilości i decyzje „połącz / nie łącz” pozycji. W plikach Excel: fusePart. |
 | **Nadmiar ze zmiany** | Komponenty zamówione lub dostarczone, które przestały być potrzebne po zmianie BOM. |
 | **Desygnacja** | Przypisanie opakowania komponentu do konkretnej linii BOM przy wydaniu na produkcję. W plikach Excel: dPart. |
 | **Numer pojemnika** | Numer pojemnika, w którym komponent jest wydany na produkcję. Komponent może być w kilku pojemnikach. |
@@ -92,7 +92,7 @@ W dokumentacji iPart **legacy** oznacza system plików Excel/VBA i comparator w 
 | plik BOM_P&P | pośredni plik o stałych kolumnach, do którego przekleja się dane Klienta | import BOM i P&P z mapowaniem kolumn |
 | iPart (plik) | BOM pakietu, synchronizacja z dataPart, Part TS, MPN, historia | obszar Dokumentacja pakietu |
 | Rdzeń BOM | wspólne kolumny plików iPart, fusePart, sPart, cPart i dPart | linia BOM |
-| fusePart | łączenie BOM-ów po kluczu Part TS + Case | łączenie BOM-ów |
+| fusePart | łączenie BOM-ów po kluczu Part TS + Case | łączenie BOM-ów (obszar Zaopatrzenie) |
 | sPart | zakupy | obszar Zaopatrzenie |
 | entPart (plik) | lista komponentów powierzanych wysyłana Klientowi | obszar Zaopatrzenie (towar powierzony) |
 | scrapPart, supplyPart | reguły zapasu według Case | reguła zapasu |

@@ -1,7 +1,7 @@
 ---
 status: propozycja
 zakres: system
-przegląd: 2026-11-24
+przegląd: 2026-11-25
 ---
 
 # Mapa obszarów
@@ -12,12 +12,12 @@ System dzieli się na **obszary**, czyli duże części odpowiadające sposobom 
 
 | Obszar | Odpowiada za | Legacy (pliki Excel) | Dokumentacja |
 |---|---|---|---|
-| **Dokumentacja pakietu** | import i porównanie BOM i P&P Klienta, potwierdzenie linii, BOM pakietu (Part TS, MPN zatwierdzone i niedozwolone, zamienniki), zatwierdzenie P&P i BOM, wersje BOM, łączenie BOM-ów do wspólnych zakupów | comparator, iPart, fusePart | do utworzenia |
-| **Baza komponentów** | komponenty i ich parametry, Case, Footprint, sposób montażu, słowniki | dataPart | do utworzenia |
-| **Zaopatrzenie** | zapotrzebowanie i zakupy komponentów pod ZK, zamienniki od zakupowca, towar powierzony, reguły zapasu, nadwyżka zakupowa | sPart, entPart, scrapPart | do utworzenia |
+| **Dokumentacja pakietu** | import i porównanie BOM i P&P Klienta, potwierdzenie linii, BOM pakietu (Part TS, MPN zatwierdzone i niedozwolone, zamienniki), zatwierdzenie P&P i BOM, wersje BOM | comparator, iPart | do utworzenia |
+| **Baza komponentów** | komponenty i ich parametry, Case, Footprint, sposób montażu, powiązanie MPN z symbolem magazynowym, słowniki | dataPart | do utworzenia |
+| **Zaopatrzenie** | zapotrzebowanie i zakupy komponentów pod ZK, łączenie BOM-ów do wspólnych zakupów, zgłoszenia zamienników od zakupowca, towar powierzony, reguły zapasu, wycena, nadwyżka zakupowa | sPart, fusePart, entPart, scrapPart | do utworzenia |
 | **Kompletacja** | kompletacja komponentów pod ZK i PP, desygnacja opakowań przy wydaniu na produkcję | cPart, dPart | do utworzenia; zakres czeka na decyzję o przejęciu (zasada 5) |
 | **Estymacja** | szacowanie czasu montażu pakietu | qPart (niedokończony) | do utworzenia; zakres czeka na decyzję o przejęciu (zasada 5) |
-| **Usługi wspólne** | użytkownicy i uprawnienia, historia zmian, blokady edycji, powiadomienia, ustawienia firmy i Klienta | — (dziś w każdym pliku osobno) | do utworzenia |
+| **Usługi wspólne** | użytkownicy, role i administracja dostępów (edycja / odczyt / brak), historia zmian, blokady edycji, powiadomienia, ustawienia firmy i Klienta | — (dziś w każdym pliku osobno) | do utworzenia |
 
 ## Relacje
 
@@ -64,7 +64,8 @@ flowchart LR
 
 ## Decyzje robocze (do akceptacji)
 
-1. **Zamiennik od zakupowca jest zgłoszeniem do Dokumentacji pakietu, a nie zapisem w Zaopatrzeniu.** Zgłoszenie trafia do Opiekuna Projektu. Zamiennik spełniający reguły „takie same lub lepsze parametry” jest akceptowany automatycznie ([Decyzje VBA](../robocze/Decyzje%20VBA.md), 2.9).
+1. **Zamiennik od zakupowca zapisuje się w BOM pakietu (Dokumentacja pakietu), a nie w Zaopatrzeniu.** Zamiennik o takich samych lub lepszych parametrach jest akceptowany automatycznie; inny zatwierdza zakupowiec z podaniem podstawy. Zakupowiec wybiera zakres: BOM pakietu albo wersja BOM dla ZK ([Decyzje VBA](../robocze/Decyzje%20VBA.md), 2.9 i 4.1). Zaopatrzenie wysyła zgłoszenie, Dokumentacja pakietu zapisuje zmianę.
+2. **Łączenie BOM-ów należy do Zaopatrzenia** i jest zestawieniem bez własnych decyzji o BOM: przechowuje ZK, wersje BOM, ilości i decyzje „połącz / nie łącz”. Łączenie tylko w obrębie jednego Klienta ([Decyzje VBA](../robocze/Decyzje%20VBA.md), 3.1–3.7).
 
 ## Otwarte pytania
 

@@ -1,7 +1,7 @@
 ---
 status: roboczy
-zakres: decyzje dotyczące mechanizmów VBA przy przenoszeniu do aplikacji iPart — przegląd w toku (sesja 1 z 4 zakończona)
-przegląd: 2026-11-24
+zakres: decyzje dotyczące mechanizmów VBA przy przenoszeniu do aplikacji iPart — przegląd w toku (sesje 1–2 z 4 zakończone)
+przegląd: 2026-11-25
 ---
 
 # Decyzje VBA — notatki z przeglądu kodu
@@ -53,6 +53,31 @@ Reguły pod konkretnych Klientów (wpisane dziś w kod) → **ustawienia Klienta
 
 Kierunek ogólny: przy dobrze zoptymalizowanej pracy — **wszystko według nowych założeń**, zamiast wciągania starych danych 1:1.
 
+## Sesja 2 — fusePart
+
+| # | Mechanizm | [kod] dziś | [decyzja] |
+|---|---|---|---|
+| 3.1 | Czym jest łączenie | Osobny plik z własnymi listami MPN i zatwierdzeniem; nic nie wraca do iPart | **Zmienić:** łączenie = zestawienie (widok): przechowuje tylko ZK, wersje BOM i ilości; linie, MPN, zamienniki zawsze z BOM pakietów; różnica między pakietami rozwiązywana w BOM pakietu. Decyzje dotyczą zawsze BOM albo BOM dla ZK — łączenie nie ma własnych decyzji |
+| 3.2 | Klucz łączenia | Tekst `Part TS/Case`, tylko obcięte brzegi i apostrof; różnica spacji = osobne komponenty | **Zmienić:** (1) ten sam MPN + ten sam Case → łączenie automatyczne; ten sam MPN, różny Case → decyzja operatora. (2) te same parametry (po liczbach) + ten sam Case → automatycznie; różny Case → decyzja; parametry zgodne, ale jedna linia ma dodatkowe **nieukryte** parametry → decyzja operatora |
+| 3.3 | Decyzja o łączeniu | Brak (klucz identyczny albo nie) | **Nowe:** łączenie tworzy i decyduje **zakupowiec** (wybiera BOM-y kupowane razem, rozstrzyga wątpliwe pozycje). Decyzja „połącz / nie łącz” zapisana w łączeniu (kto, kiedy, które linie) i zapamiętana jako podpowiedź dla tej samej pary komponentów. Błąd w BOM poprawia się w BOM pakietu |
+| 3.4 | MPN w połączonej pozycji | Zatwierdzone = część wspólna wszystkich ZK w pliku (także bez tego komponentu → pusta lista); niedozwolone nie przechodzą | **Zmienić:** zatwierdzone = część wspólna tylko połączonych linii; niedozwolone = suma ze wszystkich połączonych linii. Pusta część wspólna → zakupowiec może połączyć, wskazując MPN z uzasadnieniem; to decyzja o zamienniku w BOM pakietu, zatwierdzana przez zakupowca z podstawą (wg 4.1) |
+| 3.5 | Kolumna „Różnice” | Każda kolumna z >1 wartością (także pusta vs wypełniona) → kolor + nazwa kolumny; Footprint nie przechodzi | **Zmienić:** informacja o różnicy w konkretnej komórce (Description, Value, Notes itd.) — różnic jest niewiele; Confirmed nie dotyczy (tylko zatwierdzone wersje BOM); Footprint nie pokazujemy. **Linie DNP** nie łączą się z innymi, zostają na dole zestawienia. **Nowe:** rozłączenie pojedynczej linii z połączonej pozycji, z podaniem powodu. Pusta vs wypełniona komórka → pokazywana słabiej niż sprzeczność („uzupełnione tylko w pakiecie A”) |
+| 3.6 | Towar powierzony w łączeniu | Każda pozycja z czymkolwiek w EntPart → na listę cała SumaQty; zapas od sumy | **Zmienić:** ilość powierzona tylko z linii powierzonych; pozycja mieszana (powierzona w jednym pakiecie, kupowana w innym) → pokazana zakupowcowi jako różnica, do decyzji. „?” oznaczone jak w 2.13. Eksport listy towaru powierzonego z poziomu łączenia (układ i język wg 2.13), **jedna lista na łączenie, zapas od sumy**. **Łączenie tylko w obrębie jednego Klienta** |
+| 3.7 | Zatwierdzenie łączenia i zmiany | Zatwierdzenie bez warunków, przełącza na tryb przyrostowy; zmiany = pogrubienie z ostatniego importu; ZK wpisywany ręcznie, klucz bez roku | **Zmienić:** brak osobnego zatwierdzenia — zestawienie dostosowane przez zakupowca jest stanem obowiązującym i w tej formie idzie do kompletacji. Zmiana BOM lub ilości ZK → lista „było → będzie” dla zakupowca (dokupić / anulować / nadmiar ze zmiany), nic po cichu [niepewne: od którego momentu zmiany wymagają obsłużenia — np. od pierwszego zamówienia]. ZK = rzeczywisty numer w formacie `nnn/rrrr`. Dodanie ZK do istniejącego łączenia dozwolone: bez wątpliwości łączy się automatycznie, wątpliwości rozstrzyga zakupowiec |
+| — | Błędy techniczne fusePart | Footprint pomijany, MPN od kolumny P, przerwanie na pustym Part TS, ID z pozycji wiersza, kopie zapasowe, przycisk bez makra, dwie kopie pliku | **Porzucić** — rozwiązane przez model 3.1 |
+
+## Sesja 2 — sPart
+
+| # | Mechanizm | [kod] dziś | [decyzja] |
+|---|---|---|---|
+| 4.1 | Status MPN i zamiennik od zakupowca | Status automatyczny z list iPart; ręczny status miał trafiać do iPart, ale przez błąd wielkości liter nigdy nie trafia; zakupowiec nie widzi niedozwolonych | **Zmienić:** zakupowiec widzi przy pozycji MPN zatwierdzone (z podstawą) i niedozwolone; wybór z zatwierdzonych → status automatyczny; niedozwolonego nie da się wybrać. Nowy MPN spoza listy = zamiennik do BOM: takie same lub lepsze parametry → automatycznie; w pozostałych przypadkach **zatwierdza zakupowiec z podaniem podstawy** (także „zatwierdzony przez Klienta”). Zakres: na stałe (BOM pakietu) albo tylko dla ZK (wersja BOM dla ZK — dawny „Jednorazowo Dopuszczony”). Zamówienia (ZD) powstają w innym systemie — iPart ich nie blokuje |
+| 4.2 | Ilości, zapas, stan magazynu | Formuły; stan wklejany ręcznie; MPN do szukania stanu wpisywany ręcznie przy każdej linii; zablokowane doliczane do stanu; brak rezerwacji; zapas z łącza do „Obudowy.xlsx”, Case spoza tabeli → „bł.” | **Zmienić:** zapas z reguł zapasu w iPart wg Case; Case bez reguły → ostrzeżenie i decyzja zakupowca, **zapamiętana** jako podpowiedź (Case, przypisanie, kto, kiedy, przy jakim ZK). Stan magazynu: w pierwszej wersji **import pliku**, docelowo odczyt z systemu magazynowego. Zakupowiec wskazuje MPN z magazynu (nie opakowanie); wybór MPN, który ma ilość „w kompletacji”, „na ZD” albo „zablokowane” → ostrzeżenie do akceptacji; przy nim lista dostępnych opakowań i pole „ilość do pobrania z magazynu” [niepewne: czy import stanu zawiera dane opakowań]. Rezerwacje — poza zakresem (wywiad) |
+| 4.3 | Linie niepotwierdzone | Tylko podświetlenie; liczone do zamówienia jak potwierdzone | **Zmienić:** widoczne, **nieliczone** do zamówienia do czasu potwierdzenia; zakupowiec może świadomie odblokować linię z podaniem powodu (np. długi LT) |
+| 4.4 | Wycena, kursy, ceny | WKLEJ ze stałych zakresów własnego arkusza Excel zakupów, dopasowanie po kolejności; kursy banku przez Power Query; cennik magazynowy z łącza; ceny chronione tylko nazwami kolumn; blokady trybu nie działają | **Zmienić:** import wyceny z mapowaniem kolumn i dopasowaniem po MPN lub numerze linii, niedopasowane do decyzji; kurs waluty zapisany przy wycenie [niepewne: kurs z dnia wyceny — do potwierdzenia]; cennik magazynowy importowany plikiem, docelowo z systemu magazynowego; ceny widzą tylko uprawnione role: **Zakupowiec, Kierownik Logistyki, Kierownik działu Obsługi Projektu** |
+| 4.5 | Nadwyżka zakupowa i podsumowanie kosztów | Nadwyżka = (zamówione + cały stan magazynu) − BOM; „Zablokuj wartości” zamraża formuły; rozliczenie łączenia z tekstu FuseDes | **Odłożone — nierozstrzygnięte.** Sekcję dodały zakupy; odpowiedzi zna Kierownik Logistyki (pytania w „Otwarte pytania”) |
+| 4.6 | Przekazanie do kompletacji | sPart → cPart przy każdym zamknięciu, tylko PP1; ceny ukryte nazwami kolumn; zapis iPart i cPart przed decyzją o zapisie sPart; Mounting „jednorazowo DNP / zamiennik” chroniony tekstem | **Zmienić:** kompletacja czyta dane zakupowe bezpośrednio, dla wszystkich partii; ceny ukrywają uprawnienia (poza cenami magazyn widzi wszystko); zakupowiec widzi wydania i uwagi magazynu per partia na bieżąco; zapis przez sesję edycji (2.12a); zmiany „tylko dla ZK” = wersja BOM dla ZK. **Uwagi zakupów magazyn obsługuje tak jak zmiany** (do obsłużenia, z potwierdzeniem) |
+| — | Administracja dostępów | Brak (hasło w kodzie, tryby pliku) | **Nowe:** moduł administracji dostępów (Usługi wspólne): konkretne dostępy × role, dla każdego: edycja / odczyt / brak dostępu |
+
 ## Błędy, których aplikacja nie może powtórzyć (dotychczas)
 
 - Zmiana wielkości liter w danych przekazywanych dalej (comparator).
@@ -62,6 +87,15 @@ Kierunek ogólny: przy dobrze zoptymalizowanej pracy — **wszystko według nowy
 - Ciche nadpisywanie danych Klienta (Value) i bazy (Footprint przy zatwierdzeniu P&P).
 - Kasowanie zakazów MPN przy zmianie linii; literówka w nazwie arkusza przerywająca operację w połowie.
 - Ciche „naprawianie” wpisu użytkownika (ESR: usuwanie separatora dziesiętnego).
+- Porównanie tekstu zamiast danych przy łączeniu (podwójna spacja = inny komponent) (fusePart).
+- Część wspólna MPN liczona z pakietów, w których komponentu nie ma; gubienie MPN niedozwolonych (fusePart).
+- Cała ilość pozycji na liście towaru powierzonego, gdy powierza tylko jeden pakiet (fusePart).
+- Klucz ZK bez roku (fusePart).
+- Decyzja użytkownika, która po cichu nigdzie nie trafia (statusy MPN: błąd wielkości liter) (sPart).
+- Zapis innych plików, zanim użytkownik zdecyduje o zapisie (sPart).
+- Ręcznie wpisywany klucz wyszukiwania przy każdej linii (PN magazynu) (sPart).
+- Dopasowanie danych po kolejności wierszy (wycena, cPart, iPart) (sPart, fusePart).
+- Ochrona danych przez nazwy kolumn zamiast uprawnień (ceny) (sPart).
 
 ## Otwarte pytania (dotychczas)
 
@@ -73,3 +107,8 @@ Kierunek ogólny: przy dobrze zoptymalizowanej pracy — **wszystko według nowy
 | Lista parametrów zawsze widocznych dla pozostałych typów | Kierownik działu Obsługi Projektu, Opiekunowie Projektu |
 | 30–50 przykładowych zapisów Value od różnych Klientów (nauka porównania) | Operatorzy danych BOM |
 | Zwalnianie porzuconej blokady edycji BOM (po jakim czasie, kto może) | Kierownik działu Obsługi Projektu |
+| Do czego służy nadwyżka i podsumowanie kosztów; czy wliczanie całego stanu magazynu do nadwyżki jest zamierzone; propozycja: nadwyżka tylko z zamówień pod ZK, osobno zapas i nadwyżka ponad zapas, ceny i kursy zapisane przy wycenie, rozliczenie łączenia z ilości per ZK | Kierownik Logistyki |
+| Kurs waluty: z dnia wyceny? | Zakupowiec, Kierownik Logistyki |
+| Wzór własnego arkusza wyceny zakupów (do mapowania importu) | Zakupowiec |
+| Czy import stanu magazynu zawiera dane opakowań (do wyboru ilości z magazynu)? | Magazyn, drugi developer |
+| Od którego momentu zmiana w łączeniu wymaga obsłużenia przez zakupowca („było → będzie”)? | Kierownik działu Obsługi Projektu, Zakupowiec |
