@@ -76,11 +76,23 @@ Jedno źródło znaczeń pojęć iPart. Obowiązuje w całej dokumentacji i w ro
 | **LT** | Czas dostawy komponentu (lead time). |
 | **Reguła zapasu** | Ilość zamawiana ponad BOM zależnie od Case, osobno dla zakupów i dla towaru powierzonego. W plikach Excel: scrapPart, arkusze supplyPart i entPart. |
 | **Nadwyżka zakupowa** | Komponenty zamówione ponad ilość z BOM. Nie mylić z nadwyżką w ProduMan (dobre wyroby ponad cel). |
-| **Łączenie BOM-ów** | Zestawienie BOM-ów kilku ZK jednego Klienta do wspólnych zakupów i kompletacji. Tworzy je zakupowiec. Nie ma własnych decyzji o BOM: przechowuje ZK, wersje BOM, ilości i decyzje „połącz / nie łącz” pozycji. W plikach Excel: fusePart. |
+| **Łączenie BOM-ów** | Zestawienie BOM-ów kilku ZK jednego Klienta do wspólnych zakupów i kompletacji. Tworzy je zakupowiec, Opiekun Projektu albo Kierownik działu Obsługi Projektu. Nie ma własnych decyzji o BOM: przechowuje ZK, wersje BOM, ilości i decyzje „połącz / nie łącz” pozycji. W plikach Excel: fusePart. |
 | **Nadmiar ze zmiany** | Komponenty zamówione lub dostarczone, które przestały być potrzebne po zmianie BOM. |
 | **Desygnacja** | Przypisanie opakowania komponentu do konkretnej linii BOM przy wydaniu na produkcję. W plikach Excel: dPart. |
 | **Numer pojemnika** | Numer pojemnika, w którym komponent jest wydany na produkcję. Komponent może być w kilku pojemnikach. |
 | **Sposób wydania** | Dokąd magazyn wydaje komponent: produkcja SMT, produkcja THT, serwis, bezpośrednio do Klienta. Domyślnie wynika ze sposobu montażu; wyjątki ustala Opiekun Projektu w BOM. |
+| **Partia (PP)** | Część ilości ZK kompletowana i wydawana osobno, z własną kompletacją. Wszystkie partie ZK korzystają z tej samej wersji BOM dla ZK. Tworzy ją magazyn. |
+
+## Praca w aplikacji
+
+| Pojęcie | Znaczenie |
+|---|---|
+| **Do obsłużenia** | Lista pozycji przypisanych osobie: zmiana do obsłużenia, zadanie (np. zatwierdzenie P&P), komunikat do zapoznania. Pozycja ma stan: nowa, obsłużona (kto, kiedy, jak) albo odrzucona z powodem. |
+| **Operator tematu** | Osoba, która zajmuje się pakietem, ZK, łączeniem albo partią — podjęła temat (utworzyła, zaimportowała, przejęła). Do niej trafiają pozycje „Do obsłużenia” dotyczące tematu. Nie ma przypisań do Klientów. |
+| **Komunikat** | Wiadomość do pakietu, wersji BOM, ZK albo linii BOM, z autorem i adresatami (dział albo osoba). Wymaga potwierdzenia przeczytania. Nie mylić z komunikatem do zlecenia w ProduMan. |
+| **Zastępstwo** | Wskazanie osoby, do której w okresie nieobecności trafiają pozycje „Do obsłużenia” (kopia zostaje u nieobecnego). |
+| **Administrator grupy** | Osoba w grupie (dział, etap) z dodatkowym prawem wpisywania zastępstw i zwalniania blokad edycji. Wyznacza go Kierownik działu Obsługi Projektu. Cecha osoby, nie rola. |
+| **Blokada edycji** | Zajęcie całego BOM pakietu na czas sesji edycji. Wygasa po godzinie bez aktywności; niezapisane zmiany zostają jako szkic. |
 
 ## Legacy i odpowiedniki
 

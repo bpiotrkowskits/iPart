@@ -1,7 +1,7 @@
 ---
 status: propozycja
 zakres: system
-przegląd: 2026-11-25
+przegląd: 2026-11-26
 ---
 
 # Kontekst i cel systemu
@@ -26,9 +26,8 @@ iPart **nie zastępuje** Nexo, systemu magazynowego, kompletora ani ProduMan. Ko
 | Rola | Co robi w systemie |
 |---|---|
 | Opiekun klienta (rola ProduMan) | jedyny kanał kontaktu z Klientem: przekazuje dokumentację, zmiany i odpowiedzi na pytania; wycenia pracę przy ofercie |
-| Operator danych BOM | importuje BOM i P&P Klienta, porównuje je i przygotowuje pytania do Klienta |
-| Opiekun Projektu | opracowuje BOM pakietu: synchronizacja z bazą komponentów, Part TS, zamienniki, odpowiedzi Klienta. Osoba kontaktowa dla innych działów. Nazwa roli może się zmienić |
-| Kierownik działu Obsługi Projektu | ustala reguły, rozwiązuje nietypowe przypadki, współustala reguły zapasu |
+| Opiekun Projektu | importuje i porównuje BOM i P&P Klienta, przygotowuje pytania do Klienta (dawniej osobna rola „Operator danych BOM”); opracowuje BOM pakietu: synchronizacja z bazą komponentów, Part TS, zamienniki, odpowiedzi Klienta. Osoba kontaktowa dla innych działów. Nazwa roli może się zmienić |
+| Kierownik działu Obsługi Projektu | ustala reguły, rozwiązuje nietypowe przypadki, współustala reguły zapasu, prowadzi panel administratora i wyznacza administratorów grup |
 | Technolog SMT | zatwierdza P&P i Footprint (zgodność z programem SMT) |
 | Zakupowiec | wycenia i zamawia komponenty, łączy BOM-y do wspólnych zakupów, zatwierdza zamienniki z podaniem podstawy, zatwierdza przejście ZK w toku na nową wersję BOM |
 | Kierownik Logistyki | podsumowuje koszty i nadwyżki zakupowe projektu, współustala reguły zapasu |
