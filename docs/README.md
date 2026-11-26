@@ -17,7 +17,7 @@ Ta dokumentacja opisuje, **z jakich części składa się system, za co odpowiad
 1. [Kontekst i cel systemu](system/01%20Kontekst%20i%20cel%20systemu.md) — po co jest system, kto z niego korzysta, z czym się łączy, warunki przyszłego przejęcia.
 2. [Mapa obszarów](system/02%20Mapa%20obszarów.md) — z jakich obszarów składa się system i jak się ze sobą komunikują.
 3. [Słownik](system/03%20Słownik.md) — znaczenie pojęć, z odesłaniami do Słownika ProduMan dla pojęć wspólnych.
-4. Mapa obszaru, którego dotyczy zadanie, a z niej karta modułu (do utworzenia).
+4. Mapa obszaru, którego dotyczy zadanie (`obszary/`), a z niej karta modułu.
 5. [Decyzje](decyzje/README.md) — gdy trzeba wiedzieć, *dlaczego* coś jest tak, a nie inaczej.
 6. [Środowiska](system/07%20Środowiska.md) — baza danych, uprawnienia, publikacja aplikacji i cykl nowej wersji.
 
@@ -49,9 +49,9 @@ Każdy poziom opisuje tylko siebie i linkuje do poziomu niższego.
 | System: kontekst, mapa obszarów, słownik | propozycja |
 | [System: środowiska](system/07%20Środowiska.md) | propozycja; środowisko na serwerze w trakcie ustalania z IT |
 | System: architektura techniczna, kierunek i etapy rozwoju | do utworzenia |
-| Obszary: Dokumentacja pakietu, Baza komponentów, Zaopatrzenie, Usługi wspólne | do utworzenia po przeglądzie kodu VBA |
-| Obszary: Kompletacja, Estymacja | do utworzenia; zakres czeka na decyzję o przejęciu |
-| [Materiały robocze](robocze/) | roboczy: [wywiad](robocze/Wywiad%20obieg%20plików.md), [analiza techniczna](robocze/analiza-techniczna/README.md), [przegląd kodu VBA](robocze/Decyzje%20VBA.md) (sesja 1 z 4), opis kodu etapu nauki ([model komponentów](robocze/Model%20komponentów%20etap%20nauki.md), [import dataPart](robocze/Import%20dataPart%20etap%20nauki.md)) |
+| Obszary: [Dokumentacja pakietu](obszary/Dokumentacja%20pakietu/00%20Mapa%20obszaru.md), [Baza komponentów](obszary/Baza%20komponentów/00%20Mapa%20obszaru.md), [Zaopatrzenie](obszary/Zaopatrzenie/00%20Mapa%20obszaru.md), [Usługi wspólne](obszary/Usługi%20wspólne/00%20Mapa%20obszaru.md) — mapy i karty modułów | propozycja; kontrakty zewnętrzne do utworzenia |
+| Obszary: [Kompletacja](obszary/Kompletacja/00%20Mapa%20obszaru.md), [Estymacja](obszary/Estymacja/00%20Mapa%20obszaru.md) — mapa i kontrakt, bez kart | propozycja / szkic; zakres czeka na decyzję o przejęciu |
+| [Materiały robocze](robocze/) | roboczy: [wywiad](robocze/Wywiad%20obieg%20plików.md), [analiza techniczna](robocze/analiza-techniczna/README.md), [przegląd kodu VBA](robocze/Decyzje%20VBA.md) (sesje 1–5; przeniesione do kart modułów), [projekt bazy danych](robocze/Projekt%20bazy%20danych.md) (przeniesiony do ADR i kart), opis kodu etapu nauki ([model komponentów](robocze/Model%20komponentów%20etap%20nauki.md), [import dataPart](robocze/Import%20dataPart%20etap%20nauki.md)) |
 
 ## Najważniejsze zasady
 

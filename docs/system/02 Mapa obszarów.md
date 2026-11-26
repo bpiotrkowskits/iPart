@@ -12,12 +12,12 @@ System dzieli się na **obszary**, czyli duże części odpowiadające sposobom 
 
 | Obszar | Odpowiada za | Legacy (pliki Excel) | Dokumentacja |
 |---|---|---|---|
-| **Dokumentacja pakietu** | import i porównanie BOM i P&P Klienta, potwierdzenie linii, BOM pakietu (Part TS, MPN zatwierdzone i niedozwolone, zamienniki), zatwierdzenie P&P i BOM, wersje BOM | comparator, iPart | do utworzenia |
-| **Baza komponentów** | komponenty i ich parametry, Case, Footprint, sposób montażu, powiązanie MPN z symbolem magazynowym, słowniki | dataPart | do utworzenia |
-| **Zaopatrzenie** | zapotrzebowanie i zakupy komponentów pod ZK, łączenie BOM-ów do wspólnych zakupów, zgłoszenia zamienników od zakupowca, towar powierzony, reguły zapasu, wycena, nadwyżka zakupowa | sPart, fusePart, entPart, scrapPart | do utworzenia |
-| **Kompletacja** | kompletacja komponentów pod ZK i PP, desygnacja opakowań przy wydaniu na produkcję | cPart, dPart | do utworzenia; zakres czeka na decyzję o przejęciu (zasada 5) |
-| **Estymacja** | szacowanie czasu montażu pakietu | qPart (niedokończony) | do utworzenia; zakres czeka na decyzję o przejęciu (zasada 5) |
-| **Usługi wspólne** | użytkownicy, role i administracja dostępów (edycja / odczyt / brak), panel administratora (słowniki obudów, wzorce nazewnictwa), historia zmian, blokady edycji, powiadomienia, ustawienia firmy i Klienta | — (dziś w każdym pliku osobno) | do utworzenia |
+| **Dokumentacja pakietu** | import i porównanie BOM i P&P Klienta, potwierdzenie linii, BOM pakietu (Part TS, MPN zatwierdzone i niedozwolone, zamienniki), zatwierdzenie P&P i BOM, wersje BOM | comparator, iPart | [mapa obszaru](../obszary/Dokumentacja%20pakietu/00%20Mapa%20obszaru.md) |
+| **Baza komponentów** | komponenty i ich parametry, Case, Footprint, sposób montażu, powiązanie MPN z symbolem magazynowym, słowniki | dataPart | [mapa obszaru](../obszary/Baza%20komponentów/00%20Mapa%20obszaru.md) |
+| **Zaopatrzenie** | zapotrzebowanie i zakupy komponentów pod ZK, łączenie BOM-ów do wspólnych zakupów, zgłoszenia zamienników od zakupowca, towar powierzony, reguły zapasu, wycena, nadwyżka zakupowa | sPart, fusePart, entPart, scrapPart | [mapa obszaru](../obszary/Zaopatrzenie/00%20Mapa%20obszaru.md) |
+| **Kompletacja** | kompletacja komponentów pod ZK i PP, desygnacja opakowań przy wydaniu na produkcję | cPart, dPart | [mapa obszaru](../obszary/Kompletacja/00%20Mapa%20obszaru.md); bez kart do decyzji o przejęciu (zasada 5) |
+| **Estymacja** | szacowanie czasu montażu pakietu | qPart (niedokończony) | [mapa obszaru](../obszary/Estymacja/00%20Mapa%20obszaru.md); bez kart do decyzji o przejęciu (zasada 5) |
+| **Usługi wspólne** | użytkownicy, role i administracja dostępów (edycja / odczyt / brak), panel administratora (słowniki obudów, wzorce nazewnictwa), historia zmian, blokady edycji, powiadomienia, ustawienia firmy i Klienta | — (dziś w każdym pliku osobno) | [mapa obszaru](../obszary/Usługi%20wspólne/00%20Mapa%20obszaru.md) |
 
 ## Relacje
 
@@ -62,10 +62,8 @@ flowchart LR
 4. **Obszar komunikuje się z innymi tylko przez swój kontrakt zewnętrzny.** Właścicielem kontraktu jest obszar, który go wystawia.
 5. **Kompletacja i Estymacja są obszarami do wydzielenia.** ProduMan przewiduje, że gospodarkę materiałową (obszar MRP) i estymację przejmie inny system. Nie wiadomo jeszcze, czy będzie to iPart, czy moduł BOM systemu magazynowego. Do czasu decyzji oba obszary w iPart opisujemy na poziomie mapy i kontraktu, bez kart modułów.
 
-## Decyzje robocze (do akceptacji)
-
-1. **Zamiennik od zakupowca zapisuje się w BOM pakietu (Dokumentacja pakietu), a nie w Zaopatrzeniu.** Zamiennik o takich samych lub lepszych parametrach jest akceptowany automatycznie; inny zatwierdza zakupowiec z podaniem podstawy. Zakupowiec wybiera zakres: BOM pakietu albo wersja BOM dla ZK ([Decyzje VBA](../robocze/Decyzje%20VBA.md), 2.9 i 4.1). Zaopatrzenie wysyła zgłoszenie, Dokumentacja pakietu zapisuje zmianę.
-2. **Łączenie BOM-ów należy do Zaopatrzenia** i jest zestawieniem bez własnych decyzji o BOM: przechowuje ZK, wersje BOM, ilości i decyzje „połącz / nie łącz”. Łączenie tylko w obrębie jednego Klienta ([Decyzje VBA](../robocze/Decyzje%20VBA.md), 3.1–3.7).
+6. **Zamiennik od zakupowca zapisuje się w BOM pakietu (Dokumentacja pakietu), a nie w Zaopatrzeniu.** Zaopatrzenie wysyła zgłoszenie, Dokumentacja pakietu zapisuje zmianę — na stałe albo w wersji BOM dla ZK.
+7. **Łączenie BOM-ów należy do Zaopatrzenia** jako zestawienie zakupowe bez własnych decyzji o BOM, tylko w obrębie jednego Klienta ([ADR-0009](../decyzje/ADR-0009%20Zestawienie%20zakupowe%20zamiast%20osobnej%20ścieżki%20łączenia.md)).
 
 ## Otwarte pytania
 

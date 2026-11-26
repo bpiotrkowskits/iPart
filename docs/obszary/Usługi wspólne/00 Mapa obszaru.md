@@ -1,0 +1,73 @@
+---
+status: propozycja
+zakres: obszar Usługi wspólne
+przegląd: 2026-11-26
+---
+
+# Obszar Usługi wspólne — mapa obszaru
+
+## Cel
+
+Obszar daje wszystkim obszarom te same mechanizmy pracy: kto pracuje i co może, co ma do obsłużenia, jak się komunikuje, jak edytuje i jak zapisuje historię. Dziś każdy plik Excel robił to po swojemu albo wcale.
+
+## Granica
+
+| Obszar posiada | Obszar nie posiada (kto posiada) |
+|---|---|
+| odniesienie do konta użytkownika, role, dostępy, grupy, administratorzy grup, zastępstwa | konta i logowanie → firmowy system logowania |
+| Klient (dane wspólne dla obszarów) | dane biznesowe obszarów (BOM, komponenty, zakupy, kompletacja) |
+| lista „Do obsłużenia”, komunikaty z potwierdzeniami | historia danych obszaru → schemat tego obszaru (budowa wspólna) |
+| blokady edycji i szkice | słowniki obudów, reguły zapasu → Baza komponentów |
+| ustawienia (firma → Klient → pakiet → linia), kolory danych | |
+| panel administratora (ekran) | |
+| wspólna budowa historii zmian ([ADR-0007](../../decyzje/ADR-0007%20Jeden%20mechanizm%20historii%20zmian.md)) | |
+
+## Reguły obszaru
+
+1. **Jeden mechanizm wszędzie.** „Do obsłużenia”, komunikaty, blokady, zastępstwa i historia działają tak samo we wszystkich obszarach.
+2. **Grupa ≠ rola.** Grupa służy do zastępstw, administratorów i zadań bez operatora; rola — do dostępów.
+3. **Bez przypisań do Klientów.** Pozycje trafiają do operatora tematu, a gdy go nie ma — do grupy.
+4. **Użytkownik pochodzi z firmowego systemu logowania;** iPart przechowuje tylko odniesienie do konta. Role, grupy i zastępstwa prowadzimy lokalnie.
+
+## Moduły
+
+| Moduł | Odpowiada za | Karta | Kod |
+|---|---|---|---|
+| Użytkownicy i dostępy | odniesienie do konta, role, macierz dostępów, grupy, administratorzy grup, zastępstwa | [Użytkownicy i dostępy](moduly/Użytkownicy%20i%20dostępy.md) | brak |
+| Do obsłużenia i komunikaty | lista „Do obsłużenia”, operator tematu, komunikaty z potwierdzeniami | [Do obsłużenia i komunikaty](moduly/Do%20obsłużenia%20i%20komunikaty.md) | brak |
+| Edycja i historia | sesje edycji, blokady, szkice, wspólna budowa historii zmian | [Edycja i historia](moduly/Edycja%20i%20historia.md) | częściowo: historia komponentów w `src/iPart.Infrastructure` |
+| Ustawienia i panel administratora | Klient, ustawienia, kolory danych, panel administratora | [Ustawienia i panel administratora](moduly/Ustawienia%20i%20panel%20administratora.md) | częściowo: `src/iPart.App/Resources/DataColors.xaml` |
+
+## Relacje między modułami
+
+```mermaid
+flowchart LR
+    U[Użytkownicy i dostępy] -- zastępstwa, grupy --> D[Do obsłużenia i komunikaty]
+    E[Edycja i historia] -- zapis zmian, zwolnienie blokady --> D
+    U -- administrator grupy --> E
+    S[Ustawienia i panel administratora] -- dostęp tylko Kier. działu OP --> U
+```
+
+## Przebiegi
+
+**Zmiana zatwierdzonego BOM**
+1. Opiekun zapisuje zmiany z komentarzem (Edycja i historia).
+2. Do zakupowca ZK i — gdy kompletacja ruszyła — do magazynu trafia pozycja „Do obsłużenia”; w czasie zastępstwa — do zastępcy.
+3. Odbiorca oznacza pozycję jako obsłużoną (jak) albo odrzuconą (z powodem).
+
+**Porzucona blokada**
+1. Blokada wygasa po 1 godzinie bez aktywności; szkic zostaje.
+2. Administrator grupy może zwolnić ją od razu, z powodem — właściciel dostaje pozycję „Do obsłużenia”.
+
+## Otwarte pytania
+
+| Pytanie | Kto może odpowiedzieć |
+|---|---|
+| Dostęp do firmowego systemu logowania: mechanizm, stały identyfikator konta, lista kont, dane osoby | developer IT, drugi developer |
+| Powiadomienia e-mail lub Teams (integracja z Teams ProduMan) — kiedy i jak | developer IT |
+
+## Decyzje
+
+- [ADR-0007](../../decyzje/ADR-0007%20Jeden%20mechanizm%20historii%20zmian.md) Jeden mechanizm historii zmian
+- [ADR-0006](../../decyzje/ADR-0006%20Stałe%20identyfikatory%20i%20powiązania%20zewnętrzne.md) Stałe identyfikatory
+- [ADR-0005](../../decyzje/ADR-0005%20Schemat%20bazy%20na%20obszar.md) Schemat bazy na obszar

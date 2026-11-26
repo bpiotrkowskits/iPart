@@ -1,6 +1,6 @@
 ---
 status: roboczy
-zakres: decyzje dotyczące mechanizmów VBA przy przenoszeniu do aplikacji iPart — przegląd w toku (sesje 1–4 zakończone; sesja 5: baza danych całego systemu; sesja 6: qPart i wzorce obudów — po wersji alfa)
+zakres: decyzje dotyczące mechanizmów VBA przy przenoszeniu do aplikacji iPart — przegląd w toku (sesje 1–5 zakończone; sesja 5: baza danych całego systemu; sesja 6: qPart i wzorce obudów — po wersji alfa)
 przegląd: 2026-11-26
 ---
 

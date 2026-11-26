@@ -53,10 +53,11 @@ Jedno źródło znaczeń pojęć iPart. Obowiązuje w całej dokumentacji i w ro
 
 | Pojęcie | Znaczenie |
 |---|---|
-| **Komponent** | Rekord bazy komponentów: MPN z parametrami, Case, Footprint i sposobem montażu. |
+| **Komponent** | Rekord bazy komponentów: MPN z parametrami, Case, Footprint i sposobem montażu. Rozpoznawany po MPN i producencie. Klient nie wyróżnia komponentu — własność fizyczną towaru opisuje symbol magazynowy. |
+| **Symbol magazynowy** | Oznaczenie komponentu w systemie magazynowym i Nexo. Komponent może mieć kilka symboli: własny firmy i powierzony przez Klienta. |
 | **MPN** | Numer części producenta (Manufacturer Part Number). W plikach Excel: „Part Number”. |
 | **Case** | Obudowa zgodna z dokumentacją producenta, czasem w zapisie uproszczonym. Decyduje Opiekun Projektu. |
-| **Footprint** | Obraz elementu na płytce. Zwykle zgodny z Case, ale nie zawsze (wymogi programu SMT). Decyduje Technolog SMT. Raz ustalony obowiązuje wszędzie; footprint dedykowany to ustawienie jednego Klienta. |
+| **Footprint** | Obraz elementu na płytce. Zwykle zgodny z Case, ale nie zawsze (wymogi programu SMT). Decyduje Technolog SMT. Raz ustalony obowiązuje wszędzie. **Footprint dedykowany** to wariant footprintu komponentu oznaczony Klientem — pokazywany, gdy BOM i P&P należą do tego Klienta. |
 | **Sposób montażu** | Technologia montażu elementu: SMT, THT, Press-Fit, Pin-In-Paste, MECH, Plugs (wtyki, domyślnie wydawane na THT), PCB albo DNP. W plikach Excel: „Mounting”. Nie mówi, dokąd element jest wydawany (patrz sposób wydania). |
 | **Value** | Wartość komponentu w formacie firmy, zawsze pełna (np. z PPM). |
 | **Parametr nieukrywalny** | Parametr, który zawsze widać w Part TS danego typu komponentu (np. rezystancja, tolerancja i moc rezystora). |
@@ -65,7 +66,7 @@ Jedno źródło znaczeń pojęć iPart. Obowiązuje w całej dokumentacji i w ro
 | **Zamiennik** | MPN inny niż w BOM Klienta, dopuszczony dla linii. Taki sam lub lepszy w parametrach widocznych w Part TS, z tym samym Case. |
 | **Zamiennik jednorazowy** | Zamiennik dopuszczony tylko dla jednego ZK, bez zmiany BOM pakietu. |
 | **PADS** | Liczniki wyprowadzeń według grup obudów (RC, TT, DL, QL, BGA, TP, NS, THT…). Podstawa estymacji. |
-| **Ustawienia Klienta** | Reguły jednego Klienta, np. PPM zawsze w Part TS, MPN zawsze (także RC), footprinty dedykowane, język listy komponentów powierzanych. |
+| **Ustawienia Klienta** | Reguły jednego Klienta, np. PPM zawsze w Part TS, MPN zawsze (także RC), język listy komponentów powierzanych. |
 
 ## Zaopatrzenie i kompletacja
 
@@ -76,6 +77,8 @@ Jedno źródło znaczeń pojęć iPart. Obowiązuje w całej dokumentacji i w ro
 | **LT** | Czas dostawy komponentu (lead time). |
 | **Reguła zapasu** | Ilość zamawiana ponad BOM zależnie od Case, osobno dla zakupów i dla towaru powierzonego. W plikach Excel: scrapPart, arkusze supplyPart i entPart. |
 | **Nadwyżka zakupowa** | Komponenty zamówione ponad ilość z BOM. Nie mylić z nadwyżką w ProduMan (dobre wyroby ponad cel). |
+| **Zestawienie zakupowe** | Jeden albo kilka ZK jednego Klienta kupowanych i kompletowanych razem: ZK z wersjami BOM i ilościami, pozycje zakupu, partie. Zestawienie z kilkoma ZK ma numer `FUSEnnn/rrrr` i opcjonalną nazwę ([ADR-0009](../decyzje/ADR-0009%20Zestawienie%20zakupowe%20zamiast%20osobnej%20ścieżki%20łączenia.md)). |
+| **Pozycja zakupu** | Wiersz zestawienia zakupowego: jedna albo kilka połączonych linii BOM kupowanych jako jeden komponent, z wybranym MPN, ilościami, dostawcą, LT, ceną i odnośnikami do ZD. |
 | **Łączenie BOM-ów** | Zestawienie BOM-ów kilku ZK jednego Klienta do wspólnych zakupów i kompletacji. Tworzy je zakupowiec, Opiekun Projektu albo Kierownik działu Obsługi Projektu. Nie ma własnych decyzji o BOM: przechowuje ZK, wersje BOM, ilości i decyzje „połącz / nie łącz” pozycji. W plikach Excel: fusePart. |
 | **Nadmiar ze zmiany** | Komponenty zamówione lub dostarczone, które przestały być potrzebne po zmianie BOM. |
 | **Desygnacja** | Przypisanie opakowania komponentu do konkretnej linii BOM przy wydaniu na produkcję. W plikach Excel: dPart. |
