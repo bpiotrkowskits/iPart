@@ -49,7 +49,7 @@ Każdy poziom opisuje tylko siebie i linkuje do poziomu niższego.
 | System: kontekst, mapa obszarów, słownik | propozycja |
 | [System: środowiska](system/07%20Środowiska.md) | propozycja; środowisko na serwerze w trakcie ustalania z IT |
 | System: architektura techniczna, kierunek i etapy rozwoju | do utworzenia |
-| Obszary: [Dokumentacja pakietu](obszary/Dokumentacja%20pakietu/00%20Mapa%20obszaru.md), [Baza komponentów](obszary/Baza%20komponentów/00%20Mapa%20obszaru.md), [Zaopatrzenie](obszary/Zaopatrzenie/00%20Mapa%20obszaru.md), [Usługi wspólne](obszary/Usługi%20wspólne/00%20Mapa%20obszaru.md) — mapy i karty modułów | propozycja; kontrakty zewnętrzne do utworzenia |
+| Obszary: [Dokumentacja pakietu](obszary/Dokumentacja%20pakietu/00%20Mapa%20obszaru.md), [Baza komponentów](obszary/Baza%20komponentów/00%20Mapa%20obszaru.md), [Zaopatrzenie](obszary/Zaopatrzenie/00%20Mapa%20obszaru.md), [Usługi wspólne](obszary/Usługi%20wspólne/00%20Mapa%20obszaru.md) — mapy, kontrakty zewnętrzne i karty modułów | propozycja |
 | Obszary: [Kompletacja](obszary/Kompletacja/00%20Mapa%20obszaru.md), [Estymacja](obszary/Estymacja/00%20Mapa%20obszaru.md) — mapa i kontrakt, bez kart | propozycja / szkic; zakres czeka na decyzję o przejęciu |
 | [Materiały robocze](robocze/) | roboczy: [wywiad](robocze/Wywiad%20obieg%20plików.md), [analiza techniczna](robocze/analiza-techniczna/README.md), [przegląd kodu VBA](robocze/Decyzje%20VBA.md) (sesje 1–5; przeniesione do kart modułów), [projekt bazy danych](robocze/Projekt%20bazy%20danych.md) (przeniesiony do ADR i kart), opis kodu etapu nauki ([model komponentów](robocze/Model%20komponentów%20etap%20nauki.md), [import dataPart](robocze/Import%20dataPart%20etap%20nauki.md)) |
 

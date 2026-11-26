@@ -21,7 +21,7 @@ Obszar ustala, **co, ile i od kogo kupić** pod ZK: zbiera ZK jednego Klienta w 
 | lista komponentów powierzanych i import odesłanej listy | stan magazynowy jako źródło → system magazynowy |
 | zapamiętane decyzje łączenia (podpowiedzi) | |
 
-Inne obszary współpracują z obszarem tylko przez kontrakt zewnętrzny (do utworzenia).
+Inne obszary współpracują z obszarem tylko przez [kontrakt zewnętrzny](01%20Kontrakt%20zewnętrzny.md).
 
 ## Reguły obszaru
 

@@ -95,10 +95,6 @@ Brak odpowiednika: w plikach Excel hasło w kodzie i tryby pliku.
 
 2026-11-26: brak kodu. W 0.1.0 login Windows zapisywany tekstem przy rekordach.
 
-## Decyzje robocze (do akceptacji)
-
-1. **Macierz dostępów** powyżej to pierwsza wersja z sesji 4 z poprawkami z 9.10 ([Decyzje VBA](../../../robocze/Decyzje%20VBA.md)); kolumna Opiekun klienta i dostęp Opiekuna Projektu do zestawień zakupowych — dopisane według 9.10.
-
 ## Otwarte pytania
 
 | Pytanie                                                                                | Kto może odpowiedzieć         |

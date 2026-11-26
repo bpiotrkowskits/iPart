@@ -22,7 +22,7 @@ Obszar zamienia dokumentację Klienta (BOM i P&P) na **BOM pakietu**: jedno źr�
 | MPN zatwierdzone (z podstawą) i MPN niedozwolone (z powodem) | |
 | zatwierdzenie P&P i zatwierdzenie BOM | |
 
-Inne obszary współpracują z obszarem tylko przez kontrakt zewnętrzny (do utworzenia).
+Inne obszary współpracują z obszarem tylko przez [kontrakt zewnętrzny](01%20Kontrakt%20zewnętrzny.md).
 
 ## Reguły obszaru
 

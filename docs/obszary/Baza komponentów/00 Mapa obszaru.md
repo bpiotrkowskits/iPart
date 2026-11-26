@@ -21,7 +21,7 @@ Obszar prowadzi **wspólną dla całej firmy wiedzę o komponentach**: parametry
 | słowniki: typy, obudowy, równoważne nazwy obudów, wzorce nazewnictwa | ekran panelu administratora → Usługi wspólne (obszar posiada dane) |
 | reguły zapasu (obudowa → grupa → progi) i zapamiętane przypisania obudów | |
 
-Inne obszary współpracują z obszarem tylko przez kontrakt zewnętrzny (do utworzenia).
+Inne obszary współpracują z obszarem tylko przez [kontrakt zewnętrzny](01%20Kontrakt%20zewnętrzny.md).
 
 ## Reguły obszaru
 

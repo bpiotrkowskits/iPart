@@ -22,6 +22,8 @@ Obszar daje wszystkim obszarom te same mechanizmy pracy: kto pracuje i co może,
 | panel administratora (ekran) | |
 | wspólna budowa historii zmian ([ADR-0007](../../decyzje/ADR-0007%20Jeden%20mechanizm%20historii%20zmian.md)) | |
 
+Inne obszary korzystają z obszaru tylko przez [kontrakt zewnętrzny](01%20Kontrakt%20zewnętrzny.md).
+
 ## Reguły obszaru
 
 1. **Jeden mechanizm wszędzie.** „Do obsłużenia”, komunikaty, blokady, zastępstwa i historia działają tak samo we wszystkich obszarach.
