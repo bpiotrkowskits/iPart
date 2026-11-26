@@ -1,7 +1,7 @@
 ---
 status: propozycja
 zakres: system
-przegląd: 2026-11-25
+przegląd: 2026-11-26
 ---
 
 # Mapa obszarów
@@ -17,7 +17,7 @@ System dzieli się na **obszary**, czyli duże części odpowiadające sposobom 
 | **Zaopatrzenie** | zapotrzebowanie i zakupy komponentów pod ZK, łączenie BOM-ów do wspólnych zakupów, zgłoszenia zamienników od zakupowca, towar powierzony, reguły zapasu, wycena, nadwyżka zakupowa | sPart, fusePart, entPart, scrapPart | do utworzenia |
 | **Kompletacja** | kompletacja komponentów pod ZK i PP, desygnacja opakowań przy wydaniu na produkcję | cPart, dPart | do utworzenia; zakres czeka na decyzję o przejęciu (zasada 5) |
 | **Estymacja** | szacowanie czasu montażu pakietu | qPart (niedokończony) | do utworzenia; zakres czeka na decyzję o przejęciu (zasada 5) |
-| **Usługi wspólne** | użytkownicy, role i administracja dostępów (edycja / odczyt / brak), historia zmian, blokady edycji, powiadomienia, ustawienia firmy i Klienta | — (dziś w każdym pliku osobno) | do utworzenia |
+| **Usługi wspólne** | użytkownicy, role i administracja dostępów (edycja / odczyt / brak), panel administratora (słowniki obudów, wzorce nazewnictwa), historia zmian, blokady edycji, powiadomienia, ustawienia firmy i Klienta | — (dziś w każdym pliku osobno) | do utworzenia |
 
 ## Relacje
 

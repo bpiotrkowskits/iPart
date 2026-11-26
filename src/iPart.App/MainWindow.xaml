@@ -7,6 +7,30 @@
         mc:Ignorable="d"
         Title="iPart" Height="820" Width="1280" MinHeight="640" MinWidth="980">
     <Window.Resources>
+        <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary Source="Resources/DataColors.xaml" />
+        </ResourceDictionary.MergedDictionaries>
+        <!-- 8.1 Linie BOM: niepotwierdzona linia; pełna informacja w podpowiedzi (8.4) -->
+        <Style x:Key="BomLineRowStyle" TargetType="DataGridRow">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Confirmed}" Value="False">
+                    <Setter Property="Background" Value="{StaticResource Data.Line.Unconfirmed}" />
+                    <Setter Property="Foreground" Value="{StaticResource Data.Text}" />
+                    <Setter Property="ToolTip" Value="Linia niepotwierdzona" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <!-- 8.1 Komponenty: montaż THT, Press-Fit albo MECH -->
+        <Style x:Key="ComponentRowStyle" TargetType="DataGridRow">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsNonSmtMounting}" Value="True">
+                    <Setter Property="Background" Value="{StaticResource Data.Line.NonSmtMounting}" />
+                    <Setter Property="Foreground" Value="{StaticResource Data.Text}" />
+                    <Setter Property="ToolTip" Value="{Binding Mounting}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
         <Style TargetType="DataGrid">
             <Setter Property="AutoGenerateColumns" Value="False" />
             <Setter Property="IsReadOnly" Value="True" />
@@ -19,6 +43,7 @@
             <Setter Property="RowHeight" Value="28" />
         </Style>
         <Style TargetType="Button"><Setter Property="Padding" Value="12,6" /><Setter Property="Margin" Value="0,0,8,0" /></Style>
+        </ResourceDictionary>
     </Window.Resources>
     <TabControl Margin="16">
         <TabItem Header="Pakiety" DataContext="{Binding Packages}">
@@ -54,7 +79,7 @@
                         <TextBlock Text="Rewizja importu BOM: " VerticalAlignment="Center" />
                         <ComboBox ItemsSource="{Binding Revisions}" SelectedItem="{Binding SelectedRevision}" DisplayMemberPath="DisplayName" MinWidth="320" HorizontalAlignment="Left" />
                     </DockPanel>
-                    <DataGrid ItemsSource="{Binding Lines}">
+                    <DataGrid ItemsSource="{Binding Lines}" RowStyle="{StaticResource BomLineRowStyle}">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Linia" Binding="{Binding LineNumber}" Width="50" />
                             <DataGridTextColumn Header="Designator" Binding="{Binding Designators}" Width="200" />
@@ -155,7 +180,7 @@
                     <TextBox Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" />
                 </DockPanel>
                 <TextBlock DockPanel.Dock="Bottom" Text="{Binding Status}" Margin="0,8,0,0" AutomationProperties.LiveSetting="Polite" />
-                <DataGrid ItemsSource="{Binding Items}">
+                <DataGrid ItemsSource="{Binding Items}" RowStyle="{StaticResource ComponentRowStyle}">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="MPN" Binding="{Binding Mpn}" Width="240" />
                         <DataGridTextColumn Header="Montaż" Binding="{Binding Mounting}" Width="100" />

@@ -1,0 +1,39 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!--
+        Kolory danych iPart — jedno miejsce dla całej aplikacji.
+        Źródło: docs/robocze/Decyzje VBA.md, sekcja „Kolory” (8.1–8.4).
+        Kolor zależy od działu (widoku), dlatego statusy MPN mają osobne klucze dla zakupów i magazynu.
+        Kolory danych wyglądają tak samo w trybie jasnym i ciemnym; tekst na nich: Data.Text.
+        Docelowo edytowalne w panelu administratora (Kierownik działu Obsługi Projektu).
+    -->
+    <SolidColorBrush x:Key="Data.Text" Color="#1B1B1B" />
+
+    <!-- 8.1 Linie BOM — wszystkie widoki -->
+    <SolidColorBrush x:Key="Data.Line.Unconfirmed" Color="#F4B183" />
+    <SolidColorBrush x:Key="Data.Line.Dnp" Color="#C9C9C9" />
+    <SolidColorBrush x:Key="Data.Line.NonSmtMounting" Color="#BFFF9F" />
+    <SolidColorBrush x:Key="Data.Line.DirectToCustomer" Color="#F7F5A3" />
+
+    <!-- 8.2 Status MPN — zakupy -->
+    <SolidColorBrush x:Key="Data.MpnStatus.Purchasing.Compliant" Color="#A9D18E" />
+    <SolidColorBrush x:Key="Data.MpnStatus.Purchasing.Approved" Color="#A9D18E" />
+    <SolidColorBrush x:Key="Data.MpnStatus.Purchasing.OrderSubstitute" Color="#9DC3E6" />
+    <SolidColorBrush x:Key="Data.MpnStatus.Purchasing.ToVerify" Color="#FFD966" />
+
+    <!-- 8.2 Status MPN — kompletacja i dPart (zgodny z BOM / z parametrami / Generic: bez koloru) -->
+    <SolidColorBrush x:Key="Data.MpnStatus.Warehouse.Substitute" Color="#9DC3E6" />
+    <!-- do weryfikacji: linia zablokowana do kompletacji do potwierdzenia przez Opiekuna Projektu albo zakupowca -->
+    <SolidColorBrush x:Key="Data.MpnStatus.Warehouse.ToVerify" Color="#FF0000" />
+
+    <!-- 8.2 Niedozwolony — wszystkie widoki -->
+    <SolidColorBrush x:Key="Data.MpnStatus.Forbidden.Background" Color="#000000" />
+    <SolidColorBrush x:Key="Data.MpnStatus.Forbidden.Text" Color="#FF0000" />
+
+    <!-- 8.3 Kompletacja -->
+    <SolidColorBrush x:Key="Data.Kitting.Complete" Color="#70AD47" />
+    <SolidColorBrush x:Key="Data.Kitting.Partial" Color="#FFC000" />
+    <SolidColorBrush x:Key="Data.Kitting.Shortage.Background" Color="#FFC7CE" />
+    <SolidColorBrush x:Key="Data.Kitting.Shortage.Text" Color="#9C0006" />
+    <SolidColorBrush x:Key="Data.Kitting.NonSmtOverIssue" Color="#FF5050" />
+</ResourceDictionary>

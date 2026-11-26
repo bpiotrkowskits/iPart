@@ -1,7 +1,7 @@
 ---
 status: propozycja
 zakres: słownik systemu iPart
-przegląd: 2026-11-25
+przegląd: 2026-11-26
 ---
 
 # Słownik
@@ -57,7 +57,7 @@ Jedno źródło znaczeń pojęć iPart. Obowiązuje w całej dokumentacji i w ro
 | **MPN** | Numer części producenta (Manufacturer Part Number). W plikach Excel: „Part Number”. |
 | **Case** | Obudowa zgodna z dokumentacją producenta, czasem w zapisie uproszczonym. Decyduje Opiekun Projektu. |
 | **Footprint** | Obraz elementu na płytce. Zwykle zgodny z Case, ale nie zawsze (wymogi programu SMT). Decyduje Technolog SMT. Raz ustalony obowiązuje wszędzie; footprint dedykowany to ustawienie jednego Klienta. |
-| **Sposób montażu** | SMT, THT, DNP albo PCB. W plikach Excel: „Mounting”. |
+| **Sposób montażu** | Technologia montażu elementu: SMT, THT, Press-Fit, Pin-In-Paste, MECH, Plugs (wtyki, domyślnie wydawane na THT), PCB albo DNP. W plikach Excel: „Mounting”. Nie mówi, dokąd element jest wydawany (patrz sposób wydania). |
 | **Value** | Wartość komponentu w formacie firmy, zawsze pełna (np. z PPM). |
 | **Parametr nieukrywalny** | Parametr, który zawsze widać w Part TS danego typu komponentu (np. rezystancja, tolerancja i moc rezystora). |
 | **MPN zatwierdzone** | Lista MPN dopuszczonych dla linii, z podstawą (z BOM Klienta, z parametrów, decyzja). Pierwszy MPN z BOM Klienta jest preferowany. |
@@ -80,7 +80,7 @@ Jedno źródło znaczeń pojęć iPart. Obowiązuje w całej dokumentacji i w ro
 | **Nadmiar ze zmiany** | Komponenty zamówione lub dostarczone, które przestały być potrzebne po zmianie BOM. |
 | **Desygnacja** | Przypisanie opakowania komponentu do konkretnej linii BOM przy wydaniu na produkcję. W plikach Excel: dPart. |
 | **Numer pojemnika** | Numer pojemnika, w którym komponent jest wydany na produkcję. Komponent może być w kilku pojemnikach. |
-| **Sposób wydania** | Cel wydania: SMT, THT, serwis, bezpośrednio do Klienta itp. |
+| **Sposób wydania** | Dokąd magazyn wydaje komponent: produkcja SMT, produkcja THT, serwis, bezpośrednio do Klienta. Domyślnie wynika ze sposobu montażu; wyjątki ustala Opiekun Projektu w BOM. |
 
 ## Legacy i odpowiedniki
 

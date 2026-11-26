@@ -1,7 +1,7 @@
 ---
 status: roboczy
-zakres: decyzje dotyczące mechanizmów VBA przy przenoszeniu do aplikacji iPart — przegląd w toku (sesje 1–2 z 4 zakończone)
-przegląd: 2026-11-25
+zakres: decyzje dotyczące mechanizmów VBA przy przenoszeniu do aplikacji iPart — przegląd w toku (sesje 1–3 z 4 zakończone)
+przegląd: 2026-11-26
 ---
 
 # Decyzje VBA — notatki z przeglądu kodu
@@ -78,6 +78,43 @@ Kierunek ogólny: przy dobrze zoptymalizowanej pracy — **wszystko według nowy
 | 4.6 | Przekazanie do kompletacji | sPart → cPart przy każdym zamknięciu, tylko PP1; ceny ukryte nazwami kolumn; zapis iPart i cPart przed decyzją o zapisie sPart; Mounting „jednorazowo DNP / zamiennik” chroniony tekstem | **Zmienić:** kompletacja czyta dane zakupowe bezpośrednio, dla wszystkich partii; ceny ukrywają uprawnienia (poza cenami magazyn widzi wszystko); zakupowiec widzi wydania i uwagi magazynu per partia na bieżąco; zapis przez sesję edycji (2.12a); zmiany „tylko dla ZK” = wersja BOM dla ZK. **Uwagi zakupów magazyn obsługuje tak jak zmiany** (do obsłużenia, z potwierdzeniem) |
 | — | Administracja dostępów | Brak (hasło w kodzie, tryby pliku) | **Nowe:** moduł administracji dostępów (Usługi wspólne): konkretne dostępy × role, dla każdego: edycja / odczyt / brak dostępu |
 
+## Sesja 3 — cPart
+
+| # | Mechanizm | [kod] dziś | [decyzja] |
+|---|---|---|---|
+| 5.1 | Partie produkcyjne (PP) | Partia = kopia arkusza z kopią BOM, aktualizowana osobno; zakupy tylko w PP1; „Zmień ilości w ZK” = kopia arkusza z datą; czyszczenie kolumn przesunięte o jedną | **Zmienić:** partia = podział ilości ZK (w łączeniu — każdego ZK osobno), wszystkie partie na wspólnej wersji BOM dla ZK; każda partia ma własną kompletację (opakowania, wydano, uwagi). Partie tworzy **magazyn** na podstawie informacji od Opiekuna klienta albo produkcji (technolog, kierownik). Zmiany Klienta po sprawdzeniu PP1 → zmiana wersji BOM dla ZK, obowiązuje kolejne partie [niepewne: czy wtedy potrzebna jest osobna wersja dla partii]. „Zmień ilości w ZK” → **symulacja** „czego i ile zabraknie przy większej ilości” (partii lub ZK), bez zapisu |
+| 5.2 | Import opakowań | Pliki z systemu magazynowego; przypisanie po MPN z „Nazwa” (własna normalizacja); opakowanie do wszystkich pasujących linii; usunięcie bez śladu; listy powtórzonych i nieprzypisanych nieczyszczone; import = od razu nowy dPart | **Zmienić:** import pliku w pierwszej wersji, docelowo odczyt bezpośredni; przypisanie po MPN wybranym przez zakupowca, normalizacja jak 1.2; **jedno opakowanie może obsłużyć kilka linii** (praktyka magazynu) — aplikacja sprawdza, czy ilość wystarcza dla wszystkich tych linii, a jeśli nie — ostrzeżenie do świadomej akceptacji; konflikty i braki rozstrzyga magazyn, decyzje w historii; wycofanie opakowania z kompletacji z powodem; nieprzypisane liczone od nowa przy każdym imporcie. dPart: produkcja otwiera dziś plik na komputerze przy stanowisku przyjęcia opakowań → w aplikacji **widok dla produkcji** na tym komputerze, zmiany oznaczone; import nie tworzy osobnego dokumentu [decyzja robocza; dPart do większego dopracowania w przyszłości] |
+| 5.3 | Wydano, różnica, „ile płytek” | Formuły; „Wydano” = suma wydana dla linii (w szablonie rev3.3 bez formuły i bez makra wypełniającego — źródło do wyjaśnienia); tekst w „Wydano” = linia kompletna; „Max płytek” z wierszy 12–259 | **Zmienić:** „Wydano” = suma wydana dla linii BOM, liczona z ilości w przypisanych opakowaniach (ilość w opakowaniu osobno per opakowanie); korekta ręczna z powodem; linia kompletna bez liczenia — jawne oznaczenie z powodem; „Max płytek” ze wszystkich linii, bez limitu; pomijane tylko DNP; **PCB liczona jak każda inna linia**; opakowanie wspólne dla kilku linii — ilość dzielona wg zapotrzebowania |
+| 5.4 | Blokada zatwierdzenia P&P | Brak w kodzie (tylko organizacyjnie); cPart sprawdza jedynie zatwierdzenie BOM | **Zmienić:** kompletacja może się zacząć bez zatwierdzenia P&P; udostępnienie dPart produkcji i oznaczenie partii jako gotowej dla linii SMT wymaga zatwierdzenia P&P przez Technologa SMT; pakiet bez linii SMT nie wymaga. Wyjątki praktycznie się nie zdarzają — brak. **Projektować tak, by można było dodać osobne zatwierdzenie przez Technologa THT** (zatwierdzenia per technologia, nie jedno na pakiet) |
+| 5.5 | Zmiany w BOM po rozpoczęciu kompletacji | Pogrubienie z ostatniej aktualizacji; opakowania i „Wydano” zostają bez ostrzeżenia; Mounting spoza listy nigdy nie aktualizowany (błąd wielkości liter — DNP nie wraca na SMT) | **Zmienić:** zmiana linii z przypisanymi opakowaniami → pozycja do obsłużenia dla magazynu („było → będzie” + podpowiedź: zwrócić / dobrać / bez zmian); partii z nieobsłużonymi zmianami nie można oznaczyć jako gotowej; produkcja widzi te linie oznaczone w dPart; zmiana linii bez opakowań — zwykła aktualizacja; Mounting i inne pola zawsze aktualizowane (wyjątki = wersja BOM dla ZK). Obsłużenie nie wraca do Opiekuna Projektu ani zakupowca — **zapis w historii kompletacji** |
+| 5.6 | Sposób wydania i nietypowe Mounting | Kolumna „Sposób wydania” nieużywana; Mounting miesza technologię („SMT”, „THT”…) z celem wydania („Bezpośrednio do Klienta”, „Materiały Dodatkowe”) | **Zmienić:** dwa pola. Sposób montażu (SMT, THT, Press-Fit, Pin-In-Paste, MECH, Plugs, PCB, DNP; Plugs = wtyki, domyślnie wydawane na THT) — Opiekun Projektu, z bazy komponentów. Sposób wydania (produkcja SMT, produkcja THT, serwis, bezpośrednio do Klienta) — domyślnie z Mounting, wyjątki ustala Opiekun Projektu w BOM. „Materiały Dodatkowe” — na razie pomijamy |
+
+## Sesja 3 — dPart
+
+| # | Mechanizm | [kod] dziś | [decyzja] |
+|---|---|---|---|
+| 6.1 | Pozostałe mechanizmy dPart | Numer pojemnika wycinany z tekstu lokalizacji; zmiany = tylko podświetlona data; zmiana ilości w dPart (łączenie) bez powrotu; desygnatory per ZK jako tekst | **Zmienić:** numer pojemnika z kolumny „Pojemnik” w pliku z systemu magazynowego (bez wycinania); widok pokazuje „było → będzie” zmienionych pól (5.5); desygnatory z podziałem na ZK jako dane. **Porzucić:** zmianę ilości w dPart (zastępuje ją symulacja z 5.1) |
+
+## Sesja 3 — pliki bez makr (dataPart, scrapPart, entPart)
+
+| # | Mechanizm | [kod] dziś | [decyzja] |
+|---|---|---|---|
+| 7.1 | Reguły zapasu — wybór progu | sPart i tabela min/max: największy próg ≤ ilość; makro listy powierzonych: najmniejszy próg ≥ ilość; ok. 1 030 obudów w entScrap bez grupy; sPart czyta plik „Obudowy” (= scrapPart pod starą nazwą) | **Zmienić:** jeden sposób wyboru progu dla zakupów i towaru powierzonego — **„od dołu” (największy próg ≤ ilość)**, jak w scrapPart i sPart; dwa zestawy wartości (zakupy, powierzone) zostają; reguły w iPart w jednym miejscu, edytują Kierownik Logistyki i Kierownik działu Obsługi Projektu; obudowa bez grupy → decyzja zapamiętywana jak w 4.2, grupa „nieprzypisane” tylko jako ostateczność |
+| 7.2 | Flagi zatwierdzeń i historia (dataPart) | Flagi: puste / `\|` niezatwierdzone / `?` (stara flaga, zastąpiona `\|`) / `<login> [data]`; ok. 80% footprintów niezatwierdzonych; historia w 15 kolumnach Tag, bez daty i autora | **Zmienić:** Case, Footprint, Value/parametry i Mounting mają status: brak / niezatwierdzona / zatwierdzona (kto, kiedy) — bez „?”; zmiana zatwierdzonej danej cofa ją do niezatwierdzonej i wymaga ponownego zatwierdzenia przez uprawnioną osobę; historia pełna jak 2.12. **Niezatwierdzonych footprintów nie przenosimy** (powstają od nowa). **Footprint bez osobnego, zatwierdzonego footprintu = kopia Case** (jak dziś w iPart) |
+| 7.3 | Arkusze pomocnicze dataPart | altCase (rodziny i równoważne nazwy obudów), stdCase (wzorce nazewnictwa), qtyCase (licznik, formuła do wiersza 28 635), thtCase (MPN → Footprint THT), arkusz footprintów dedykowanych Klienta (MPN → kilka footprintów, formuła bierze pierwszy), PADS (ręcznie), Critical (1 wpis) | **Zmienić:** **panel administratora** (dostęp tylko Kierownik działu Obsługi Projektu) ze słownikami: równoważne nazwy obudów (używane przy porównaniu Case) i wzorce nazewnictwa (ostrzeżenie przy niezgodnym Case; **zmiana wzorca zmienia nazwy wszystkich obudów utworzonych według niego** — lista „było → będzie” do zatwierdzenia). Licznik obudów — liczony automatycznie, z **grupową zmianą nazwy obudowy** (wszędzie, z listą „było → będzie”), w panelu administratora. thtCase — porzucić jako osobną bibliotekę (THT = Mounting, 1.6). Footprinty dedykowane Klienta — **zostają** (2.7: ustawienie Klienta). PADS — uzupełniają Opiekunowie Projektu przy tworzeniu komponentu; potrzebne od razu (estymacja). **Critical — zostaje**, z nową logiką (do ustalenia) |
+| 7.4 | entPart — odesłana lista | Kolumny K–N wypełnia Klient; kolumny O–Q („Symbol”, „Nazwa PL”, „Result”) bez makra | **Zmienić:** kolumny O–Q zostają w formacie pliku bez zmian — wymaga ich importer do systemu magazynowego (rozwiązanie drugiego developera). Import odesłanej listy (2.13): MPN podany przez Klienta = **zatwierdzony przez Klienta** automatycznie, z podstawą „lista towaru powierzonego od Klienta” — dopisany **na stałe do BOM pakietu**; ilość od Klienta mniejsza niż z zapasem → ostrzeżenie dla zakupowca |
+
+## Kolory (formatowanie warunkowe iPart, sPart, cPart, dPart)
+
+Zestawienie reguł z plików i próbki: strona „Kolory plików Part” (artefakt, 2026-11-26).
+
+| # | Znaczenie | [kod] dziś | [decyzja] |
+|---|---|---|---|
+| 8.1 | Linie BOM | Niepotwierdzona F4B183 (cPart jaśniej F8CBAD); DNP C9C9C9; THT/PressFit/MECH BFFF9F (sPart: MECH i „zamiennik THT” sprawdzane w kolumnie statusu — nie działa; cPart: tylko THT); „Bezpośrednio do Klienta” F7F5A3 tylko iPart i sPart | **Ujednolicić** we wszystkich widokach: niepotwierdzona F4B183, DNP C9C9C9, montaż THT / Press-Fit / MECH / Plugs (wtyki — domyślnie wydawane na THT) BFFF9F, bezpośrednio do Klienta F7F5A3 — **także w kompletacji i dPart** |
+| 8.2 | Status MPN | Różne kolory i nazwy statusów w każdym pliku („Niedozwolony” vs „Niedopuszczony”) | **Kolor zależy od działu (widoku).** Zakupy: zgodny z BOM / z parametrami / Generic A9D18E; zatwierdzony (Klient, TS) A9D18E; zamiennik tylko dla ZK 9DC3E6; do weryfikacji FFD966; niedozwolony czarne tło + czerwony tekst. Kompletacja i dPart: zgodny z BOM / z parametrami / Generic — bez koloru; **zatwierdzony i zamiennik tylko dla ZK — 9DC3E6** (magazyn musi okleić rolkę informacją „zamiennik”; pełna nazwa statusu zostaje widoczna, żeby każdy mógł zareagować na błąd poprzednika); **do weryfikacji — FF0000 i blokada**: przypisanie opakowań do takiej linii jest zablokowane do potwierdzenia przez Opiekuna Projektu albo zakupowca; niedozwolony czarne + czerwony. **Jedna nazwa: „Niedozwolony”.** **Generic** jest nadal w użyciu — ta sama logika co „zgodny z parametrami” |
+| 8.3 | Kompletacja | Kompletna 70AD47; częściowo FFC000; brak (różnica < 0) FFC7CE / 9C0006; THT wydane ponad zapotrzebowanie FF0000 | Kompletna, częściowo, brak — bez zmian. **Wydane ponad zapotrzebowanie dla THT, MECH, Press-Fit i Plugs — FF5050**: polityka firmy — te elementy wydajemy prawie zawsze na styk, nawet gdy zakupy kupiły więcej |
+| 8.4 | Zasady | — | Kolor zależy od działu — to samo znaczenie może mieć inny kolor w zakupach i w magazynie (odrzucona zasada „jeden kolor wszędzie”). Kolor nie jest jedyną informacją — pełna informacja **w podpowiedzi po najechaniu** na komórkę. Kolejność, gdy pasuje kilka znaczeń: DNP → niepotwierdzona → montaż inny niż SMT → sposób wydania; statusy MPN i kompletacji kolorują tylko swoje komórki. Kolory danych edytowalne w panelu administratora (Kierownik działu Obsługi Projektu), takie same w trybie jasnym i ciemnym |
+
 ## Błędy, których aplikacja nie może powtórzyć (dotychczas)
 
 - Zmiana wielkości liter w danych przekazywanych dalej (comparator).
@@ -96,6 +133,7 @@ Kierunek ogólny: przy dobrze zoptymalizowanej pracy — **wszystko według nowy
 - Ręcznie wpisywany klucz wyszukiwania przy każdej linii (PN magazynu) (sPart).
 - Dopasowanie danych po kolejności wierszy (wycena, cPart, iPart) (sPart, fusePart).
 - Ochrona danych przez nazwy kolumn zamiast uprawnień (ceny) (sPart).
+- Reguła koloru sprawdzająca złą kolumnę albo inną nazwę statusu niż ta, którą pisze kod (sPart, cPart, dPart).
 
 ## Otwarte pytania (dotychczas)
 
@@ -111,4 +149,7 @@ Kierunek ogólny: przy dobrze zoptymalizowanej pracy — **wszystko według nowy
 | Kurs waluty: z dnia wyceny? | Zakupowiec, Kierownik Logistyki |
 | Wzór własnego arkusza wyceny zakupów (do mapowania importu) | Zakupowiec |
 | Czy import stanu magazynu zawiera dane opakowań (do wyboru ilości z magazynu)? | Magazyn, drugi developer |
+| Skąd dziś bierze się wartość „Wydano” w cPart? W szablonie cPart_v3 (rev3.3) kolumna nie ma formuły, a makra jej nie wypełniają (tylko sumują przy eksporcie dPart). Inna wersja pliku w użyciu? | Magazyn |
+| Logika komponentów krytycznych (Critical): co oznacza, kto ustawia, jakie ma skutki | Kierownik działu Obsługi Projektu |
+| Footprinty dedykowane Klienta: gdy MPN ma kilka footprintów — który obowiązuje (per Klient? per projekt?) | Kierownik działu Obsługi Projektu, Technolog SMT |
 | Od którego momentu zmiana w łączeniu wymaga obsłużenia przez zakupowca („było → będzie”)? | Kierownik działu Obsługi Projektu, Zakupowiec |
