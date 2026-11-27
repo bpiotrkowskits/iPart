@@ -16,7 +16,7 @@ public static class BomFields
         BomField.Footprint => "Footprint",
         BomField.Description => "Description",
         BomField.Value => "Value",
-        BomField.PartNumber => "Part Number",
+        BomField.PartNumber => "PartNumber",
         BomField.Notes => "Notes",
         _ => field.ToString()
     };

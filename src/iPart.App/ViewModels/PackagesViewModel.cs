@@ -62,10 +62,10 @@ public sealed class PackagesViewModel : ObservableObject
         await Run(async () =>
         {
             var id = await _service.CreatePackageAsync(new NewPackageRequest(NewCode, NewRevision, SelectedCustomer?.Id, NewDescription));
-            var created = $"{NewCode.Trim()} rev {NewRevision.Trim()}";
+            var created = NewCode.Trim() + (string.IsNullOrWhiteSpace(NewRevision) ? "" : $" rev {NewRevision.Trim()}");
             NewCode = NewRevision = NewDescription = "";
             await RefreshCoreAsync(id);
-            Status = $"Utworzono pakiet {created}. Teraz zaimportuj jego BOM (menu „Import BOM”).";
+            Status = $"Utworzono pakiet {created}. Teraz wczytaj jego BOM (menu „Import BOM/P&P”).";
         });
     }
 

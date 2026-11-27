@@ -31,6 +31,8 @@ public sealed class BomRevision
     public Guid? PnpApprovedByUserId { get; set; }
     public string? PnpApprovedBy { get; set; }
     public DateTimeOffset? PnpApprovedAtUtc { get; set; }
+    // Comparator: pola porównywane z P&P (kody ComparedFields, po przecinku); null = wszystkie.
+    public string? CompareFields { get; set; }
     public DateTimeOffset ImportedAtUtc { get; set; }
     public string ImportedBy { get; set; } = "";
     public string? Comment { get; set; }
@@ -60,6 +62,15 @@ public sealed class BomLine
     public DateTimeOffset? ConfirmedAtUtc { get; set; }
     // Sekcja TS: sposób montażu (kod słownika, np. THT). Part TS — pole PartTs.
     public string? MountingCode { get; set; }
+    // Sekcja TS: Footprint i Description ustalone przy rozstrzygnięciu (z BOM, z P&P albo własne). Oryginał Klienta bez zmian.
+    public string? TsFootprint { get; set; }
+    public string? TsDescription { get; set; }
+    // Value ustalone w Comparatorze (z BOM, z P&P albo własne).
+    public string? TsValue { get; set; }
+    // PartNumber ustalony w Comparatorze (gdy porównywany i różny od P&P).
+    public string? TsPartNumber { get; set; }
+    // Linia wydzielona z innej linii (rozdzielenie według grup P&P): numer linii źródłowej.
+    public int? SplitFromLineNumber { get; set; }
     // Po porównaniu z P&P: decyzja (SPRAWDZONE / WYKAZ_ROZNIC), pytanie do Klienta i odpowiedź Klienta.
     public string? ComparisonDecision { get; set; }
     public string? DifferenceQuestion { get; set; }
@@ -85,9 +96,9 @@ public sealed class BomLineExtraValue
 }
 
 public sealed record PackageSummary(Guid Id, string Code, string CustomerRevision, string? CustomerName,
-    string? Description, int RevisionCount, DateTimeOffset CreatedAtUtc, string CreatedBy)
+    string? Description, int RevisionCount, DateTimeOffset CreatedAtUtc, string CreatedBy, Guid? CustomerId = null)
 {
-    public string DisplayName => $"{Code} rev {CustomerRevision}" + (CustomerName is null ? "" : $" — {CustomerName}");
+    public string DisplayName => Code + (string.IsNullOrWhiteSpace(CustomerRevision) ? "" : $" rev {CustomerRevision}") + (CustomerName is null ? "" : $" — {CustomerName}");
 }
 
 public sealed record BomRevisionSummary(Guid Id, int Number, string SourceFileName, string? SourceSheet,
@@ -137,12 +148,14 @@ public static class ConfirmationBases
     public const string CustomerAnswer = "ODPOWIEDZ_KLIENTA";
     public const string PreviousRealization = "WCZESNIEJSZA_REALIZACJA";
     public const string CoordinatorDecision = "DECYZJA_OPIEKUNA";
+    public const string PnpMatch = "ZGODNE_Z_PNP";
 
     public static readonly IReadOnlyDictionary<string, string> Names = new Dictionary<string, string>(StringComparer.Ordinal)
     {
         [CustomerAnswer] = "Odpowiedź Klienta",
         [PreviousRealization] = "Wcześniejsza realizacja",
         [CoordinatorDecision] = "Decyzja Opiekuna Projektu (z uzasadnieniem)",
+        [PnpMatch] = "Zgodność BOM z P&P (automatycznie)",
     };
 
     public static string Describe(string? code) => code is not null && Names.TryGetValue(code, out var name) ? name : code ?? "";

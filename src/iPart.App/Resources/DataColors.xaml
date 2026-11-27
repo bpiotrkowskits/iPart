@@ -10,7 +10,11 @@
     <SolidColorBrush x:Key="Data.Text" Color="#1B1B1B" />
 
     <!-- 8.1 Linie BOM — wszystkie widoki -->
-    <SolidColorBrush x:Key="Data.Line.Unconfirmed" Color="#F4B183" />
+    <!-- Linia niezatwierdzona — delikatny kolor całej linii; komórki z różnymi wartościami (Comparator) — pełny pomarańczowy i pogrubienie. -->
+    <SolidColorBrush x:Key="Data.Line.Unconfirmed" Color="#FBE3D2" />
+    <SolidColorBrush x:Key="Data.Cell.Difference" Color="#F4B183" />
+    <!-- Zaznaczona linia niezatwierdzona — ten sam odcień, trochę ciemniejszy (kolor nie znika po zaznaczeniu). -->
+    <SolidColorBrush x:Key="Data.Line.UnconfirmedSelected" Color="#F8CBAD" />
     <SolidColorBrush x:Key="Data.Line.Dnp" Color="#C9C9C9" />
     <SolidColorBrush x:Key="Data.Line.NonSmtMounting" Color="#BFFF9F" />
     <SolidColorBrush x:Key="Data.Line.DirectToCustomer" Color="#F7F5A3" />

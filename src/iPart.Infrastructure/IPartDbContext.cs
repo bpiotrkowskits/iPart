@@ -242,11 +242,14 @@ public sealed class IPartDbContext(DbContextOptions<IPartDbContext> options) : D
         foreach (var name in new[] { nameof(PnpRow.X), nameof(PnpRow.Y), nameof(PnpRow.Rotation), nameof(PnpRow.Side) }) pnp.Property(name).HasMaxLength(50);
         pnp.Property(x => x.Footprint).HasMaxLength(500);
         pnp.Property(x => x.Value).HasMaxLength(500);
+        pnp.Property(x => x.XMm).HasPrecision(12, 4);
+        pnp.Property(x => x.YMm).HasPrecision(12, 4);
         pnp.HasIndex(x => new { x.BomRevisionId, x.Designator }).IsUnique();
         pnp.HasOne<BomRevision>().WithMany().HasForeignKey(x => x.BomRevisionId).OnDelete(DeleteBehavior.Cascade);
         revision.HasOne<DocumentationFile>().WithMany().HasForeignKey(x => x.PnpFileId).OnDelete(DeleteBehavior.Restrict);
         revision.Property(x => x.PnpFileName).HasMaxLength(260);
         revision.Property(x => x.PnpApprovedBy).HasMaxLength(256);
+        revision.Property(x => x.CompareFields).HasMaxLength(100).IsUnicode(false);
 
         // MPN zatwierdzone i niedozwolone linii.
         var mpn = model.Entity<LineMpn>();
@@ -275,6 +278,12 @@ public sealed class IPartDbContext(DbContextOptions<IPartDbContext> options) : D
         version.HasOne<BomRevision>().WithMany().HasForeignKey(x => x.BomRevisionId).OnDelete(DeleteBehavior.Restrict);
 
         line.Property(x => x.MountingCode).HasMaxLength(50);
+        line.Property(x => x.TsFootprint).HasMaxLength(500);
+        line.Property(x => x.TsValue).HasMaxLength(500);
+        line.Property(x => x.TsPartNumber).HasMaxLength(1000);
+        line.Property(x => x.TsDescription).HasMaxLength(2000);
+        pnp.Property(x => x.Description).HasMaxLength(2000);
+        pnp.Property(x => x.PartNumber).HasMaxLength(1000);
         line.Property(x => x.ComparisonDecision).HasMaxLength(20).IsUnicode(false);
         line.Property(x => x.DifferenceQuestion).HasMaxLength(2000);
         line.Property(x => x.CustomerAnswer).HasMaxLength(2000);

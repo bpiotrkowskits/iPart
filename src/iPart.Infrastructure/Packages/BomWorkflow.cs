@@ -55,14 +55,23 @@ public sealed class AttachPnpHandler(IDbContextFactory<IPartDbContext> contexts,
             UploadedByUserId = user.UserId, UploadedBy = user.GetAuthor(), UploadedAtUtc = now
         };
         context.DocumentationFiles.Add(file);
+        await using var transaction = await context.Database.BeginTransactionAsync(ct);
         await context.PnpRows.Where(x => x.BomRevisionId == revision.Id).ExecuteDeleteAsync(ct);
         foreach (var row in command.Rows) { row.Id = Guid.NewGuid(); row.BomRevisionId = revision.Id; context.PnpRows.Add(row); }
         var before = revision.PnpFileName;
         revision.PnpFileId = file.Id;
         revision.PnpFileName = file.FileName;
-        context.DocumentationChangeSets.Add(Audit.Set(user, revision.PackageId, ChangeOperations.Imported, null,
-            Audit.Field(nameof(BomRevision), revision.Id, $"Rewizja {revision.Number}.P&P", before, $"{file.FileName} ({command.Rows.Count} wierszy)")));
+        if (command.Options is { } options) revision.CompareFields = options.Store();
+        var changes = new List<DocumentationFieldChange>
+        {
+            Audit.Field(nameof(BomRevision), revision.Id, $"Rewizja {revision.Number}.P&P", before, $"{file.FileName} ({command.Rows.Count} wierszy)")
+        };
+
+        var lines = await context.BomLines.Include(x => x.ExpandedDesignators).Where(x => x.BomRevisionId == revision.Id).ToListAsync(ct);
+        Comparator.Sync(revision, lines, command.Rows, user, changes);
+        context.DocumentationChangeSets.Add(Audit.Set(user, revision.PackageId, ChangeOperations.Imported, null, changes.ToArray()));
         await context.SaveChangesAsync(ct);
+        await transaction.CommitAsync(ct);
         return Result.Ok();
     }
 }
@@ -282,5 +291,68 @@ public sealed class SqlBomWorkflowReader(IDbContextFactory<IPartDbContext> conte
     {
         await using var context = await contexts.CreateDbContextAsync(ct);
         return await context.MountingMethods.AsNoTracking().OrderBy(x => x.Id).Select(x => new MountingOption(x.Code, x.Name)).ToListAsync(ct);
+    }
+}
+
+/// <summary>
+/// Rozstrzygnięcie linii po porównaniu z P&amp;P i potwierdzenie (1.5): podstawa, odpowiedź Klienta albo komentarz,
+/// wartości do sekcji TS dla różniących się pól (z BOM, z P&amp;P albo własne). Oryginał Klienta zostaje bez zmian.
+/// </summary>
+public sealed class ResolveLineHandler(IDbContextFactory<IPartDbContext> contexts, ICurrentUser user) : ICommandHandler<ResolveLine>
+{
+    public async Task<Result> HandleAsync(ResolveLine command, CancellationToken ct = default)
+    {
+        if (command.Basis is not (ConfirmationBases.CoordinatorDecision or ConfirmationBases.CustomerAnswer or ConfirmationBases.PreviousRealization))
+            return Result.Fail("Wybierz podstawę zatwierdzenia.");
+        var note = Audit.Clean(command.Note);
+        if (command.Basis == ConfirmationBases.CustomerAnswer && note is null) return Result.Fail("Wpisz odpowiedź Klienta.");
+        if (command.Basis == ConfirmationBases.PreviousRealization && note is null) return Result.Fail("Wpisz komentarz — której realizacji dotyczy.");
+
+        await using var context = await contexts.CreateDbContextAsync(ct);
+        var line = await context.BomLines.Include(x => x.ExpandedDesignators).SingleOrDefaultAsync(x => x.Id == command.LineId, ct);
+        if (line is null) return Result.Fail("Linia nie istnieje.");
+        if (line.Confirmed) return Result.Fail($"Linia {line.LineNumber} jest już zatwierdzona.");
+        var revision = await context.BomRevisions.AsNoTracking().SingleAsync(r => r.Id == line.BomRevisionId, ct);
+        var pnp = await context.PnpRows.AsNoTracking().Where(x => x.BomRevisionId == revision.Id).ToListAsync(ct);
+
+        var changes = new List<DocumentationFieldChange>();
+        foreach (var values in LineFields.For(line, pnp, ComparatorOptions.Parse(revision.CompareFields)).Where(v => v.Differs))
+        {
+            var resolution = command.Resolutions.FirstOrDefault(r => r.Field == values.Field);
+            if (resolution is null) return Result.Fail($"Wybierz wartość dla pola {values.Label} (BOM, P&P albo własna).");
+            var value = LineFields.Value(values, resolution);
+            if (value is null)
+                return Result.Fail(resolution.Source == ValueSource.Pnp
+                    ? $"{values.Label}: w P&P są różne wartości ({values.PnpText}) — wybierz BOM albo wpisz własną."
+                    : $"{values.Label}: brak wartości do zapisania.");
+            switch (values.Field)
+            {
+                case ComparedFields.Value:
+                    changes.Add(Audit.Field(nameof(BomLine), line.Id, Audit.Line(line, "Value"), line.TsValue, value)); line.TsValue = value; break;
+                case ComparedFields.Footprint:
+                    changes.Add(Audit.Field(nameof(BomLine), line.Id, Audit.Line(line, "Footprint TS"), line.TsFootprint, value)); line.TsFootprint = value; break;
+                case ComparedFields.PartNumber:
+                    changes.Add(Audit.Field(nameof(BomLine), line.Id, Audit.Line(line, "PartNumber"), line.TsPartNumber, value)); line.TsPartNumber = value; break;
+                case ComparedFields.Description:
+                    changes.Add(Audit.Field(nameof(BomLine), line.Id, Audit.Line(line, "Description TS"), line.TsDescription, value)); line.TsDescription = value; break;
+            }
+        }
+
+        if (command.Basis == ConfirmationBases.CustomerAnswer)
+        {
+            changes.Add(Audit.Field(nameof(BomLine), line.Id, Audit.Line(line, "Odpowiedź Klienta"), line.CustomerAnswer, note));
+            line.CustomerAnswer = note;
+        }
+        if (line.ComparisonDecision is null) line.ComparisonDecision = ComparisonDecisions.Checked;
+        line.Confirmed = true;
+        line.ConfirmationBasis = command.Basis;
+        line.ConfirmationNote = note;
+        line.ConfirmedByUserId = user.UserId;
+        line.ConfirmedBy = user.GetAuthor();
+        line.ConfirmedAtUtc = DateTimeOffset.UtcNow;
+        changes.Add(Audit.Field(nameof(BomLine), line.Id, Audit.Line(line, "Confirmed"), "false", ConfirmationBases.Describe(command.Basis)));
+        context.DocumentationChangeSets.Add(Audit.Set(user, revision.PackageId, ChangeOperations.Confirmed, note, changes.ToArray()));
+        await context.SaveChangesAsync(ct);
+        return Result.Ok();
     }
 }

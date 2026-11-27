@@ -203,9 +203,10 @@ namespace iPart.Infrastructure.Migrations
             migrationBuilder.DropIndex(name: "IX_Packages_CustomerId", schema: "documentation", table: "Packages");
             migrationBuilder.Sql("ALTER TABLE [shared].[Customers] ADD [NewId] uniqueidentifier NOT NULL CONSTRAINT [DF_Customers_NewId] DEFAULT NEWID();");
             migrationBuilder.Sql("ALTER TABLE [documentation].[Packages] ADD [NewCustomerId] uniqueidentifier NULL;");
+            // EXEC — skrypt idempotentny kompiluje cały wsad także na bazie już zaktualizowanej, gdzie tych kolumn nie ma.
             migrationBuilder.Sql("""
-                UPDATE p SET p.[NewCustomerId] = c.[NewId]
-                FROM [documentation].[Packages] p JOIN [shared].[Customers] c ON c.[Id] = p.[CustomerId];
+                EXEC(N'UPDATE p SET p.[NewCustomerId] = c.[NewId]
+                FROM [documentation].[Packages] p JOIN [shared].[Customers] c ON c.[Id] = p.[CustomerId];');
                 """);
             migrationBuilder.Sql("ALTER TABLE [documentation].[Packages] DROP COLUMN [CustomerId];");
             migrationBuilder.Sql("EXEC sp_rename N'[documentation].[Packages].[NewCustomerId]', N'CustomerId', N'COLUMN';");

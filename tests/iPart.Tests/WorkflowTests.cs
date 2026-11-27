@@ -34,13 +34,46 @@ public sealed class WorkflowTests
         var result = BomPnpComparer.Compare(lines, pnp);
 
         Assert.Empty(result.Lines[0].Differences);                                  // normalizacja tylko do porównania
-        Assert.Contains(result.Lines[1].Differences, d => d.Kind == "Footprint" && d.Detail.Contains("C2C = 0603"));
+        Assert.Contains(result.Lines[1].Differences, d => d.Kind == "Footprint" && d.Detail == "C2C: Footprint P&P 0603 ≠ BOM 0402");
+        Assert.Equal(new[] { ("C2C", false), ("C2A, C2B", true) }, result.Lines[1].Groups.Select(g => (g.Designators, g.Matches)));
         Assert.Contains(result.Lines[2].Differences, d => d.Kind == "Brak w P&P" && d.Detail.Contains("J4"));
         var tp = Assert.Single(result.Lines[3].Differences);
         Assert.Equal((DifferenceSeverity.Warning, "Brak danych po obu stronach"), (tp.Severity, tp.Kind));
         Assert.Contains(result.Lines[4].Differences, d => d.Kind == "Ilość ≠ desygnatory" && d.Severity == DifferenceSeverity.Warning);
         Assert.Equal(new[] { "U99" }, result.OnlyInPnp);
         Assert.Equal(2, result.Differences);
+    }
+
+    [Theory]
+    [InlineData(new[] { "R3", "R1", "R2", "R5" }, "R1–R3, R5")]
+    [InlineData(new[] { "C2A", "C2B", "C1" }, "C1, C2A, C2B")]
+    [InlineData(new[] { "R01", "R02", "R03" }, "R01–R03")]
+    [InlineData(new[] { "U1", "R1", "J1-1" }, "J1-1, R1, U1")]
+    public void DesignatorsAreShownAsRanges(string[] designators, string expected) => Assert.Equal(expected, DesignatorRanges.Compress(designators));
+
+    [Theory]
+    [InlineData("1000", CoordinateUnit.Mils, 25.4)]
+    [InlineData("1000mil", CoordinateUnit.Auto, 25.4)]
+    [InlineData("12,5", CoordinateUnit.Millimeters, 12.5)]
+    [InlineData("3.05mm", CoordinateUnit.Mils, 3.05)]
+    [InlineData("12.5", CoordinateUnit.Auto, 12.5)]
+    public void CoordinatesConvertToMillimeters(string text, CoordinateUnit unit, double expected) =>
+        Assert.Equal((decimal)expected, Coordinates.ToMillimeters(text, unit));
+
+    [Theory]
+    [InlineData("Center-X(mil)", CoordinateUnit.Mils)]
+    [InlineData("X (mm)", CoordinateUnit.Millimeters)]
+    [InlineData("Mid X", CoordinateUnit.Auto)]
+    public void UnitIsReadFromHeader(string header, CoordinateUnit unit) => Assert.Equal(unit, Coordinates.FromHeader(header));
+
+    [Fact]
+    public void UnreadableCoordinateStaysOriginalWithWarning()
+    {
+        var table = new BomSourceTable(["Des", "X"], [new BomSourceRow(2, ["R1", "abc"]), new BomSourceRow(3, ["R2", "100"])]);
+        var result = PnpImportBuilder.Build(table, [new(0, PnpField.Designator), new(1, PnpField.X)], CoordinateUnit.Mils);
+        Assert.Equal((null, "abc"), (result.Rows[0].XMm, result.Rows[0].X));
+        Assert.Equal(2.54m, result.Rows[1].XMm);
+        Assert.Contains(result.Issues, i => i.Severity == ImportSeverity.Warning);
     }
 
     [Fact]

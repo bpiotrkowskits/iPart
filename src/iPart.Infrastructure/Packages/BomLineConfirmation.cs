@@ -16,7 +16,7 @@ public sealed class ConfirmBomLineHandler(IDbContextFactory<IPartDbContext> cont
 
     public async Task<Result> HandleAsync(ConfirmBomLine command, CancellationToken cancellationToken = default)
     {
-        if (!ConfirmationBases.Names.ContainsKey(command.Basis)) return Result.Fail("Wybierz podstawę potwierdzenia.");
+        if (!ConfirmationBases.Names.ContainsKey(command.Basis) || command.Basis == ConfirmationBases.PnpMatch) return Result.Fail("Wybierz podstawę potwierdzenia.");
         var note = string.IsNullOrWhiteSpace(command.Note) ? null : command.Note.Trim();
         if (command.Basis == ConfirmationBases.CoordinatorDecision && note is null)
             return Result.Fail("Decyzja Opiekuna wymaga uzasadnienia.");

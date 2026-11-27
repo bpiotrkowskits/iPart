@@ -7,8 +7,8 @@
         <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="16" /><ColumnDefinition Width="340" /></Grid.ColumnDefinitions>
 
         <DockPanel Grid.ColumnSpan="3" Margin="0,0,0,16">
-            <Button DockPanel.Dock="Right" Content="Otwórz BOM pakietu" Command="{Binding OpenCommand}" />
-            <TextBlock Text="Pakiety" Style="{DynamicResource PageTitle}" VerticalAlignment="Center" />
+            <Button DockPanel.Dock="Right" Content="Otwórz pakiet" Command="{Binding OpenCommand}" />
+            <TextBlock Text="Pakiet Elektroniczny" Style="{DynamicResource PageTitle}" VerticalAlignment="Center" />
         </DockPanel>
 
         <DockPanel Grid.Row="1" Margin="0,0,0,12">
@@ -29,7 +29,7 @@
                     <DataGridTextColumn Header="Pakiet" Binding="{Binding Code}" Width="200" />
                     <DataGridTextColumn Header="Rewizja Klienta" Binding="{Binding CustomerRevision}" Width="120" />
                     <DataGridTextColumn Header="Klient" Binding="{Binding CustomerName}" Width="180" />
-                    <DataGridTextColumn Header="Rewizje importu" Binding="{Binding RevisionCount}" Width="130" />
+                    <DataGridTextColumn Header="Wczytane BOM" Binding="{Binding RevisionCount}" Width="120" />
                     <DataGridTextColumn Header="Utworzył" Binding="{Binding CreatedBy}" Width="180" />
                     <DataGridTextColumn Header="Opis" Binding="{Binding Description}" Width="*" />
                 </DataGrid.Columns>
@@ -40,7 +40,7 @@
             <StackPanel>
                 <TextBlock Text="Nowy pakiet" Style="{DynamicResource SectionTitle}" />
                 <TextBox Text="{Binding NewCode, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Kod pakietu (np. PCBA1)" Margin="0,0,0,8" />
-                <TextBox Text="{Binding NewRevision, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Rewizja Klienta (np. C)" Margin="0,0,0,8" />
+                <TextBox Text="{Binding NewRevision, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Rewizja Klienta (opcjonalnie)" Margin="0,0,0,8" />
                 <ComboBox ItemsSource="{Binding Customers}" SelectedItem="{Binding SelectedCustomer}" materialDesign:HintAssist.Hint="Klient" Margin="0,0,0,8" />
                 <DockPanel Margin="0,0,0,8">
                     <Button DockPanel.Dock="Right" Content="Dodaj Klienta" Command="{Binding AddCustomerCommand}" Margin="8,0,0,0" Style="{DynamicResource MaterialDesignOutlinedButton}" />

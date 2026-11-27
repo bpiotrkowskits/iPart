@@ -307,8 +307,8 @@ IF NOT EXISTS (
     WHERE [MigrationId] = N'20261126121809_Etap1Fundament'
 )
 BEGIN
-    UPDATE p SET p.[NewCustomerId] = c.[NewId]
-    FROM [documentation].[Packages] p JOIN [shared].[Customers] c ON c.[Id] = p.[CustomerId];
+    EXEC(N'UPDATE p SET p.[NewCustomerId] = c.[NewId]
+    FROM [documentation].[Packages] p JOIN [shared].[Customers] c ON c.[Id] = p.[CustomerId];');
 END;
 
 IF NOT EXISTS (
@@ -1370,6 +1370,138 @@ IF NOT EXISTS (
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
     VALUES (N'20261127084012_PilotProcesBom', N'10.0.15');
+END;
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261127091654_PilotWspolrzedneMm'
+)
+BEGIN
+    ALTER TABLE [documentation].[PnpRows] ADD [XMm] decimal(12,4) NULL;
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261127091654_PilotWspolrzedneMm'
+)
+BEGIN
+    ALTER TABLE [documentation].[PnpRows] ADD [YMm] decimal(12,4) NULL;
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261127091654_PilotWspolrzedneMm'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20261127091654_PilotWspolrzedneMm', N'10.0.15');
+END;
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261127095120_PilotRozstrzygniecieLinii'
+)
+BEGIN
+    ALTER TABLE [documentation].[PnpRows] ADD [Description] nvarchar(2000) NULL;
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261127095120_PilotRozstrzygniecieLinii'
+)
+BEGIN
+    ALTER TABLE [documentation].[BomLines] ADD [TsDescription] nvarchar(2000) NULL;
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261127095120_PilotRozstrzygniecieLinii'
+)
+BEGIN
+    ALTER TABLE [documentation].[BomLines] ADD [TsFootprint] nvarchar(500) NULL;
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261127095120_PilotRozstrzygniecieLinii'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20261127095120_PilotRozstrzygniecieLinii', N'10.0.15');
+END;
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261127135206_PilotComparator'
+)
+BEGIN
+    ALTER TABLE [documentation].[BomRevisions] ADD [CompareFields] varchar(100) NULL;
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261127135206_PilotComparator'
+)
+BEGIN
+    ALTER TABLE [documentation].[BomLines] ADD [SplitFromLineNumber] int NULL;
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261127135206_PilotComparator'
+)
+BEGIN
+    ALTER TABLE [documentation].[BomLines] ADD [TsValue] nvarchar(500) NULL;
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261127135206_PilotComparator'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20261127135206_PilotComparator', N'10.0.15');
+END;
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261127151113_PilotPartNumber'
+)
+BEGIN
+    ALTER TABLE [documentation].[PnpRows] ADD [PartNumber] nvarchar(1000) NULL;
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261127151113_PilotPartNumber'
+)
+BEGIN
+    ALTER TABLE [documentation].[BomLines] ADD [TsPartNumber] nvarchar(1000) NULL;
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261127151113_PilotPartNumber'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20261127151113_PilotPartNumber', N'10.0.15');
 END;
 
 COMMIT;

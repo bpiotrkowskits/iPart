@@ -23,7 +23,7 @@ public sealed class SqlServerPackageService(IDbContextFactory<IPartDbContext> co
         }
         var rows = await query.OrderBy(x => x.p.Code).ThenBy(x => x.p.CustomerRevision)
             .Select(x => new PackageSummary(x.p.Id, x.p.Code, x.p.CustomerRevision, x.CustomerName, x.p.Description,
-                context.BomRevisions.Count(r => r.PackageId == x.p.Id), x.p.CreatedAtUtc, x.p.CreatedBy))
+                context.BomRevisions.Count(r => r.PackageId == x.p.Id), x.p.CreatedAtUtc, x.p.CreatedBy, x.p.CustomerId))
             .ToListAsync(cancellationToken);
         return rows;
     }
@@ -33,12 +33,11 @@ public sealed class SqlServerPackageService(IDbContextFactory<IPartDbContext> co
         var code = request.Code?.Trim() ?? "";
         var revision = request.CustomerRevision?.Trim() ?? "";
         if (code.Length == 0) throw new PackageOperationException("Podaj kod pakietu.");
-        if (revision.Length == 0) throw new PackageOperationException("Podaj rewizję Klienta (np. A, B, 1.0).");
         if (code.Length > 100 || revision.Length > 50) throw new PackageOperationException("Kod pakietu (max 100) lub rewizja (max 50) są za długie.");
 
         await using var context = await contexts.CreateDbContextAsync(cancellationToken);
         if (await context.Packages.AnyAsync(x => x.Code == code && x.CustomerRevision == revision && x.CustomerId == request.CustomerId, cancellationToken))
-            throw new PackageOperationException($"Pakiet {code} rev {revision} już istnieje dla tego Klienta.");
+            throw new PackageOperationException($"Pakiet {code}{(revision.Length > 0 ? " rev " + revision : "")} już istnieje dla tego Klienta.");
         var package = new Package
         {
             Code = code, CustomerRevision = revision, CustomerId = request.CustomerId,
@@ -52,7 +51,7 @@ public sealed class SqlServerPackageService(IDbContextFactory<IPartDbContext> co
         try { await context.SaveChangesAsync(cancellationToken); }
         catch (DbUpdateException e) when (e.InnerException is SqlException { Number: 2601 or 2627 })
         {
-            throw new PackageOperationException($"Pakiet {code} rev {revision} już istnieje dla tego Klienta.");
+            throw new PackageOperationException($"Pakiet {code}{(revision.Length > 0 ? " rev " + revision : "")} już istnieje dla tego Klienta.");
         }
         return package.Id;
     }

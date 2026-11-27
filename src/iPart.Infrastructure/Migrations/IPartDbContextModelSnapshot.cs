@@ -831,6 +831,25 @@ namespace iPart.Infrastructure.Migrations
                     b.Property<int?>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<int?>("SplitFromLineNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TsDescription")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("TsFootprint")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("TsPartNumber")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("TsValue")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<string>("Value")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
@@ -904,6 +923,11 @@ namespace iPart.Infrastructure.Migrations
                     b.Property<string>("Comment")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("CompareFields")
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<DateTimeOffset>("ImportedAtUtc")
                         .HasColumnType("datetimeoffset");
@@ -1118,6 +1142,10 @@ namespace iPart.Infrastructure.Migrations
                     b.Property<Guid>("BomRevisionId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
                     b.Property<string>("Designator")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -1126,6 +1154,10 @@ namespace iPart.Infrastructure.Migrations
                     b.Property<string>("Footprint")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("PartNumber")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("Rotation")
                         .HasMaxLength(50)
@@ -1146,9 +1178,17 @@ namespace iPart.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<decimal?>("XMm")
+                        .HasPrecision(12, 4)
+                        .HasColumnType("decimal(12,4)");
+
                     b.Property<string>("Y")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal?>("YMm")
+                        .HasPrecision(12, 4)
+                        .HasColumnType("decimal(12,4)");
 
                     b.HasKey("Id");
 
