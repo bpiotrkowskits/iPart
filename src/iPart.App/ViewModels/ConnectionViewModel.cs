@@ -5,7 +5,8 @@ using iPart.Core.Packages;
 
 namespace iPart.App.ViewModels;
 
-public sealed class MainWindowViewModel : ObservableObject
+/// <summary>Strona „Połączenie z bazą”: wersja programu, sprawdzenie połączenia i zgodności schematu.</summary>
+public sealed class ConnectionViewModel : ObservableObject
 {
     private readonly IDatabaseConnectionChecker? _checker;
     private readonly IDatabaseInfoReader? _databaseInfo;
@@ -13,33 +14,27 @@ public sealed class MainWindowViewModel : ObservableObject
     private string _status = "Nie sprawdzono połączenia";
     private string _connectionDetails = "";
 
-    public MainWindowViewModel(IDatabaseConnectionChecker? checker, string? configurationError = null, ImportExcelViewModel? import = null,
-        PackagesViewModel? packages = null, BomImportViewModel? bomImport = null, ComponentsViewModel? components = null,
+    public ConnectionViewModel(IDatabaseConnectionChecker? checker, string? configurationError = null,
         IDatabaseInfoReader? databaseInfo = null, string? currentUser = null)
     {
         _checker = checker;
         _configurationError = configurationError;
         _databaseInfo = databaseInfo;
-        Import = import;
-        Packages = packages;
-        BomImport = bomImport;
-        Components = components;
         CurrentUser = currentUser ?? Environment.UserName;
         CheckConnectionCommand = new AsyncCommand(CheckConnectionAsync);
     }
 
     public ICommand CheckConnectionCommand { get; }
-    public ImportExcelViewModel? Import { get; }
-    public PackagesViewModel? Packages { get; }
-    public BomImportViewModel? BomImport { get; }
-    public ComponentsViewModel? Components { get; }
     public string CurrentUser { get; }
 
     public string AppVersion { get; } = "Wersja " +
-        (typeof(MainWindowViewModel).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion.Split('+')[0] ?? "?")
-        + " — wersja wstępna, do nauki publikacji (nie do pracy produkcyjnej)";
+        (typeof(ConnectionViewModel).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion.Split('+')[0] ?? "?")
+        + " — pilotaż (dane testowe)";
 
     public string Status { get => _status; private set => Set(ref _status, value); }
+
+    /// <summary>Komunikat o problemie wykrytym przy starcie (np. niezgodna wersja bazy).</summary>
+    public void Report(string message, string details = "") { Status = message; ConnectionDetails = details; }
     public string ConnectionDetails { get => _connectionDetails; private set => Set(ref _connectionDetails, value); }
 
     private async Task CheckConnectionAsync()

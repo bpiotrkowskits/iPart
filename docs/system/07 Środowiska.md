@@ -7,6 +7,10 @@ przegląd: 2026-11-24
 # Środowiska
 
 > **Propozycja.** Opisuje układ środowisk, zasady pracy z bazą i cykl publikacji wersji. Środowisko na serwerze firmy jest dopiero ustalane z IT (sekcja „Stan”).
+>
+> **Pilotaż** ([ADR-0014](../decyzje/ADR-0014%20Pilotaż%20bez%20serwera%20i%20z%20kopiami%20danych%20ProduMana.md)): program łączy się z bazą testową bezpośrednio, jak w 0.1.0 — opis poniżej obowiązuje do końca pilotażu.
+>
+> **Do przepisania po [ADR-0010](../decyzje/ADR-0010%20Serwer%20aplikacji%20między%20klientem%20a%20bazą.md):** docelowo aplikacja łączy się z serwerem aplikacji, a nie z bazą. Dostęp do bazy ma tylko konto serwera — opis logowania grupy AD do bazy (zasady 2–3, „Uprawnienia”, „Konfiguracja aplikacji”) dotyczy wersji 0.1.0. Nowy układ: [Architektura techniczna](04%20Architektura%20techniczna.md).
 
 ## Środowiska
 
@@ -83,6 +87,10 @@ Plik `appsettings.json` obok programu zawiera connection string w kluczu `Connec
 | `Connect Timeout=10` | po 10 sekundach aplikacja pokazuje błąd zamiast czekać |
 
 Plik nie zawiera haseł, więc może leżeć na udziale razem z programem. Aplikacja czyta go przy starcie; po zmianie trzeba ją uruchomić ponownie.
+
+- **`appsettings.local.json`** (obok programu, poza repozytorium i poza publikacją) nadpisuje ustawienia na komputerze developera — np. baza LocalDB.
+- **Dziennik błędów:** `%LOCALAPPDATA%iPartogsiPart-RRRRMMDD.log` — wersja, Guid konta, treść błędu; bez haseł.
+- **Zgodność bazy:** przy starcie program sprawdza, czy baza ma wszystkie zmiany struktury tej wersji; jeśli nie — pokazuje komunikat zamiast wyboru konta.
 
 ## Publikacja aplikacji
 

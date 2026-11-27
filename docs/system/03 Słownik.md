@@ -18,6 +18,7 @@ Jedno źródło znaczeń pojęć iPart. Obowiązuje w całej dokumentacji i w ro
 | **Pakiet** (pakiet elektroniczny) | Słownik → Wyrób i technologia | w iPart pakiet rozpoznajemy po kodzie i rewizji Klienta (np. „PCBA1 rev C”); nowa rewizja Klienta to nowy pakiet, zgodnie z ADR-0006 ProduMan |
 | **Opiekun klienta** | Kontekst i cel systemu → Użytkownicy | jedyny kanał kontaktu z Klientem |
 | **Zakupowiec** | Kontekst i cel systemu → Użytkownicy | — |
+| **Konto** | Słownik → Konto | konto Nexo, którym osoba loguje się do iPart (LoginApi); identyfikowane przez Guid. Konto to nie pracownik: dział i role organizacyjne należą do pracownika. Uprawnienia nadaje się kontu |
 | **Towar powierzony** | Słownik → Przepływ produkcji | w plikach Excel: „powierzenie”, „EntPart”. Może dotyczyć całego BOM, pojedynczych linii albo części ilości |
 | **Kompletacja** | Słownik → Przepływ produkcji | — |
 | **Kompletor** | Słownik → Przepływ produkcji | mechanizm magazynowy, nie osoba. W plikach Excel: „TS Kompletor” |

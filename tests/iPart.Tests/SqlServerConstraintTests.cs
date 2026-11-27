@@ -27,7 +27,7 @@ public sealed class SqlServerConstraintTests(ITestOutputHelper output)
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
         while (directory is not null && !File.Exists(Path.Combine(directory.FullName, "iPart.slnx"))) directory = directory.Parent;
         if (directory is null) throw new InvalidOperationException("Nie znaleziono katalogu repozytorium.");
-        return new IPartDbContextFactory().CreateDbContext(["--settings", Path.Combine(directory.FullName, "src/iPart.App/appsettings.json")]);
+        return new IPartDbContextFactory().CreateDbContext(["--settings", TestSettings.Path(directory!.FullName)]);
     }
 
     [SqlServerFact]
@@ -49,25 +49,24 @@ public sealed class SqlServerConstraintTests(ITestOutputHelper output)
         await using var connection = new SqlConnection(context.Database.GetConnectionString());
         await connection.OpenAsync();
         var check = entity.GetCheckConstraints().Single(x => x.Name == "CK_Components_MpnNormalized").Sql;
-        await Execute(connection, $"CREATE TABLE #Keys (Mpn nvarchar(200) COLLATE Latin1_General_100_BIN2 NOT NULL, ManufacturerId int NULL, CustomerId int NULL, CHECK ({check})); CREATE UNIQUE INDEX UX_Keys ON #Keys(Mpn, ManufacturerId, CustomerId);");
-        foreach (var (manufacturer, customer) in new (int?, int?)[] { (null, null), (1, null), (null, 1), (1, 1) })
+        await Execute(connection, $"CREATE TABLE #Keys (Mpn nvarchar(200) COLLATE Latin1_General_100_BIN2 NOT NULL, ManufacturerId int NULL, CHECK ({check})); CREATE UNIQUE INDEX UX_Keys ON #Keys(Mpn, ManufacturerId);");
+        foreach (var manufacturer in new int?[] { null, 1 })
         {
-            await InsertKey(connection, "001X", manufacturer, customer);
-            var error = await Assert.ThrowsAsync<SqlException>(() => InsertKey(connection, "001X", manufacturer, customer));
+            await InsertKey(connection, "001X", manufacturer);
+            var error = await Assert.ThrowsAsync<SqlException>(() => InsertKey(connection, "001X", manufacturer));
             Assert.Contains(error.Number, new[] { 2601, 2627 });
         }
-        await InsertKey(connection, "001X", 1, 2);
-        await InsertKey(connection, "001X", 2, 1);
-        await InsertKey(connection, "001x", null, null);
-        await InsertKey(connection, "001 X", null, null);
-        await InsertKey(connection, "é", null, null);
-        await InsertKey(connection, "e\u0301", null, null);
-        await InsertKey(connection, "A", null, null);
-        await InsertKey(connection, "A\0", null, null);
-        await InsertKey(connection, "A\u0001", null, null);
+        await InsertKey(connection, "001X", 2);
+        await InsertKey(connection, "001x", null);
+        await InsertKey(connection, "001 X", null);
+        await InsertKey(connection, "é", null);
+        await InsertKey(connection, "e\u0301", null);
+        await InsertKey(connection, "A", null);
+        await InsertKey(connection, "A\0", null);
+        await InsertKey(connection, "A\u0001", null);
         foreach (var invalid in new[] { "", " X", "X ", "\tX", "X\u00a0", "\u2000X" })
         {
-            var error = await Assert.ThrowsAsync<SqlException>(() => InsertKey(connection, invalid, null, null));
+            var error = await Assert.ThrowsAsync<SqlException>(() => InsertKey(connection, invalid, null));
             Assert.Equal(547, error.Number);
         }
     }
@@ -111,13 +110,12 @@ public sealed class SqlServerConstraintTests(ITestOutputHelper output)
         await Execute(connection, $"CREATE TABLE {table} ({string.Join(',', columns.Concat(checks))});");
     }
 
-    private static async Task InsertKey(SqlConnection connection, string mpn, int? manufacturer, int? customer)
+    private static async Task InsertKey(SqlConnection connection, string mpn, int? manufacturer)
     {
         using var command = connection.CreateCommand();
-        command.CommandText = "INSERT #Keys(Mpn,ManufacturerId,CustomerId) VALUES(@mpn,@manufacturer,@customer)";
+        command.CommandText = "INSERT #Keys(Mpn,ManufacturerId) VALUES(@mpn,@manufacturer)";
         command.Parameters.Add("@mpn", SqlDbType.NVarChar, 200).Value = mpn;
         command.Parameters.Add("@manufacturer", SqlDbType.Int).Value = manufacturer is null ? DBNull.Value : manufacturer.Value;
-        command.Parameters.Add("@customer", SqlDbType.Int).Value = customer is null ? DBNull.Value : customer.Value;
         await command.ExecuteNonQueryAsync();
     }
 

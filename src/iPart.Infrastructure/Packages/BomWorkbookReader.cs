@@ -28,6 +28,18 @@ public static class BomWorkbookReader
     public static IReadOnlyList<WorkbookSheetGrid> Read(string path, CancellationToken cancellationToken = default)
     {
         using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        return Read(stream, cancellationToken);
+    }
+
+    // Odczyt z zawartości pliku — ta sama zawartość trafia potem do bazy jako kopia źródła (ADR-0008).
+    public static IReadOnlyList<WorkbookSheetGrid> Read(byte[] content, CancellationToken cancellationToken = default)
+    {
+        using var stream = new MemoryStream(content, writable: false);
+        return Read(stream, cancellationToken);
+    }
+
+    private static IReadOnlyList<WorkbookSheetGrid> Read(Stream stream, CancellationToken cancellationToken)
+    {
         var sheets = new OpenXmlWorkbookReader().Read(stream, null, cancellationToken);
         var result = new List<WorkbookSheetGrid>();
         foreach (var sheet in sheets)

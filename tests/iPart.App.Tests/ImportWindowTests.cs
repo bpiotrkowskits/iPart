@@ -18,10 +18,12 @@ public sealed class ImportWindowTests
             MainWindow? window = null;
             try
             {
-                window = new MainWindow { DataContext = new MainWindowViewModel(null, import: new ImportExcelViewModel(new ImmediateService())) };
+                // Powłoka z menu (po wyborze konta) i stroną podglądu importu dataPart — nawigacja ViewModel-first.
+                var shell = new ShellViewModel();
+                shell.SignedIn("Konto testowe", [new NavItem("Import dataPart (podgląd)", new ImportExcelViewModel(new ImmediateService()))]);
+                window = new MainWindow { DataContext = shell };
                 window.Show(); window.UpdateLayout();
-                var tabs = Descendants(window).OfType<TabControl>().First();
-                tabs.SelectedItem = tabs.Items.OfType<TabItem>().Single(t => Equals(t.Header, "Import dataPart (podgląd)")); window.UpdateLayout();
+                Assert.Contains(Descendants(window).OfType<ListBox>(), l => l.Items.Count == 1);
                 Assert.Contains(Descendants(window).OfType<Button>(), b => Equals(b.Content, "Analizuj plik"));
                 Assert.Contains(Descendants(window).OfType<Button>(), b => Equals(b.Content, "Eksportuj raport…"));
                 Assert.All(Descendants(window).OfType<DataGrid>(), grid => { Assert.True(grid.IsReadOnly); Assert.True(grid.EnableRowVirtualization); });

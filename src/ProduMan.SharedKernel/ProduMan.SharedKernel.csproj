@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Kopia ProduMan.SharedKernel (stan 2026-11-26) na czas pilotażu — ADR-0014.
+       Typów nie zmieniamy; przy dołączeniu do ProduMana projekt usuwamy i podpinamy oryginał. -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

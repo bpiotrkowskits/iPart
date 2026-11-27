@@ -1,0 +1,232 @@
+<UserControl x:Class="iPart.App.Views.PackageBomView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+    <Grid>
+        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="440" /></Grid.ColumnDefinitions>
+
+        <!-- Nagłówek pakietu i akcje -->
+        <Border Grid.ColumnSpan="2" Background="{DynamicResource Ui.Surface}" BorderBrush="{DynamicResource Ui.Border}" BorderThickness="0,0,0,1" Padding="24,12">
+            <DockPanel>
+                <Button DockPanel.Dock="Left" Command="{Binding BackCommand}" Style="{DynamicResource MaterialDesignIconButton}" ToolTip="Wróć do pakietów"
+                        AutomationProperties.Name="Wróć do pakietów" Margin="0,0,8,0">
+                    <materialDesign:PackIcon Kind="ArrowLeft" />
+                </Button>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                    <ComboBox ItemsSource="{Binding Revisions}" SelectedItem="{Binding SelectedRevision}" DisplayMemberPath="DisplayName"
+                              MinWidth="260" materialDesign:HintAssist.Hint="Rewizja importu" Style="{DynamicResource MaterialDesignOutlinedComboBox}" Margin="0,0,12,0" />
+                    <Button Content="Importuj P&amp;P…" Command="{Binding ImportPnpCommand}" Style="{DynamicResource MaterialDesignOutlinedButton}" />
+                    <Button Content="Zatwierdź P&amp;P" Command="{Binding ApprovePnpCommand}" Style="{DynamicResource MaterialDesignOutlinedButton}"
+                            ToolTip="Technolog SMT: P&amp;P zgodne z programem SMT" />
+                </StackPanel>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Package.DisplayName}" Style="{DynamicResource PageTitle}" FontSize="20" />
+                    <TextBlock Text="{Binding Summary}" Style="{DynamicResource Hint}" />
+                    <TextBlock Text="{Binding PnpState}" Style="{DynamicResource Hint}" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- Część główna -->
+        <TabControl Grid.Row="1" Margin="24,12,12,0" Style="{DynamicResource MaterialDesignFilledTabControl}">
+            <TabItem Header="Linie BOM">
+                <DockPanel Margin="0,12,0,0">
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                        <ComboBox DockPanel.Dock="Right" ItemsSource="{Binding Filters}" SelectedItem="{Binding SelectedFilter}" DisplayMemberPath="Name"
+                                  Width="200" Margin="12,0,0,0" materialDesign:HintAssist.Hint="Pokaż" Style="{DynamicResource MaterialDesignOutlinedComboBox}" />
+                        <TextBox Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Szukaj: desygnator, MPN, opis, Value, Part TS"
+                                 Style="{DynamicResource MaterialDesignOutlinedTextBox}" />
+                    </DockPanel>
+                    <WrapPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+                        <Border Width="14" Height="14" CornerRadius="3" Background="{DynamicResource Data.Line.Unconfirmed}" Margin="0,0,4,0" /><TextBlock Text="niepotwierdzona   " Style="{DynamicResource Hint}" />
+                        <Border Width="14" Height="14" CornerRadius="3" Background="{DynamicResource Data.Line.Dnp}" Margin="0,0,4,0" /><TextBlock Text="DNP   " Style="{DynamicResource Hint}" />
+                        <Border Width="14" Height="14" CornerRadius="3" Background="{DynamicResource Data.Line.NonSmtMounting}" Margin="0,0,4,0" /><TextBlock Text="THT / Press-Fit / MECH / Plugs   · najedź na linię, żeby zobaczyć pełną informację" Style="{DynamicResource Hint}" />
+                    </WrapPanel>
+                    <Border Style="{DynamicResource Card}" Padding="0">
+                        <DataGrid ItemsSource="{Binding Lines}" SelectedItem="{Binding SelectedLine}" RowStyle="{DynamicResource BomLineRowStyle}" AutomationProperties.Name="Linie BOM">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Nr" Binding="{Binding LineNumber}" Width="50" />
+                                <DataGridTextColumn Header="Desygnatory" Binding="{Binding Designators}" Width="160" />
+                                <DataGridTextColumn Header="Ilość" Binding="{Binding Quantity}" Width="60" />
+                                <DataGridTextColumn Header="Part TS" Binding="{Binding PartTs}" Width="150" />
+                                <DataGridTextColumn Header="Montaż" Binding="{Binding MountingCode}" Width="80" />
+                                <DataGridTextColumn Header="Value Klienta" Binding="{Binding Value}" Width="100" />
+                                <DataGridTextColumn Header="Opis Klienta" Binding="{Binding Description}" Width="180" />
+                                <DataGridTextColumn Header="MPN" Binding="{Binding MpnSummary}" Width="110" />
+                                <DataGridTextColumn Header="Porównanie z P&amp;P" Binding="{Binding ComparisonText}" Width="200" />
+                                <DataGridTextColumn Header="Stan" Binding="{Binding State}" Width="*" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                </DockPanel>
+            </TabItem>
+            <TabItem Header="Wykaz Różnic">
+                <DockPanel Margin="0,12,0,0">
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                        <Button DockPanel.Dock="Right" Content="Kopiuj Wykaz Różnic" Command="{Binding CopyDifferenceListCommand}" Style="{DynamicResource MaterialDesignOutlinedButton}" />
+                        <TextBlock Text="Pytania do Klienta (wysyła Opiekun klienta). Odpowiedź wpisz w panelu linii, potem potwierdź linię z podstawą „Odpowiedź Klienta”."
+                                   Style="{DynamicResource Hint}" VerticalAlignment="Center" />
+                    </DockPanel>
+                    <Border Style="{DynamicResource Card}" Padding="0">
+                        <DataGrid ItemsSource="{Binding DifferenceList}" SelectedItem="{Binding SelectedLine}" AutomationProperties.Name="Wykaz Różnic">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Linia" Binding="{Binding LineNumber}" Width="60" />
+                                <DataGridTextColumn Header="Desygnatory" Binding="{Binding Designators}" Width="160" />
+                                <DataGridTextColumn Header="Pytanie do Klienta" Binding="{Binding Question}" Width="2*" />
+                                <DataGridTextColumn Header="Odpowiedź Klienta" Binding="{Binding CustomerAnswer}" Width="2*" />
+                                <DataGridTextColumn Header="Stan" Binding="{Binding State}" Width="*" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                </DockPanel>
+            </TabItem>
+            <TabItem Header="Tylko w P&amp;P">
+                <StackPanel Margin="0,12,0,0">
+                    <TextBlock Text="Desygnatory z P&amp;P, których nie ma w BOM — do wyjaśnienia z Klientem." Style="{DynamicResource Hint}" Margin="0,0,0,8" />
+                    <ListBox ItemsSource="{Binding OnlyInPnp}" MaxHeight="500" AutomationProperties.Name="Desygnatory tylko w P&amp;P" />
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Zatwierdzenie i wersje">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="0,12,0,0" MaxWidth="900" HorizontalAlignment="Left">
+                        <Border Style="{DynamicResource Card}" Margin="0,0,0,16">
+                            <StackPanel>
+                                <TextBlock Text="Warunki" Style="{DynamicResource SectionTitle}" />
+                                <TextBlock Text="{Binding ApproveConditions}" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{DynamicResource Card}" Margin="0,0,0,16">
+                            <StackPanel>
+                                <TextBlock Text="Zatwierdź BOM — nowa wersja" Style="{DynamicResource SectionTitle}" />
+                                <RadioButton Content="Wersja dla ZK (zmiany tylko dla wskazanego ZK)" IsChecked="{Binding ApproveForOrder}" GroupName="kind" Margin="0,0,0,6" />
+                                <RadioButton Content="Wersja bazowa pakietu" GroupName="kind" Margin="0,0,0,12" />
+                                <TextBox Text="{Binding OrderNumber, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Numer ZK (nnn/rrrr)" Width="220"
+                                         HorizontalAlignment="Left" Margin="0,0,0,12" IsEnabled="{Binding ApproveForOrder}" Style="{DynamicResource MaterialDesignOutlinedTextBox}" />
+                                <TextBox Text="{Binding ApproveComment, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Komentarz (trafi do historii)"
+                                         Style="{DynamicResource MaterialDesignOutlinedTextBox}" Margin="0,0,0,12" />
+                                <TextBlock Text="Zatwierdzenia nie cofa się — zmiana to nowa wersja." Style="{DynamicResource Hint}" Margin="0,0,0,8" />
+                                <Button Content="Zatwierdź BOM" Command="{Binding ApproveBomCommand}" HorizontalAlignment="Left" />
+                            </StackPanel>
+                        </Border>
+                        <TextBlock Text="Zatwierdzone wersje" Style="{DynamicResource SectionTitle}" />
+                        <ListBox ItemsSource="{Binding Versions}" DisplayMemberPath="DisplayName" AutomationProperties.Name="Wersje BOM" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+
+        <!-- Panel linii -->
+        <Border Grid.Row="1" Grid.Column="1" Background="{DynamicResource Ui.Surface}" BorderBrush="{DynamicResource Ui.Border}" BorderThickness="1,0,0,0">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Top" Margin="16,12,16,0" Style="{DynamicResource SectionTitle}"
+                           Text="{Binding SelectedLine.LineNumber, StringFormat=Linia {0}, TargetNullValue=Wybierz linię z listy}" />
+                <TabControl Style="{DynamicResource MaterialDesignFilledTabControl}">
+                    <TabItem Header="Porównanie">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel Margin="16">
+                                <TextBlock Text="Oryginał Klienta (niezmienny)" FontWeight="SemiBold" Foreground="{DynamicResource Ui.TextSecondary}" />
+                                <TextBlock TextWrapping="Wrap" Margin="0,4,0,12">
+                                    <Run Text="{Binding SelectedLine.Designators, Mode=OneWay}" /><LineBreak />
+                                    <Run Text="{Binding SelectedLine.Description, Mode=OneWay}" /><LineBreak />
+                                    <Run Text="Value: " /><Run Text="{Binding SelectedLine.Value, Mode=OneWay}" /><Run Text=" · Footprint: " /><Run Text="{Binding SelectedLine.Footprint, Mode=OneWay}" /><LineBreak />
+                                    <Run Text="MPN: " /><Run Text="{Binding SelectedLine.PartNumber, Mode=OneWay}" /><LineBreak />
+                                    <Run Text="{Binding SelectedLine.Extras, Mode=OneWay}" Foreground="{DynamicResource Ui.TextSecondary}" />
+                                </TextBlock>
+                                <TextBlock Text="Wynik porównania z P&amp;P" Style="{DynamicResource SectionTitle}" />
+                                <ItemsControl ItemsSource="{Binding SelectedLine.Differences}" Margin="0,0,0,8">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Background="{DynamicResource Ui.Warning.Background}" CornerRadius="8" Padding="10,6" Margin="0,0,0,6">
+                                                <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource Ui.Warning.Text}"><Run Text="{Binding Kind, Mode=OneWay}" FontWeight="SemiBold" /><Run Text=": " /><Run Text="{Binding Detail, Mode=OneWay}" /></TextBlock>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <TextBlock Text="{Binding SelectedLine.ComparisonText, StringFormat=Stan: {0}}" Margin="0,0,0,12" />
+                                <TextBox Text="{Binding Question, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Pytanie do Klienta (do Wykazu Różnic)"
+                                         Style="{DynamicResource MaterialDesignOutlinedTextBox}" TextWrapping="Wrap" AcceptsReturn="True" MinHeight="60" Margin="0,0,0,8" />
+                                <WrapPanel Margin="0,0,0,16">
+                                    <Button Content="Sprawdziłem" Command="{Binding MarkCheckedCommand}" Style="{DynamicResource MaterialDesignOutlinedButton}" />
+                                    <Button Content="Do Wykazu Różnic" Command="{Binding AddToDifferenceListCommand}" />
+                                </WrapPanel>
+                                <TextBox Text="{Binding Answer, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Odpowiedź Klienta"
+                                         Style="{DynamicResource MaterialDesignOutlinedTextBox}" TextWrapping="Wrap" AcceptsReturn="True" MinHeight="60" Margin="0,0,0,8" />
+                                <Button Content="Zapisz odpowiedź Klienta" Command="{Binding SaveAnswerCommand}" HorizontalAlignment="Left" Style="{DynamicResource MaterialDesignOutlinedButton}" />
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+                    <TabItem Header="TS i MPN">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel Margin="16">
+                                <TextBlock Text="Sekcja TS (wiodąca)" Style="{DynamicResource SectionTitle}" />
+                                <TextBox Text="{Binding EditPartTs, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Part TS" Style="{DynamicResource MaterialDesignOutlinedTextBox}" Margin="0,0,0,8" />
+                                <ComboBox ItemsSource="{Binding MountingOptions}" SelectedItem="{Binding EditMounting}" DisplayMemberPath="Name"
+                                          materialDesign:HintAssist.Hint="Sposób montażu" Style="{DynamicResource MaterialDesignOutlinedComboBox}" Margin="0,0,0,8" />
+                                <Button Content="Zapisz sekcję TS" Command="{Binding SaveTsCommand}" HorizontalAlignment="Left" Margin="0,0,0,16" />
+
+                                <TextBlock Text="MPN zatwierdzone" Style="{DynamicResource SectionTitle}" />
+                                <ListBox ItemsSource="{Binding SelectedLine.Approved}" SelectedItem="{Binding SelectedMpn}" AutomationProperties.Name="MPN zatwierdzone" Margin="0,0,0,8">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel><TextBlock Text="{Binding Mpn}" FontWeight="SemiBold" /><TextBlock Text="{Binding Note, StringFormat=Podstawa: {0}}" Style="{DynamicResource Hint}" /></StackPanel>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                                <TextBlock Text="MPN niedozwolone" Style="{DynamicResource SectionTitle}" />
+                                <ListBox ItemsSource="{Binding SelectedLine.Forbidden}" SelectedItem="{Binding SelectedMpn}" AutomationProperties.Name="MPN niedozwolone" Margin="0,0,0,8">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Background="{DynamicResource Data.MpnStatus.Forbidden.Background}" CornerRadius="6" Padding="8,4">
+                                                <StackPanel><TextBlock Text="{Binding Mpn}" FontWeight="SemiBold" Foreground="{DynamicResource Data.MpnStatus.Forbidden.Text}" /><TextBlock Text="{Binding Note, StringFormat=Powód: {0}}" Foreground="#FFD6D6" /></StackPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                                <DockPanel Margin="0,0,0,16">
+                                    <Button DockPanel.Dock="Right" Content="Usuń zaznaczony" Command="{Binding RemoveMpnCommand}" Style="{DynamicResource MaterialDesignOutlinedButton}" Margin="8,0,0,0" />
+                                    <TextBox Text="{Binding RemoveReason, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Powód usunięcia (obowiązkowy)" />
+                                </DockPanel>
+
+                                <TextBlock Text="Dodaj MPN" Style="{DynamicResource SectionTitle}" />
+                                <TextBox Text="{Binding NewMpn, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="MPN" Style="{DynamicResource MaterialDesignOutlinedTextBox}" Margin="0,0,0,8" />
+                                <CheckBox Content="Niedozwolony (zakaz dla tej linii)" IsChecked="{Binding NewMpnForbidden}" Margin="0,0,0,8" />
+                                <TextBox Text="{Binding NewMpnNote, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Podstawa zatwierdzenia albo powód zakazu"
+                                         Style="{DynamicResource MaterialDesignOutlinedTextBox}" Margin="0,0,0,8" />
+                                <Button Content="Dodaj MPN" Command="{Binding AddMpnCommand}" HorizontalAlignment="Left" />
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+                    <TabItem Header="Potwierdzenie">
+                        <StackPanel Margin="16">
+                            <TextBlock Text="{Binding SelectedLine.ConfirmationText, TargetNullValue='Wybierz linię z listy.'}" TextWrapping="Wrap" Margin="0,0,0,12" />
+                            <TextBlock Text="Podstawa potwierdzenia (obowiązkowa)" Style="{DynamicResource SectionTitle}" />
+                            <ListBox ItemsSource="{Binding Bases}" SelectedItem="{Binding SelectedBasis}" DisplayMemberPath="Name" Margin="0,0,0,12" AutomationProperties.Name="Podstawa potwierdzenia" />
+                            <TextBox Text="{Binding Note, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="Uzasadnienie / odnośnik (np. odpowiedź Klienta z 25.11)"
+                                     Style="{DynamicResource MaterialDesignOutlinedTextBox}" TextWrapping="Wrap" AcceptsReturn="True" MinHeight="70" Margin="0,0,0,12" />
+                            <Button Content="Potwierdź linię" Command="{Binding ConfirmCommand}" HorizontalAlignment="Left" />
+                        </StackPanel>
+                    </TabItem>
+                    <TabItem Header="Historia">
+                        <ListBox ItemsSource="{Binding History}" Margin="8" AutomationProperties.Name="Historia pakietu">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Margin="0,4">
+                                        <TextBlock FontWeight="SemiBold" TextWrapping="Wrap"><Run Text="{Binding When, Mode=OneWay}" /><Run Text=" · " /><Run Text="{Binding Author, Mode=OneWay}" /><Run Text=" · " /><Run Text="{Binding Operation, Mode=OneWay}" /></TextBlock>
+                                        <TextBlock Text="{Binding Summary}" Style="{DynamicResource Hint}" />
+                                        <TextBlock Text="{Binding Comment}" TextWrapping="Wrap" FontStyle="Italic" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </TabItem>
+                </TabControl>
+            </DockPanel>
+        </Border>
+
+        <!-- Komunikat ostatniej operacji -->
+        <Border Grid.Row="2" Grid.ColumnSpan="2" Background="{DynamicResource Ui.Info.Background}" Padding="24,8">
+            <TextBlock Text="{Binding Status}" Foreground="{DynamicResource Ui.Info.Text}" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" />
+        </Border>
+    </Grid>
+</UserControl>

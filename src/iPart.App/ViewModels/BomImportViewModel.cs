@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.IO;
 using iPart.Core.Import;
 using iPart.Core.Packages;
 using iPart.Infrastructure.Import;
@@ -30,6 +31,7 @@ public sealed class BomImportViewModel : ObservableObject
     private BomImportResult? _result;
     private BomSourceTable? _table;
     private string _filePath = "", _comment = "", _summary = "";
+    private byte[]? _fileContent;
     private string _status = "1) Wybierz pakiet  2) wybierz plik BOM (.xlsx)  3) przypisz kolumny  4) Podgląd  5) Zapisz.";
     private int _headerRow = 1;
     private bool _isBusy;
@@ -50,7 +52,7 @@ public sealed class BomImportViewModel : ObservableObject
     public IReadOnlyList<FieldOption> FieldOptions { get; }
     public ObservableCollection<WorkbookSheetGrid> Sheets { get; } = [];
     public ObservableCollection<ColumnMappingRow> Columns { get; } = [];
-    public ObservableCollection<BomLineRow> PreviewLines { get; } = [];
+    public ObservableCollection<BomLineItem> PreviewLines { get; } = [];
     public ObservableCollection<BomImportIssue> Issues { get; } = [];
     public AsyncCommand ChooseFileCommand { get; }
     public RelayCommand SuggestCommand { get; }
@@ -103,7 +105,9 @@ public sealed class BomImportViewModel : ObservableObject
         try
         {
             var path = dialog.FileName;
-            _sheets = await Task.Run(() => BomWorkbookReader.Read(path));
+            var content = await File.ReadAllBytesAsync(path);
+            _sheets = await Task.Run(() => BomWorkbookReader.Read(content));
+            _fileContent = content;
             FilePath = path;
             Sheets.Clear();
             foreach (var s in _sheets.Where(s => s.Rows.Count > 0)) Sheets.Add(s);
@@ -150,7 +154,7 @@ public sealed class BomImportViewModel : ObservableObject
         if (_table is null) return;
         _result = BomImportBuilder.Build(_table, Columns.Select(c => new ColumnAssignment(c.Index, c.Field, c.Priority)).ToList());
         PreviewLines.Clear();
-        foreach (var line in _result.Lines) PreviewLines.Add(BomLineRow.From(line));
+        foreach (var line in _result.Lines) PreviewLines.Add(new BomLineItem(line));
         Issues.Clear();
         foreach (var issue in _result.Issues.OrderByDescending(i => i.Severity).ThenBy(i => i.LineNumber)) Issues.Add(issue);
         var errors = _result.Issues.Count(i => i.Severity == ImportSeverity.Error);
@@ -165,10 +169,11 @@ public sealed class BomImportViewModel : ObservableObject
         if (_result is null) { Status = "Najpierw kliknij Podgląd."; return; }
         if (SelectedPackage is not { } package) { Status = "Wybierz pakiet, do którego należy ten BOM."; return; }
         if (_result.HasErrors) { Status = "Nie można zapisać — podgląd zawiera błędy blokujące."; return; }
+        if (_fileContent is null) { Status = "Najpierw wybierz plik BOM."; return; }
         IsBusy = true;
         try
         {
-            var saved = await _service.SaveBomRevisionAsync(package.Id, _result, FilePath, SelectedSheet?.Name, Comment);
+            var saved = await _service.SaveBomRevisionAsync(package.Id, _result, FilePath, SelectedSheet?.Name, Comment, _fileContent);
             Status = $"Zapisano {saved.DisplayName} dla {package.DisplayName}: {saved.LineCount} linii.";
             Comment = "";
             await PackageList.ShowRevisionAsync(package.Id, saved.Id);

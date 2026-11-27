@@ -1,6 +1,7 @@
 using System.Data;
 using iPart.Core.Components;
 using iPart.Core.Packages;
+using iPart.Core.Shared;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -45,6 +46,9 @@ public sealed class SqlServerPackageService(IDbContextFactory<IPartDbContext> co
             CreatedAtUtc = DateTimeOffset.UtcNow, CreatedBy = currentUser.GetAuthor()
         };
         context.Packages.Add(package);
+        context.DocumentationChangeSets.Add(Created(nameof(Package), package.Id, ChangeOperations.Created, null,
+            (nameof(Package.Code), package.Code), (nameof(Package.CustomerRevision), package.CustomerRevision),
+            (nameof(Package.CustomerId), package.CustomerId?.ToString()), (nameof(Package.Description), package.Description)));
         try { await context.SaveChangesAsync(cancellationToken); }
         catch (DbUpdateException e) when (e.InnerException is SqlException { Number: 2601 or 2627 })
         {
@@ -64,8 +68,11 @@ public sealed class SqlServerPackageService(IDbContextFactory<IPartDbContext> co
     }
 
     public async Task<BomRevisionSummary> SaveBomRevisionAsync(Guid packageId, BomImportResult import, string sourceFileName,
-        string? sourceSheet, string? comment, CancellationToken cancellationToken = default)
+        string? sourceSheet, string? comment, byte[] sourceFileContent, CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(sourceFileContent);
+        if (sourceFileContent.LongLength == 0) throw new PackageOperationException("Plik źródłowy jest pusty.");
+        if (sourceFileContent.LongLength > StoredFile.MaxSizeBytes) throw new PackageOperationException("Plik źródłowy jest za duży (max 50 MB).");
         if (import.HasErrors) throw new PackageOperationException("Import zawiera błędy blokujące. Popraw mapowanie lub plik.");
         if (import.Lines.Count == 0) throw new PackageOperationException("Brak linii do zapisania.");
 
@@ -76,10 +83,19 @@ public sealed class SqlServerPackageService(IDbContextFactory<IPartDbContext> co
             throw new PackageOperationException("Wybrany pakiet nie istnieje (mógł zostać usunięty).");
         var number = (await context.BomRevisions.Where(x => x.PackageId == packageId).MaxAsync(x => (int?)x.Number, cancellationToken) ?? 0) + 1;
 
+        var now = DateTimeOffset.UtcNow;
+        // Kopia pliku w bazie — wiadomo, z czego powstała rewizja (ADR-0008).
+        var file = new DocumentationFile
+        {
+            FileName = Path.GetFileName(sourceFileName), ContentType = ContentTypeFor(sourceFileName),
+            SizeBytes = sourceFileContent.LongLength, Sha256 = StoredFile.ComputeSha256(sourceFileContent), Content = sourceFileContent,
+            UploadedByUserId = currentUser.UserId, UploadedBy = currentUser.GetAuthor(), UploadedAtUtc = now
+        };
+        context.DocumentationFiles.Add(file);
         var revision = new BomRevision
         {
-            PackageId = packageId, Number = number, SourceFileName = Path.GetFileName(sourceFileName), SourceSheet = sourceSheet,
-            ImportedAtUtc = DateTimeOffset.UtcNow, ImportedBy = currentUser.GetAuthor(),
+            PackageId = packageId, Number = number, SourceFileName = file.FileName, SourceSheet = sourceSheet, SourceFileId = file.Id,
+            ImportedAtUtc = now, ImportedBy = currentUser.GetAuthor(),
             Comment = string.IsNullOrWhiteSpace(comment) ? null : comment.Trim()
         };
         foreach (var source in import.Lines)
@@ -95,8 +111,20 @@ public sealed class SqlServerPackageService(IDbContextFactory<IPartDbContext> co
             line.ExtraValues = source.ExtraValues
                 .Select(e => new BomLineExtraValue { BomLineId = line.Id, Ordinal = e.Ordinal, Header = e.Header, Value = e.Value }).ToList();
             revision.Lines.Add(line);
+            // MPN z BOM Klienta trafiają na listę zatwierdzonych z podstawą „z BOM Klienta”; pierwszy jest preferowany (2.3).
+            var mpns = MpnBases.Split(source.PartNumber);
+            for (var i = 0; i < mpns.Count; i++)
+                context.LineMpns.Add(new LineMpn
+                {
+                    BomLineId = line.Id, Mpn = mpns[i], Forbidden = false, Ordinal = i + 1,
+                    Note = i == 0 ? MpnBases.FromCustomerBomPreferred : MpnBases.FromCustomerBom,
+                    AddedByUserId = currentUser.UserId, AddedBy = currentUser.GetAuthor(), AddedAtUtc = now
+                });
         }
         context.BomRevisions.Add(revision);
+        context.DocumentationChangeSets.Add(Created(nameof(Package), packageId, ChangeOperations.Imported, revision.Comment,
+            ("BomRevision.Number", number.ToString(System.Globalization.CultureInfo.InvariantCulture)),
+            ("BomRevision.SourceFileName", file.FileName), ("BomRevision.Lines", revision.Lines.Count.ToString(System.Globalization.CultureInfo.InvariantCulture))));
         try
         {
             await context.SaveChangesAsync(cancellationToken);
@@ -124,7 +152,7 @@ public sealed class SqlServerPackageService(IDbContextFactory<IPartDbContext> co
         return await context.Customers.AsNoTracking().OrderBy(x => x.Name).ToListAsync(cancellationToken);
     }
 
-    public async Task<int> AddCustomerAsync(string name, CancellationToken cancellationToken = default)
+    public async Task<Guid> AddCustomerAsync(string name, CancellationToken cancellationToken = default)
     {
         var trimmed = name?.Trim() ?? "";
         if (trimmed.Length == 0) throw new PackageOperationException("Podaj nazwę Klienta.");
@@ -134,7 +162,34 @@ public sealed class SqlServerPackageService(IDbContextFactory<IPartDbContext> co
             throw new PackageOperationException($"Klient „{trimmed}” już istnieje na liście.");
         var customer = new Customer { Name = trimmed };
         context.Customers.Add(customer);
-        await context.SaveChangesAsync(cancellationToken);
+        context.SharedChangeSets.Add(new SharedChangeSet
+        {
+            UserId = currentUser.UserId, Author = currentUser.GetAuthor(), OccurredAtUtc = DateTimeOffset.UtcNow,
+            SubjectType = nameof(Customer), SubjectId = customer.Id, Operation = ChangeOperations.Created,
+            Changes = [new SharedFieldChange { ObjectType = nameof(Customer), ObjectId = customer.Id, Field = nameof(Customer.Name), NewValue = customer.Name }]
+        });
+        try { await context.SaveChangesAsync(cancellationToken); }
+        catch (DbUpdateException e) when (e.InnerException is SqlException { Number: 2601 or 2627 })
+        {
+            throw new PackageOperationException($"Klient „{trimmed}” już istnieje na liście.");
+        }
         return customer.Id;
     }
+
+    private DocumentationChangeSet Created(string subjectType, Guid subjectId, string operation, string? comment, params (string Field, string? Value)[] fields) => new()
+    {
+        UserId = currentUser.UserId, Author = currentUser.GetAuthor(), OccurredAtUtc = DateTimeOffset.UtcNow,
+        SubjectType = subjectType, SubjectId = subjectId, Operation = operation, Comment = comment,
+        Changes = fields.Where(f => f.Value is not null).Select(f => new DocumentationFieldChange
+            { ObjectType = subjectType, ObjectId = subjectId, Field = f.Field, NewValue = f.Value }).ToList()
+    };
+
+    private static string? ContentTypeFor(string fileName) => Path.GetExtension(fileName).ToLowerInvariant() switch
+    {
+        ".xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        ".xlsm" => "application/vnd.ms-excel.sheet.macroEnabled.12",
+        ".csv" => "text/csv",
+        ".txt" => "text/plain",
+        _ => null
+    };
 }

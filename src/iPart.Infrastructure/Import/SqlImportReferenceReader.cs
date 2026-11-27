@@ -12,7 +12,7 @@ public sealed class SqlImportReferenceReader(IDbContextFactory<IPartDbContext> f
         var mounting = await context.MountingMethods.AsNoTracking().ToListAsync(cancellationToken);
         var qualifications = await context.AecQualifications.AsNoTracking().ToListAsync(cancellationToken);
         var keys = await context.Components.AsNoTracking()
-            .Select(x => new ImportBusinessKey(x.Mpn, x.ManufacturerId, x.CustomerId)).ToListAsync(cancellationToken);
+            .Select(x => new ImportBusinessKey(x.Mpn, x.ManufacturerId)).ToListAsync(cancellationToken);
         return new(mounting.ToDictionary(x => x.Name, x => x.Id, StringComparer.Ordinal),
             qualifications.ToDictionary(x => x.Name, x => x.Id, StringComparer.Ordinal), keys.ToHashSet());
     }

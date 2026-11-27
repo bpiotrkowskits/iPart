@@ -66,7 +66,8 @@ public sealed class ImportPreviewRow
 
 public sealed record ImportOptions(bool ConfirmThPToTp = false, bool ConfirmNonSToNs = false);
 public sealed record ImportProgress(string Stage, string? Sheet, int RowsRead, int Percent);
-public sealed record ImportBusinessKey(string Mpn, int? ManufacturerId, int? CustomerId);
+// Klucz komponentu: MPN + producent. Klient nie jest częścią klucza (10.5).
+public sealed record ImportBusinessKey(string Mpn, int? ManufacturerId);
 public sealed record ImportReferences(IReadOnlyDictionary<string, int> MountingMethods,
     IReadOnlyDictionary<string, int> AecQualifications, IReadOnlySet<ImportBusinessKey> ExistingKeys);
 

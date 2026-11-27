@@ -3,6 +3,7 @@
     <Project Path="src/iPart.App/iPart.App.csproj" />
     <Project Path="src/iPart.Core/iPart.Core.csproj" />
     <Project Path="src/iPart.Infrastructure/iPart.Infrastructure.csproj" />
+    <Project Path="src/ProduMan.SharedKernel/ProduMan.SharedKernel.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/iPart.App.Tests/iPart.App.Tests.csproj" />

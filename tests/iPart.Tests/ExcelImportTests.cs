@@ -25,7 +25,6 @@ public sealed class ExcelImportTests
         var record = Assert.Single(report.Records);
         Assert.Equal("001 A (Maker)", record.Mpn);
         Assert.Null(record.Component.ManufacturerId);
-        Assert.Null(record.Component.CustomerId);
         Assert.Equal("Mech", record.Mounting);
         Assert.False(record.Component.Critical);
         Assert.Equal("CASE", record.Component.CaseName);
@@ -107,7 +106,7 @@ public sealed class ExcelImportTests
     {
         using var file = new WorkbookFile(new SheetSpec("partsData", [Row("Part Number"), Row("X"), Row(" X "), Row("x")]),
             new SheetSpec("resValue", [Row("Part Number", "Rezystancja"), Row("X", "1k"), Row("orphan", "2k")]));
-        var references = References with { ExistingKeys = new HashSet<ImportBusinessKey> { new("x", null, null), new("X", 5, null) } };
+        var references = References with { ExistingKeys = new HashSet<ImportBusinessKey> { new("x", null), new("X", 5) } };
         var report = await Service(references).AnalyzeAsync(file.Path, new());
         Assert.Equal(3, report.PartsDataRecords);
         Assert.Equal(1, report.DuplicateGroups);

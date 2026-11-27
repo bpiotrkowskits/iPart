@@ -39,6 +39,7 @@ iPart **nie zastępuje** Nexo, systemu magazynowego, kompletora ani ProduMan. Ko
 | System | Właściciel | Rola wobec iPart |
 |---|---|---|
 | **Nexo** (ERP) | firma | ZK, ZD, asortyment, stany. Sposób dostępu do ustalenia |
+| **LoginApi** (konta Nexo) | developer IT | logowanie osób kontem Nexo; Guid konta, nazwa, e-mail, numer działu (ADR-0011) |
 | **System magazynowy** (z kompletorem i modułem BOM) | drugi developer, osobna baza | stan magazynowy, kompletacja w kompletorze, dokumenty zużycia; moduł BOM w budowie — docelowy właściciel BOM ([ADR-0001](../decyzje/ADR-0001%20iPart%20jako%20system%20przejściowy%20do%20czasu%20modułu%20BOM.md)) |
 | **Dokumentacja pakietów** (DokuMan, `EssegiId`) | drugi developer | tożsamość pakietu i jego dokumentacja |
 | **ProduMan** | developer IT | zarządzanie produkcją; obszar MRP (zabezpieczenie materiałowe, kompletacje, braki) przewidziany do przejęcia przez inny system |

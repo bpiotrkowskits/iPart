@@ -1,0 +1,21 @@
+<UserControl x:Class="iPart.App.Views.ComponentsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel Margin="12">
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+            <TextBlock Text="MPN zawiera: " VerticalAlignment="Center" DockPanel.Dock="Left" />
+            <Button Content="Szukaj" Command="{Binding SearchCommand}" DockPanel.Dock="Right" Margin="8,0,0,0" IsDefault="False" />
+            <TextBox Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" />
+        </DockPanel>
+        <TextBlock DockPanel.Dock="Bottom" Text="{Binding Status}" Margin="0,8,0,0" AutomationProperties.LiveSetting="Polite" />
+        <DataGrid ItemsSource="{Binding Items}" RowStyle="{DynamicResource ComponentRowStyle}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="MPN" Binding="{Binding Mpn}" Width="240" />
+                <DataGridTextColumn Header="Montaż" Binding="{Binding Mounting}" Width="100" />
+                <DataGridTextColumn Header="Obudowa (Case)" Binding="{Binding CaseName}" Width="160" />
+                <DataGridTextColumn Header="Footprint" Binding="{Binding Footprint}" Width="160" />
+                <DataGridTextColumn Header="Uwagi" Binding="{Binding Notes}" Width="*" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
+</UserControl>

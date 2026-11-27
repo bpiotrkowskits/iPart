@@ -4,21 +4,39 @@
     "type": "split",
     "children": [
       {
-        "id": "a84d963127718c2c",
+        "id": "85e894e68194cdf7",
         "type": "tabs",
+        "dimension": 35.49382716049383,
         "children": [
           {
-            "id": "8f5ae5da38aa419b",
+            "id": "607ef5c83b646368",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "obszary/Usługi wspólne/moduly/Użytkownicy i dostępy.md",
+                "file": "decyzje/ADR-0001 iPart jako system przejściowy do czasu modułu BOM.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Użytkownicy i dostępy"
+              "title": "ADR-0001 iPart jako system przejściowy do czasu modułu BOM"
+            }
+          }
+        ]
+      },
+      {
+        "id": "a65350c318a5e375",
+        "type": "tabs",
+        "dimension": 64.50617283950618,
+        "children": [
+          {
+            "id": "98e9a2d86dda1f08",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Podgląd grafu"
             }
           }
         ]
@@ -99,7 +117,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "system/07 Środowiska.md",
+                "file": "obszary/Dokumentacja pakietu/00 Mapa obszaru.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -188,31 +206,40 @@
       "bases:Stwórz nową bazę danych": false
     }
   },
-  "active": "8f5ae5da38aa419b",
+  "active": "98e9a2d86dda1f08",
   "lastOpenFiles": [
-    "obszary/Usługi wspólne/sedzNphTN",
-    "obszary/Usługi wspólne/01 Kontrakt zewnętrzny.md",
-    "obszary/Zaopatrzenie/01 Kontrakt zewnętrzny.md",
-    "obszary/Baza komponentów/01 Kontrakt zewnętrzny.md",
-    "obszary/Dokumentacja pakietu/01 Kontrakt zewnętrzny.md",
-    "zasady/Zasady dokumentacji.md",
-    "system/07 Środowiska.md",
-    "system/03 Słownik.md",
-    "system/02 Mapa obszarów.md",
-    "system/01 Kontekst i cel systemu.md",
+    "robocze/Scenariusz testu pilotażowego BOM.md",
+    "decyzje/ADR-0001 iPart jako system przejściowy do czasu modułu BOM.md",
+    "decyzje/ADR-0002 Pliki Excel nie są już poprawiane.md",
+    "robocze/Decyzje VBA.md",
+    "robocze/Projekt bazy danych.md",
+    "decyzje/ADR-0009 Zestawienie zakupowe zamiast osobnej ścieżki łączenia.md",
+    "Bez nazwy.md",
+    "robocze/analiza-techniczna/cpart.md",
+    "obszary/Dokumentacja pakietu/moduly/BOM pakietu.md",
     "robocze/Wywiad obieg plików.md",
     "robocze/Model komponentów etap nauki.md",
     "robocze/Import dataPart etap nauki.md",
-    "robocze/Decyzje VBA.md",
-    "robocze/analiza-techniczna/ipart.md",
-    "robocze/analiza-techniczna/fusepart.md",
-    "robocze/analiza-techniczna/dpart.md",
-    "robocze/analiza-techniczna/cpart.md",
-    "robocze/analiza-techniczna/comparator.md",
-    "decyzje/ADR-0004 Schemat bazy wdraża tylko administrator.md",
-    "decyzje/ADR-0001 iPart jako system przejściowy do czasu modułu BOM.md",
-    "decyzje/README.md",
-    "decyzje/ADR-0003 Comparator i iPart jako jeden moduł.md",
-    "decyzje/ADR-0002 Pliki Excel nie są już poprawiane.md"
+    "decyzje/ADR-0014 Pilotaż bez serwera i z kopiami danych ProduMana.md",
+    "obszary/Dokumentacja pakietu/01 Kontrakt zewnętrzny.md",
+    "obszary/Dokumentacja pakietu/00 Mapa obszaru.md",
+    "decyzje/ADR-0011 Logowanie kontem Nexo przez LoginApi.md",
+    "decyzje/ADR-0008 Pliki źródłowe w bazie danych.md",
+    "decyzje/ADR-0007 Jeden mechanizm historii zmian.md",
+    "system/05 Kierunek i etapy rozwoju.md",
+    "README.md.tmp.1208.b10db3628a0b",
+    "system/04 Architektura techniczna.md",
+    "system/04 Architektura techniczna.md.tmp.1208.e27e9751825e",
+    "decyzje/README.md.tmp.1208.a5a2b0b5b57d",
+    "decyzje/ADR-0010 Serwer aplikacji między klientem a bazą.md",
+    "sedJOzTgy",
+    "system/sedcxGOPi",
+    "system/07 Środowiska.md",
+    "README.md",
+    "obszary/Usługi wspólne/moduly/Użytkownicy i dostępy.md",
+    "Bez nazwy",
+    "obszary/Usługi wspólne/sedzNphTN",
+    "obszary/Usługi wspólne/01 Kontrakt zewnętrzny.md",
+    "obszary/Zaopatrzenie/01 Kontrakt zewnętrzny.md"
   ]
 }

@@ -43,9 +43,10 @@ Historia leży w schemacie każdego obszaru, ale ma tę samą budowę: zestaw zm
 
 ## Oczekiwane od systemów zewnętrznych
 
-- **Firmowy system logowania:** stały identyfikator konta, lista kont, podstawowe dane osoby.
+- **LoginApi (konta Nexo):** sprawdzenie loginu i hasła; Guid konta, login, nazwa, e-mail, numer działu ([ADR-0011](../../decyzje/ADR-0011%20Logowanie%20kontem%20Nexo%20przez%20LoginApi.md)).
+- **Widok kont ProduMana:** lista aktywnych kont (Guid → nazwa) — sposób dostępu do ustalenia.
 - **Nexo:** kontrahenci (powiązanie z Klientem) — później.
-- **ProduMan:** integracja z Teams do powiadomień, nieobecności z modułu Pracownicy — później.
+- **ProduMan:** integracja z Teams do powiadomień; nieobecności (tylko „niedostępny od–do”) i powiązanie konto ↔ pracownik z modułu Pracownicy; wspólny moduł uprawnień — później.
 
 ## Zasady zgodności
 
@@ -56,4 +57,4 @@ Historia leży w schemacie każdego obszaru, ale ma tę samą budowę: zestaw zm
 
 | Pytanie | Kto może odpowiedzieć |
 |---|---|
-| Firmowy system logowania: mechanizm, stały identyfikator konta, lista kont, dane osoby | developer IT, drugi developer |
+| Dostęp do listy aktywnych kont (widok kont ProduMana) | developer IT |

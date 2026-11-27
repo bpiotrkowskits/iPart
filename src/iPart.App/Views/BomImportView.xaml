@@ -1,0 +1,75 @@
+<UserControl x:Class="iPart.App.Views.BomImportView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="12">
+        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+            <TextBlock Text="Pakiet: " VerticalAlignment="Center" />
+            <ComboBox ItemsSource="{Binding PackageList.Packages}" SelectedItem="{Binding SelectedPackage}" DisplayMemberPath="DisplayName" MinWidth="300" Margin="0,0,8,0" />
+            <Button Content="Odśwież listę pakietów" Command="{Binding PackageList.RefreshCommand}" />
+        </StackPanel>
+        <DockPanel Grid.Row="1" Margin="0,0,0,8">
+            <Button Content="Wybierz plik BOM (.xlsx)" Command="{Binding ChooseFileCommand}" DockPanel.Dock="Left" />
+            <TextBox Text="{Binding FilePath, Mode=OneWay}" IsReadOnly="True" VerticalContentAlignment="Center" />
+        </DockPanel>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,8">
+            <TextBlock Text="Arkusz: " VerticalAlignment="Center" />
+            <ComboBox ItemsSource="{Binding Sheets}" SelectedItem="{Binding SelectedSheet}" MinWidth="160" Margin="0,0,16,0" />
+            <TextBlock Text="Wiersz nagłówków: " VerticalAlignment="Center" />
+            <TextBox Text="{Binding HeaderRow, UpdateSourceTrigger=LostFocus}" Width="50" VerticalContentAlignment="Center" Margin="0,0,16,0" />
+            <Button Content="Podpowiedz po nazwach nagłówków" Command="{Binding SuggestCommand}" />
+            <Button Content="Podgląd" Command="{Binding PreviewCommand}" />
+        </StackPanel>
+        <DataGrid Grid.Row="3" ItemsSource="{Binding Columns}" IsReadOnly="False" SelectionUnit="Cell">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Kol." Binding="{Binding Letter}" IsReadOnly="True" Width="45" />
+                <DataGridTextColumn Header="Nagłówek Klienta" Binding="{Binding Header}" IsReadOnly="True" Width="200" />
+                <DataGridTemplateColumn Header="Pole w iPart" Width="280">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox ItemsSource="{Binding DataContext.FieldOptions, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                      SelectedValuePath="Field" DisplayMemberPath="Label"
+                                      SelectedValue="{Binding Field, UpdateSourceTrigger=PropertyChanged}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Priorytet (1 = nadrzędna)" Binding="{Binding Priority, UpdateSourceTrigger=PropertyChanged}" Width="160" />
+                <DataGridTextColumn Header="Przykładowe wartości" Binding="{Binding Sample}" IsReadOnly="True" Width="*" />
+            </DataGrid.Columns>
+        </DataGrid>
+        <TextBlock Grid.Row="4" Text="{Binding Summary}" Margin="0,8" FontWeight="SemiBold" />
+        <TabControl Grid.Row="5">
+            <TabItem Header="Problemy">
+                <DataGrid ItemsSource="{Binding Issues}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Ważność" Binding="{Binding SeverityLabel}" Width="100" />
+                        <DataGridTextColumn Header="Linia" Binding="{Binding LineNumber}" Width="55" />
+                        <DataGridTextColumn Header="Wiersz Excela" Binding="{Binding SourceRow}" Width="95" />
+                        <DataGridTextColumn Header="Opis" Binding="{Binding Message}" Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+            <TabItem Header="Podgląd linii">
+                <DataGrid ItemsSource="{Binding PreviewLines}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Linia" Binding="{Binding LineNumber}" Width="50" />
+                        <DataGridTextColumn Header="Designator" Binding="{Binding Designators}" Width="200" />
+                        <DataGridTextColumn Header="Szt. desyg." Binding="{Binding DesignatorCount}" Width="70" />
+                        <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}" Width="65" />
+                        <DataGridTextColumn Header="Part TS" Binding="{Binding PartTs}" Width="140" />
+                        <DataGridTextColumn Header="Footprint" Binding="{Binding Footprint}" Width="120" />
+                        <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="100" />
+                        <DataGridTextColumn Header="Part Number" Binding="{Binding PartNumber}" Width="160" />
+                        <DataGridTextColumn Header="Kolumny dodatkowe" Binding="{Binding Extras}" Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+        </TabControl>
+        <DockPanel Grid.Row="6" Margin="0,8,0,0">
+            <Button Content="Zapisz jako nową rewizję importu" Command="{Binding SaveCommand}" DockPanel.Dock="Left" />
+            <TextBlock Text="Komentarz: " VerticalAlignment="Center" DockPanel.Dock="Left" />
+            <TextBox Text="{Binding Comment, UpdateSourceTrigger=PropertyChanged}" Width="300" DockPanel.Dock="Left" Margin="0,0,12,0" />
+            <TextBlock Text="{Binding Status}" TextWrapping="Wrap" VerticalAlignment="Center" AutomationProperties.LiveSetting="Polite" />
+        </DockPanel>
+    </Grid>
+</UserControl>

@@ -25,15 +25,22 @@ public abstract class ObservableObject : INotifyPropertyChanged
 // Zamiana wyjątków na zrozumiałe komunikaty dla użytkownika.
 public static class ErrorMessages
 {
-    public static string Describe(Exception exception) => exception switch
+    public static string Describe(Exception exception)
+    {
+        // Każdy błąd pokazany użytkownikowi trafia też do dziennika (poza anulowaniem i błędami biznesowymi).
+        if (exception is not (OperationCanceledException or PackageOperationException)) ErrorLog.Write(exception, "komunikat dla użytkownika");
+        return Text(exception);
+    }
+
+    private static string Text(Exception exception) => exception switch
     {
         PackageOperationException e => e.Message,
         SqlException { Number: 208 } => "W bazie brakuje tabel tej wersji aplikacji. Schemat bazy nie jest aktualny — zobacz zakładkę „Połączenie z bazą”.",
-        SqlException { Number: 4060 or 18456 } => "Brak dostępu do bazy dla Twojego konta Windows. Zgłoś się do administratora bazy.",
+        SqlException { Number: 4060 or 18456 } => "Brak dostępu do bazy. Zgłoś się do administratora bazy.",
         SqlException => "Błąd SQL Server: " + exception.Message,
         IOException => "Nie można odczytać pliku. Zamknij go w Excelu albo sprawdź uprawnienia. (" + exception.Message + ")",
         InvalidDataException => "Plik nie jest poprawnym skoroszytem .xlsx. (" + exception.Message + ")",
         OperationCanceledException => "Operacja anulowana.",
-        _ => "Nieoczekiwany błąd: " + exception.Message
+        _ => "Nieoczekiwany błąd: " + exception.Message + " (szczegóły zapisane w dzienniku błędów)"
     };
 }

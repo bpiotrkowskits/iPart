@@ -19,5 +19,10 @@ Jeden rejestr decyzji (ADR) dla całego systemu iPart, niezależny od rejestru P
 | [ADR-0007](ADR-0007%20Jeden%20mechanizm%20historii%20zmian.md) | Jeden mechanizm historii zmian | system | przyjęta | 2026-11-26 |
 | [ADR-0008](ADR-0008%20Pliki%20źródłowe%20w%20bazie%20danych.md) | Pliki źródłowe w bazie danych | system | przyjęta | 2026-11-26 |
 | [ADR-0009](ADR-0009%20Zestawienie%20zakupowe%20zamiast%20osobnej%20ścieżki%20łączenia.md) | Zestawienie zakupowe zamiast osobnej ścieżki łączenia | obszar Zaopatrzenie, Kompletacja | przyjęta | 2026-11-26 |
+| [ADR-0010](ADR-0010%20Serwer%20aplikacji%20między%20klientem%20a%20bazą.md) | Serwer aplikacji między klientem a bazą | system | przyjęta | 2026-11-26 |
+| [ADR-0011](ADR-0011%20Logowanie%20kontem%20Nexo%20przez%20LoginApi.md) | Logowanie kontem Nexo przez LoginApi | system | przyjęta | 2026-11-26 |
+| [ADR-0012](ADR-0012%20Budowa%20modułów%20zgodna%20z%20ProduMan.md) | Budowa modułów zgodna z ProduMan | system | przyjęta | 2026-11-26 |
+| [ADR-0013](ADR-0013%20Uprawnienia%20nadawane%20kontu%20z%20szablonów.md) | Uprawnienia nadawane kontu z szablonów | system | przyjęta | 2026-11-26 |
+| [ADR-0014](ADR-0014%20Pilotaż%20bez%20serwera%20i%20z%20kopiami%20danych%20ProduMana.md) | Pilotaż bez serwera i z kopiami danych ProduMana | system | przyjęta | 2026-11-26 |
 
 ADR o statusie `proponowana` zapisują decyzje robocze podjęte przy dokumentowaniu — do akceptacji ([Zasady dokumentacji — Decyzje](../zasady/Zasady%20dokumentacji.md)).

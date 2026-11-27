@@ -7,7 +7,6 @@ public sealed class Component
     public string Mpn { get => _mpn; set => _mpn = MpnRules.Normalize(value); }
     public Guid Version { get; set; }
     public int? ManufacturerId { get; set; }
-    public int? CustomerId { get; set; }
     public string? NamePl { get; set; }
     public string? NameEng { get; set; }
     public string? DistributorName { get; set; }

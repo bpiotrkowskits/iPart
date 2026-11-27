@@ -22,10 +22,11 @@ public sealed class InfrastructureModelTests
         var key = entity.GetIndexes().Single(x => x.GetDatabaseName() == "UX_Components_BusinessKey");
         Assert.True(key.IsUnique);
         Assert.Null(key.GetFilter());
-        Assert.Equal(new[] { "Mpn", "ManufacturerId", "CustomerId" }, key.Properties.Select(x => x.Name));
+        // Klucz komponentu: MPN + producent (10.5) — Klient nie jest częścią klucza.
+        Assert.Equal(new[] { "Mpn", "ManufacturerId" }, key.Properties.Select(x => x.Name));
         Assert.Equal("Latin1_General_100_BIN2", entity.FindProperty("Mpn")!.GetCollation());
         Assert.True(entity.FindProperty("ManufacturerId")!.IsNullable);
-        Assert.True(entity.FindProperty("CustomerId")!.IsNullable);
+        Assert.Null(entity.FindProperty("CustomerId"));
     }
 
     [Fact]

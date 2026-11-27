@@ -17,7 +17,7 @@ namespace iPart.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("dataPart")
+                .HasDefaultSchema("components")
                 .HasAnnotation("ProductVersion", "10.0.15")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
@@ -40,7 +40,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("Name");
 
-                    b.ToTable("AecQualifications", "dataPart");
+                    b.ToTable("AecQualifications", "components");
 
                     b.HasData(
                         new
@@ -101,7 +101,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("RatedVoltageV");
 
-                    b.ToTable("CapacitorParameters", "dataPart", t =>
+                    b.ToTable("CapacitorParameters", "components", t =>
                         {
                             t.HasCheckConstraint("CK_CapacitorParameters_AbsoluteTolerancePf", "[AbsoluteTolerancePf] >= 0");
 
@@ -142,7 +142,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CasePatterns", "dataPart");
+                    b.ToTable("CasePatterns", "components");
                 });
 
             modelBuilder.Entity("iPart.Core.Components.Category", b =>
@@ -162,7 +162,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("Name");
 
-                    b.ToTable("Categories", "dataPart");
+                    b.ToTable("Categories", "components");
                 });
 
             modelBuilder.Entity("iPart.Core.Components.Component", b =>
@@ -190,9 +190,6 @@ namespace iPart.Infrastructure.Migrations
                     b.Property<string>("CustomerComponentName")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
-
-                    b.Property<int?>("CustomerId")
-                        .HasColumnType("int");
 
                     b.Property<string>("DistributorName")
                         .HasMaxLength(500)
@@ -261,21 +258,19 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.HasIndex("CustomerId");
-
                     b.HasIndex("ManufacturerId");
 
                     b.HasIndex("MountingMethodId");
 
                     b.HasIndex("ProductStatusId");
 
-                    b.HasIndex("SubcategoryId", "CategoryId");
-
-                    b.HasIndex("Mpn", "ManufacturerId", "CustomerId")
+                    b.HasIndex("Mpn", "ManufacturerId")
                         .IsUnique()
                         .HasDatabaseName("UX_Components_BusinessKey");
 
-                    b.ToTable("Components", "dataPart", t =>
+                    b.HasIndex("SubcategoryId", "CategoryId");
+
+                    b.ToTable("Components", "components", t =>
                         {
                             t.HasCheckConstraint("CK_Components_MpnNormalized", "DATALENGTH([Mpn]) > 0 AND UNICODE(LEFT([Mpn], 1)) NOT IN (9,10,11,12,13,32,133,160,5760,8192,8193,8194,8195,8196,8197,8198,8199,8200,8201,8202,8232,8233,8239,8287,12288) AND UNICODE(RIGHT([Mpn], 1)) NOT IN (9,10,11,12,13,32,133,160,5760,8192,8193,8194,8195,8196,8197,8198,8199,8200,8201,8202,8232,8233,8239,8287,12288)");
 
@@ -283,51 +278,6 @@ namespace iPart.Infrastructure.Migrations
 
                             t.HasCheckConstraint("CK_Components_TemperatureOrder", "[MinimumOperatingTemperatureC] IS NULL OR [MaximumOperatingTemperatureC] IS NULL OR [MinimumOperatingTemperatureC] <= [MaximumOperatingTemperatureC]");
                         });
-                });
-
-            modelBuilder.Entity("iPart.Core.Components.ComponentHistoryEntry", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Author")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<Guid>("ComponentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("FieldPath")
-                        .IsRequired()
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)");
-
-                    b.Property<string>("NewValue")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("OccurredAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<int>("Operation")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("OperationId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("PreviousValue")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OperationId");
-
-                    b.HasIndex("ComponentId", "OccurredAtUtc");
-
-                    b.ToTable("ComponentHistory", "dataPart");
                 });
 
             modelBuilder.Entity("iPart.Core.Components.ComponentLink", b =>
@@ -354,7 +304,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("ComponentId");
 
-                    b.ToTable("ComponentLinks", "dataPart", t =>
+                    b.ToTable("ComponentLinks", "components", t =>
                         {
                             t.HasCheckConstraint("CK_ComponentLinks_Kind", "[Kind] IN (1, 2)");
                         });
@@ -403,7 +353,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasKey("ComponentId");
 
-                    b.ToTable("ComponentPads", "dataPart", t =>
+                    b.ToTable("ComponentPads", "components", t =>
                         {
                             t.HasCheckConstraint("CK_Pads_BGA", "[BGA] = 0 OR [BGA] >= 3");
 
@@ -439,7 +389,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("QualificationId");
 
-                    b.ToTable("ComponentQualifications", "dataPart");
+                    b.ToTable("ComponentQualifications", "components");
                 });
 
             modelBuilder.Entity("iPart.Core.Components.ConnectorParameters", b =>
@@ -471,7 +421,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("PositionCount");
 
-                    b.ToTable("ConnectorParameters", "dataPart", t =>
+                    b.ToTable("ConnectorParameters", "components", t =>
                         {
                             t.HasCheckConstraint("CK_ConnectorParameters_PitchMm", "[PitchMm] >= 0");
 
@@ -498,36 +448,12 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("FrequencyHz");
 
-                    b.ToTable("CrystalParameters", "dataPart", t =>
+                    b.ToTable("CrystalParameters", "components", t =>
                         {
                             t.HasCheckConstraint("CK_CrystalParameters_FrequencyHz", "[FrequencyHz] >= 0");
 
                             t.HasCheckConstraint("CK_CrystalParameters_LoadCapacitancePf", "[LoadCapacitancePf] >= 0");
                         });
-                });
-
-            modelBuilder.Entity("iPart.Core.Components.Customer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Code")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name");
-
-                    b.ToTable("Customers", "dataPart");
                 });
 
             modelBuilder.Entity("iPart.Core.Components.InductorParameters", b =>
@@ -565,7 +491,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("RatedCurrentA");
 
-                    b.ToTable("InductorParameters", "dataPart", t =>
+                    b.ToTable("InductorParameters", "components", t =>
                         {
                             t.HasCheckConstraint("CK_InductorParameters_DcrOhms", "[DcrOhms] >= 0");
 
@@ -610,7 +536,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("Color");
 
-                    b.ToTable("LedParameters", "dataPart", t =>
+                    b.ToTable("LedParameters", "components", t =>
                         {
                             t.HasCheckConstraint("CK_LedParameters_DominantWavelengthNm", "[DominantWavelengthNm] >= 0");
 
@@ -641,7 +567,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("Name");
 
-                    b.ToTable("Manufacturers", "dataPart");
+                    b.ToTable("Manufacturers", "components");
                 });
 
             modelBuilder.Entity("iPart.Core.Components.MountingMethod", b =>
@@ -652,6 +578,11 @@ namespace iPart.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(500)
@@ -659,40 +590,61 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Code")
+                        .IsUnique();
+
                     b.HasIndex("Name");
 
-                    b.ToTable("MountingMethods", "dataPart");
+                    b.ToTable("MountingMethods", "components");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
+                            Code = "SMT",
                             Name = "SMT"
                         },
                         new
                         {
                             Id = 2,
+                            Code = "PIN_IN_PASTE",
                             Name = "Pin-In-Paste"
                         },
                         new
                         {
                             Id = 3,
+                            Code = "THT",
                             Name = "THT"
                         },
                         new
                         {
                             Id = 4,
+                            Code = "PRESS_FIT",
                             Name = "Press-Fit"
                         },
                         new
                         {
                             Id = 5,
+                            Code = "PLUGS",
                             Name = "Plugs"
                         },
                         new
                         {
                             Id = 6,
+                            Code = "MECH",
                             Name = "Mech"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Code = "PCB",
+                            Name = "PCB"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Code = "DNP",
+                            Name = "DNP"
                         });
                 });
 
@@ -713,7 +665,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("Name");
 
-                    b.ToTable("ProductStatuses", "dataPart");
+                    b.ToTable("ProductStatuses", "components");
 
                     b.HasData(
                         new
@@ -767,7 +719,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("TolerancePercent");
 
-                    b.ToTable("ResistorParameters", "dataPart", t =>
+                    b.ToTable("ResistorParameters", "components", t =>
                         {
                             t.HasCheckConstraint("CK_ResistorParameters_PowerWatts", "[PowerWatts] >= 0");
 
@@ -799,7 +751,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasIndex("Name");
 
-                    b.ToTable("Subcategories", "dataPart");
+                    b.ToTable("Subcategories", "components");
                 });
 
             modelBuilder.Entity("iPart.Core.Packages.BomLine", b =>
@@ -810,8 +762,36 @@ namespace iPart.Infrastructure.Migrations
                     b.Property<Guid>("BomRevisionId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("ComparisonDecision")
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<string>("ConfirmationBasis")
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("ConfirmationNote")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
                     b.Property<bool>("Confirmed")
                         .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("ConfirmedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ConfirmedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<Guid?>("ConfirmedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CustomerAnswer")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<string>("Description")
                         .HasMaxLength(2000)
@@ -821,12 +801,20 @@ namespace iPart.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("DifferenceQuestion")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
                     b.Property<string>("Footprint")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<int>("LineNumber")
                         .HasColumnType("int");
+
+                    b.Property<string>("MountingCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(4000)
@@ -852,8 +840,10 @@ namespace iPart.Infrastructure.Migrations
                     b.HasIndex("BomRevisionId", "LineNumber")
                         .IsUnique();
 
-                    b.ToTable("BomLines", "dataPart", t =>
+                    b.ToTable("BomLines", "documentation", t =>
                         {
+                            t.HasCheckConstraint("CK_BomLines_ConfirmationBasis", "[Confirmed] = 0 OR [ConfirmationBasis] IS NOT NULL");
+
                             t.HasCheckConstraint("CK_BomLines_LineNumber", "[LineNumber] >= 1");
 
                             t.HasCheckConstraint("CK_BomLines_Quantity", "[Quantity] >= 0");
@@ -878,7 +868,7 @@ namespace iPart.Infrastructure.Migrations
                     b.HasIndex("BomRevisionId", "Designator")
                         .IsUnique();
 
-                    b.ToTable("BomLineDesignators", "dataPart");
+                    b.ToTable("BomLineDesignators", "documentation");
                 });
 
             modelBuilder.Entity("iPart.Core.Packages.BomLineExtraValue", b =>
@@ -900,7 +890,7 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasKey("BomLineId", "Ordinal");
 
-                    b.ToTable("BomLineExtraValues", "dataPart", t =>
+                    b.ToTable("BomLineExtraValues", "documentation", t =>
                         {
                             t.HasCheckConstraint("CK_BomLineExtraValues_Ordinal", "[Ordinal] >= 1");
                         });
@@ -929,6 +919,26 @@ namespace iPart.Infrastructure.Migrations
                     b.Property<Guid>("PackageId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTimeOffset?>("PnpApprovedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("PnpApprovedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<Guid?>("PnpApprovedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("PnpFileId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PnpFileName")
+                        .HasMaxLength(260)
+                        .HasColumnType("nvarchar(260)");
+
+                    b.Property<Guid?>("SourceFileId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("SourceFileName")
                         .IsRequired()
                         .HasMaxLength(260)
@@ -940,13 +950,123 @@ namespace iPart.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("PnpFileId");
+
+                    b.HasIndex("SourceFileId");
+
                     b.HasIndex("PackageId", "Number")
                         .IsUnique();
 
-                    b.ToTable("BomRevisions", "dataPart", t =>
+                    b.ToTable("BomRevisions", "documentation", t =>
                         {
                             t.HasCheckConstraint("CK_BomRevisions_Number", "[Number] >= 1");
                         });
+                });
+
+            modelBuilder.Entity("iPart.Core.Packages.BomVersion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("ApprovedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ApprovedBy")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<Guid?>("ApprovedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BomRevisionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<int>("LineCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LinesJson")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OrderNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<Guid>("PackageId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("UnconfirmedCount")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BomRevisionId");
+
+                    b.HasIndex("PackageId", "Number")
+                        .IsUnique();
+
+                    b.ToTable("BomVersions", "documentation", t =>
+                        {
+                            t.HasCheckConstraint("CK_BomVersions_Kind", "[Kind] IN ('BAZOWA', 'DLA_ZK') AND ([Kind] = 'BAZOWA' OR [OrderNumber] IS NOT NULL)");
+                        });
+                });
+
+            modelBuilder.Entity("iPart.Core.Packages.LineMpn", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("AddedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("AddedBy")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<Guid?>("AddedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BomLineId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Forbidden")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Mpn")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("Ordinal")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BomLineId", "Mpn", "Forbidden")
+                        .IsUnique();
+
+                    b.ToTable("LineMpns", "documentation");
                 });
 
             modelBuilder.Entity("iPart.Core.Packages.Package", b =>
@@ -967,8 +1087,8 @@ namespace iPart.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<int?>("CustomerId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CustomerRevision")
                         .IsRequired()
@@ -987,7 +1107,535 @@ namespace iPart.Infrastructure.Migrations
                         .IsUnique()
                         .HasDatabaseName("UX_Packages_CodeRevisionCustomer");
 
-                    b.ToTable("Packages", "dataPart");
+                    b.ToTable("Packages", "documentation");
+                });
+
+            modelBuilder.Entity("iPart.Core.Packages.PnpRow", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BomRevisionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Designator")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Footprint")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Rotation")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Side")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("SourceRow")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Value")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("X")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Y")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BomRevisionId", "Designator")
+                        .IsUnique();
+
+                    b.ToTable("PnpRows", "documentation");
+                });
+
+            modelBuilder.Entity("iPart.Core.Shared.ComponentsChangeSet", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Author")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<DateTimeOffset>("OccurredAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Operation")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("SubjectId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SubjectType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubjectType", "SubjectId", "OccurredAtUtc");
+
+                    b.ToTable("ChangeSets", "components");
+                });
+
+            modelBuilder.Entity("iPart.Core.Shared.ComponentsFieldChange", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<Guid>("ChangeSetId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Field")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
+
+                    b.Property<string>("NewValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ObjectId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ObjectType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PreviousValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChangeSetId");
+
+                    b.HasIndex("ObjectType", "ObjectId");
+
+                    b.ToTable("FieldChanges", "components");
+                });
+
+            modelBuilder.Entity("iPart.Core.Shared.Customer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Customers", "shared");
+                });
+
+            modelBuilder.Entity("iPart.Core.Shared.Department", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("Departments", "employees");
+                });
+
+            modelBuilder.Entity("iPart.Core.Shared.DocumentationChangeSet", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Author")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<DateTimeOffset>("OccurredAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Operation")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("SubjectId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SubjectType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubjectType", "SubjectId", "OccurredAtUtc");
+
+                    b.ToTable("ChangeSets", "documentation");
+                });
+
+            modelBuilder.Entity("iPart.Core.Shared.DocumentationFieldChange", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<Guid>("ChangeSetId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Field")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
+
+                    b.Property<string>("NewValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ObjectId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ObjectType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PreviousValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChangeSetId");
+
+                    b.HasIndex("ObjectType", "ObjectId");
+
+                    b.ToTable("FieldChanges", "documentation");
+                });
+
+            modelBuilder.Entity("iPart.Core.Shared.DocumentationFile", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte[]>("Content")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("ContentType")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(260)
+                        .HasColumnType("nvarchar(260)");
+
+                    b.Property<string>("Sha256")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(false)
+                        .HasColumnType("char(64)")
+                        .IsFixedLength();
+
+                    b.Property<long>("SizeBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset>("UploadedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("UploadedBy")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<Guid?>("UploadedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Sha256");
+
+                    b.ToTable("Files", "documentation", t =>
+                        {
+                            t.HasCheckConstraint("CK_Files_Size", "[SizeBytes] >= 0 AND [SizeBytes] = DATALENGTH([Content])");
+                        });
+                });
+
+            modelBuilder.Entity("iPart.Core.Shared.Group", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("Groups", "shared");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("6f1c0b2e-0001-4d6a-9a51-6b1f0c2a0001"),
+                            Code = "OBSLUGA_PROJEKTU",
+                            Name = "Obsługa Projektu"
+                        },
+                        new
+                        {
+                            Id = new Guid("6f1c0b2e-0002-4d6a-9a51-6b1f0c2a0002"),
+                            Code = "TECHNOLOGIA_SMT",
+                            Name = "Technologia SMT"
+                        },
+                        new
+                        {
+                            Id = new Guid("6f1c0b2e-0003-4d6a-9a51-6b1f0c2a0003"),
+                            Code = "ZAKUPY",
+                            Name = "Zakupy"
+                        },
+                        new
+                        {
+                            Id = new Guid("6f1c0b2e-0004-4d6a-9a51-6b1f0c2a0004"),
+                            Code = "MAGAZYN",
+                            Name = "Magazyn"
+                        },
+                        new
+                        {
+                            Id = new Guid("6f1c0b2e-0005-4d6a-9a51-6b1f0c2a0005"),
+                            Code = "PRODUKCJA",
+                            Name = "Produkcja"
+                        },
+                        new
+                        {
+                            Id = new Guid("6f1c0b2e-0006-4d6a-9a51-6b1f0c2a0006"),
+                            Code = "OPIEKUNOWIE_KLIENTA",
+                            Name = "Opiekunowie klienta"
+                        });
+                });
+
+            modelBuilder.Entity("iPart.Core.Shared.GroupMember", b =>
+                {
+                    b.Property<Guid>("GroupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsAdministrator")
+                        .HasColumnType("bit");
+
+                    b.HasKey("GroupId", "UserId");
+
+                    b.ToTable("GroupMembers", "shared");
+                });
+
+            modelBuilder.Entity("iPart.Core.Shared.ProduManAccount", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("Department")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("FullName")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Login")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("users", "produman");
+                });
+
+            modelBuilder.Entity("iPart.Core.Shared.SharedChangeSet", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Author")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<DateTimeOffset>("OccurredAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Operation")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("SubjectId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SubjectType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubjectType", "SubjectId", "OccurredAtUtc");
+
+                    b.ToTable("ChangeSets", "shared");
+                });
+
+            modelBuilder.Entity("iPart.Core.Shared.SharedFieldChange", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<Guid>("ChangeSetId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Field")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
+
+                    b.Property<string>("NewValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ObjectId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ObjectType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PreviousValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChangeSetId");
+
+                    b.HasIndex("ObjectType", "ObjectId");
+
+                    b.ToTable("FieldChanges", "shared");
+                });
+
+            modelBuilder.Entity("iPart.Core.Shared.UserAccess", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("ChangedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ChangedBy")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<Guid?>("ChangedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PermissionsJson")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("UserAccess", "shared", t =>
+                        {
+                            t.HasCheckConstraint("CK_UserAccess_Json", "ISJSON([PermissionsJson]) = 1");
+                        });
                 });
 
             modelBuilder.Entity("iPart.Core.Components.CapacitorParameters", b =>
@@ -1011,11 +1659,6 @@ namespace iPart.Infrastructure.Migrations
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("iPart.Core.Components.Customer", null)
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("iPart.Core.Components.Manufacturer", null)
                         .WithMany()
                         .HasForeignKey("ManufacturerId")
@@ -1036,15 +1679,6 @@ namespace iPart.Infrastructure.Migrations
                         .HasForeignKey("SubcategoryId", "CategoryId")
                         .HasPrincipalKey("Id", "CategoryId")
                         .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("iPart.Core.Components.ComponentHistoryEntry", b =>
-                {
-                    b.HasOne("iPart.Core.Components.Component", null)
-                        .WithMany()
-                        .HasForeignKey("ComponentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("iPart.Core.Components.ComponentLink", b =>
@@ -1174,14 +1808,93 @@ namespace iPart.Infrastructure.Migrations
                         .HasForeignKey("PackageId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("iPart.Core.Shared.DocumentationFile", null)
+                        .WithMany()
+                        .HasForeignKey("PnpFileId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("iPart.Core.Shared.DocumentationFile", null)
+                        .WithMany()
+                        .HasForeignKey("SourceFileId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("iPart.Core.Packages.BomVersion", b =>
+                {
+                    b.HasOne("iPart.Core.Packages.BomRevision", null)
+                        .WithMany()
+                        .HasForeignKey("BomRevisionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("iPart.Core.Packages.Package", null)
+                        .WithMany()
+                        .HasForeignKey("PackageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("iPart.Core.Packages.LineMpn", b =>
+                {
+                    b.HasOne("iPart.Core.Packages.BomLine", null)
+                        .WithMany()
+                        .HasForeignKey("BomLineId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("iPart.Core.Packages.Package", b =>
                 {
-                    b.HasOne("iPart.Core.Components.Customer", null)
+                    b.HasOne("iPart.Core.Shared.Customer", null)
                         .WithMany()
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("iPart.Core.Packages.PnpRow", b =>
+                {
+                    b.HasOne("iPart.Core.Packages.BomRevision", null)
+                        .WithMany()
+                        .HasForeignKey("BomRevisionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("iPart.Core.Shared.ComponentsFieldChange", b =>
+                {
+                    b.HasOne("iPart.Core.Shared.ComponentsChangeSet", null)
+                        .WithMany("Changes")
+                        .HasForeignKey("ChangeSetId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("iPart.Core.Shared.DocumentationFieldChange", b =>
+                {
+                    b.HasOne("iPart.Core.Shared.DocumentationChangeSet", null)
+                        .WithMany("Changes")
+                        .HasForeignKey("ChangeSetId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("iPart.Core.Shared.GroupMember", b =>
+                {
+                    b.HasOne("iPart.Core.Shared.Group", null)
+                        .WithMany()
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("iPart.Core.Shared.SharedFieldChange", b =>
+                {
+                    b.HasOne("iPart.Core.Shared.SharedChangeSet", null)
+                        .WithMany("Changes")
+                        .HasForeignKey("ChangeSetId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("iPart.Core.Components.Component", b =>
@@ -1215,6 +1928,21 @@ namespace iPart.Infrastructure.Migrations
             modelBuilder.Entity("iPart.Core.Packages.BomRevision", b =>
                 {
                     b.Navigation("Lines");
+                });
+
+            modelBuilder.Entity("iPart.Core.Shared.ComponentsChangeSet", b =>
+                {
+                    b.Navigation("Changes");
+                });
+
+            modelBuilder.Entity("iPart.Core.Shared.DocumentationChangeSet", b =>
+                {
+                    b.Navigation("Changes");
+                });
+
+            modelBuilder.Entity("iPart.Core.Shared.SharedChangeSet", b =>
+                {
+                    b.Navigation("Changes");
                 });
 #pragma warning restore 612, 618
         }

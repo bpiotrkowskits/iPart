@@ -104,10 +104,10 @@ public sealed class ExcelPreviewService(IImportReferenceReader referenceReader) 
                 ReportUnmapped(row, preview);
             }
             var byMpn = report.Records.GroupBy(x => x.Mpn, StringComparer.Ordinal).ToDictionary(x => x.Key, x => x.ToArray(), StringComparer.Ordinal);
-            var duplicateGroups = report.Records.GroupBy(x => new ImportBusinessKey(x.Mpn, x.Component.ManufacturerId, x.Component.CustomerId)).Where(x => x.Count() > 1).ToArray();
+            var duplicateGroups = report.Records.GroupBy(x => new ImportBusinessKey(x.Mpn, x.Component.ManufacturerId)).Where(x => x.Count() > 1).ToArray();
             report.DuplicateGroups = duplicateGroups.Length;
             foreach (var group in duplicateGroups)
-                Problem(ImportSeverity.Error, "DuplicateBusinessKey", $"Duplikat klucza biznesowego w {group.Count()} wierszach; producent i klient NULL nie są wildcardami.", group.SelectMany(x => x.FieldSources["Mpn"]).ToArray(), group.ToArray());
+                Problem(ImportSeverity.Error, "DuplicateBusinessKey", $"Duplikat klucza biznesowego w {group.Count()} wierszach; pusty producent nie jest wildcardem.", group.SelectMany(x => x.FieldSources["Mpn"]).ToArray(), group.ToArray());
             foreach (var name in new[] { "resValue", "capValue", "ctceValue" })
             {
                 if (!_schemas.TryGetValue(name, out var schema)) { Problem(ImportSeverity.Information, "OptionalSheetMissing", $"Brak opcjonalnego arkusza {name}.", []); continue; }
@@ -142,7 +142,7 @@ public sealed class ExcelPreviewService(IImportReferenceReader referenceReader) 
                 cancellationToken.ThrowIfCancellationRequested();
                 Merge(target);
                 foreach (var global in _blockingGlobal) if (!target.Issues.Contains(global)) target.Issues.Add(global);
-                if (references?.ExistingKeys.Contains(new(target.Mpn, target.Component.ManufacturerId, target.Component.CustomerId)) == true)
+                if (references?.ExistingKeys.Contains(new(target.Mpn, target.Component.ManufacturerId)) == true)
                 { report.DatabaseCollisions++; Problem(ImportSeverity.Error, "DatabaseCollision", "Taki MPN, producent i klient istnieją już w bazie. Nie zaplanowano automatycznego scalenia.", target.FieldSources["Mpn"], [target]); }
                 try { ComponentValidator.Validate(target.Component); }
                 catch (ComponentValidationException exception) { Problem(ImportSeverity.Error, "ModelValidation", exception.Message, target.Sources, [target]); }

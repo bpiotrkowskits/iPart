@@ -489,3 +489,6 @@ zrodla/
 
 # Wynik publikacji aplikacji (dotnet publish)
 publish/
+
+# Ustawienia lokalne developera (np. baza LocalDB) — nie trafiają do repozytorium
+**/appsettings.local.json

@@ -4,15 +4,7 @@ using iPart.Core.Packages;
 
 namespace iPart.App.ViewModels;
 
-public sealed record BomLineRow(int LineNumber, string? Designators, int DesignatorCount, int? Quantity, string? PartTs,
-    string? Footprint, string? Description, string? Value, string? PartNumber, string? Notes, bool Confirmed, string Extras)
-{
-    public static BomLineRow From(BomLine line) => new(line.LineNumber, line.Designators, line.ExpandedDesignators.Count, line.Quantity,
-        line.PartTs, line.Footprint, line.Description, line.Value, line.PartNumber, line.Notes, line.Confirmed,
-        string.Join("; ", line.ExtraValues.OrderBy(x => x.Ordinal).Select(x => $"{x.Header}: {x.Value}")));
-}
-
-public sealed record CustomerOption(int? Id, string Name)
+public sealed record CustomerOption(Guid? Id, string Name)
 {
     public override string ToString() => Name;
 }
@@ -23,7 +15,6 @@ public sealed class PackagesViewModel : ObservableObject
     private string _search = "", _status = "Kliknij „Odśwież”, aby wczytać pakiety z bazy.";
     private string _newCode = "", _newRevision = "", _newDescription = "", _newCustomerName = "";
     private PackageSummary? _selectedPackage;
-    private BomRevisionSummary? _selectedRevision;
     private CustomerOption? _selectedCustomer;
     private bool _isBusy;
 
@@ -33,11 +24,14 @@ public sealed class PackagesViewModel : ObservableObject
         RefreshCommand = new AsyncCommand(RefreshAsync);
         CreatePackageCommand = new AsyncCommand(CreatePackageAsync);
         AddCustomerCommand = new AsyncCommand(AddCustomerAsync);
+        OpenCommand = new AsyncCommand(() => SelectedPackage is { } p && Open is not null ? Open(p, null) : Task.CompletedTask);
     }
 
+    /// <summary>Nawigacja do BOM pakietu (ustawia powłoka): pakiet i opcjonalnie rewizja importu do pokazania.</summary>
+    public Func<PackageSummary, Guid?, Task>? Open { get; set; }
+    public AsyncCommand OpenCommand { get; }
+
     public ObservableCollection<PackageSummary> Packages { get; } = [];
-    public ObservableCollection<BomRevisionSummary> Revisions { get; } = [];
-    public ObservableCollection<BomLineRow> Lines { get; } = [];
     public ObservableCollection<CustomerOption> Customers { get; } = [];
     public AsyncCommand RefreshCommand { get; }
     public AsyncCommand CreatePackageCommand { get; }
@@ -52,19 +46,7 @@ public sealed class PackagesViewModel : ObservableObject
     public string NewCustomerName { get => _newCustomerName; set => Set(ref _newCustomerName, value); }
     public CustomerOption? SelectedCustomer { get => _selectedCustomer; set => Set(ref _selectedCustomer, value); }
 
-    public PackageSummary? SelectedPackage
-    {
-        get => _selectedPackage;
-        set { if (Set(ref _selectedPackage, value)) _revisionsLoading = LoadRevisionsAsync(); }
-    }
-
-    private Task _revisionsLoading = Task.CompletedTask;
-
-    public BomRevisionSummary? SelectedRevision
-    {
-        get => _selectedRevision;
-        set { if (Set(ref _selectedRevision, value)) _ = LoadLinesAsync(); }
-    }
+    public PackageSummary? SelectedPackage { get => _selectedPackage; set => Set(ref _selectedPackage, value); }
 
     public async Task RefreshAsync()
     {
@@ -83,7 +65,7 @@ public sealed class PackagesViewModel : ObservableObject
             var created = $"{NewCode.Trim()} rev {NewRevision.Trim()}";
             NewCode = NewRevision = NewDescription = "";
             await RefreshCoreAsync(id);
-            Status = $"Utworzono pakiet {created}. Teraz zaimportuj jego BOM w zakładce „Import BOM”.";
+            Status = $"Utworzono pakiet {created}. Teraz zaimportuj jego BOM (menu „Import BOM”).";
         });
     }
 
@@ -100,12 +82,11 @@ public sealed class PackagesViewModel : ObservableObject
         });
     }
 
-    // Po imporcie BOM: odśwież listę i pokaż nową rewizję.
+    // Po imporcie BOM: odśwież listę i otwórz BOM pakietu na nowej rewizji importu.
     public async Task ShowRevisionAsync(Guid packageId, Guid revisionId)
     {
         await RefreshCoreAsync(packageId);
-        await _revisionsLoading;
-        SelectedRevision = Revisions.FirstOrDefault(r => r.Id == revisionId);
+        if (SelectedPackage is { } package && Open is not null) await Open(package, revisionId);
     }
 
     private async Task RefreshCoreAsync(Guid? select)
@@ -121,30 +102,6 @@ public sealed class PackagesViewModel : ObservableObject
         SelectedCustomer = Customers.FirstOrDefault(c => c.Id == selectedCustomer) ?? Customers[0];
         _selectedPackage = null;
         SelectedPackage = Packages.FirstOrDefault(p => p.Id == select);
-    }
-
-    private async Task LoadRevisionsAsync()
-    {
-        Revisions.Clear();
-        Lines.Clear();
-        if (SelectedPackage is not { } package) return;
-        await Run(async () =>
-        {
-            foreach (var r in await _service.ListRevisionsAsync(package.Id)) Revisions.Add(r);
-            SelectedRevision = Revisions.FirstOrDefault();
-            if (Revisions.Count == 0) Status = $"Pakiet {package.DisplayName} nie ma jeszcze żadnego BOM.";
-        });
-    }
-
-    private async Task LoadLinesAsync()
-    {
-        Lines.Clear();
-        if (SelectedRevision is not { } revision) return;
-        await Run(async () =>
-        {
-            foreach (var line in await _service.GetLinesAsync(revision.Id)) Lines.Add(BomLineRow.From(line));
-            Status = $"{revision.DisplayName}: {Lines.Count} linii, plik {revision.SourceFileName}, importował {revision.ImportedBy}.";
-        });
     }
 
     private async Task Run(Func<Task> action)

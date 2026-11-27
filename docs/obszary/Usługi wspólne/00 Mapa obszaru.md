@@ -14,7 +14,7 @@ Obszar daje wszystkim obszarom te same mechanizmy pracy: kto pracuje i co może,
 
 | Obszar posiada | Obszar nie posiada (kto posiada) |
 |---|---|
-| odniesienie do konta użytkownika, role, dostępy, grupy, administratorzy grup, zastępstwa | konta i logowanie → firmowy system logowania |
+| użytkownik (Guid konta Nexo i kopia danych konta), dostępy, grupy, administratorzy grup, zastępstwa | konta, hasła i logowanie → Nexo przez LoginApi; dział, role w działach, umiejętności → moduł Pracownicy ProduMan |
 | Klient (dane wspólne dla obszarów) | dane biznesowe obszarów (BOM, komponenty, zakupy, kompletacja) |
 | lista „Do obsłużenia”, komunikaty z potwierdzeniami | historia danych obszaru → schemat tego obszaru (budowa wspólna) |
 | blokady edycji i szkice | słowniki obudów, reguły zapasu → Baza komponentów |
@@ -29,7 +29,7 @@ Inne obszary korzystają z obszaru tylko przez [kontrakt zewnętrzny](01%20Kontr
 1. **Jeden mechanizm wszędzie.** „Do obsłużenia”, komunikaty, blokady, zastępstwa i historia działają tak samo we wszystkich obszarach.
 2. **Grupa ≠ rola.** Grupa służy do zastępstw, administratorów i zadań bez operatora; rola — do dostępów.
 3. **Bez przypisań do Klientów.** Pozycje trafiają do operatora tematu, a gdy go nie ma — do grupy.
-4. **Użytkownik pochodzi z firmowego systemu logowania;** iPart przechowuje tylko odniesienie do konta. Role, grupy i zastępstwa prowadzimy lokalnie.
+4. **Użytkownik loguje się kontem Nexo** przez LoginApi ([ADR-0011](../../decyzje/ADR-0011%20Logowanie%20kontem%20Nexo%20przez%20LoginApi.md)); tożsamością jest Guid konta. Dostępy, grupy i zastępstwa prowadzimy lokalnie, po Guidzie konta — tak, by dało się je przenieść do wspólnego modułu uprawnień firmy.
 
 ## Moduły
 
@@ -65,7 +65,7 @@ flowchart LR
 
 | Pytanie | Kto może odpowiedzieć |
 |---|---|
-| Dostęp do firmowego systemu logowania: mechanizm, stały identyfikator konta, lista kont, dane osoby | developer IT, drugi developer |
+| Dostęp do listy aktywnych kont (widok kont ProduMana) — sposób do ustalenia po stronie ProduMana | developer IT |
 | Powiadomienia e-mail lub Teams (integracja z Teams ProduMan) — kiedy i jak | developer IT |
 
 ## Decyzje

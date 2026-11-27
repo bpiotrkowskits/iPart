@@ -1,8 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.1" />
+    <PackageReference Include="MaterialDesignThemes" Version="5.3.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.15" />
     <None Update="appsettings.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <!-- Ustawienia lokalne developera (np. baza LocalDB): nadpisują appsettings.json, poza repozytorium i poza publikacją. -->
+    <None Include="appsettings.local.json" Condition="Exists('appsettings.local.json')" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Never" />
     <ProjectReference Include="..\iPart.Core\iPart.Core.csproj" />
     <ProjectReference Include="..\iPart.Infrastructure\iPart.Infrastructure.csproj" />
   </ItemGroup>
@@ -10,7 +14,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <!-- Numer wersji widoczny w zakładce „Połączenie z bazą”. Podnoś przy każdej publikacji. -->
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
     <Product>iPart</Product>
     <TargetFramework>net10.0-windows</TargetFramework>
     <Nullable>enable</Nullable>

@@ -9,13 +9,13 @@ public sealed class HistoryTests
     {
         var old = new Component { Mpn = "001", Pads = new(), Resistor = new() };
         var current = new Component { Id = old.Id, Mpn = "001", Pads = new() { TP = 0, BTC = false },
-            Resistor = new() { ResistanceOhms = 0 }, CustomerId = 1, Qualifications = [new() { QualificationId = 1 }],
+            Resistor = new() { ResistanceOhms = 0 }, ManufacturerId = 1, Qualifications = [new() { QualificationId = 1 }],
             Links = [new() { Url = "https://example.org", Kind = ComponentLinkKind.Documentation }] };
         var changes = ComponentChanges.Between(old, current);
         Assert.Contains(changes, x => x.Path == "Pads.TP" && x.PreviousValue is null && x.NewValue == "0");
         Assert.Contains(changes, x => x.Path == "Pads.BTC" && x.PreviousValue is null && x.NewValue == "false");
         Assert.Contains(changes, x => x.Path == "Resistor.ResistanceOhms" && x.NewValue == "0");
-        Assert.Contains(changes, x => x.Path == "CustomerId");
+        Assert.Contains(changes, x => x.Path == "ManufacturerId");
         Assert.Contains(changes, x => x.Path == "Qualifications.1");
         Assert.Contains(changes, x => x.Path.EndsWith(".Url"));
         Assert.DoesNotContain(changes, x => x.Path == "Mpn" || x.Path.Contains("Version"));

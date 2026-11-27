@@ -1,5 +1,6 @@
 using System.Security.Principal;
 using iPart.Core.Components;
+using iPart.Core.Shared;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -53,7 +54,7 @@ public sealed class SqlServerComponentService(IDbContextFactory<IPartDbContext> 
                 return Concurrent(component.Id);
 
             if (await context.Components.AnyAsync(x => x.Id != component.Id && x.Mpn == component.Mpn &&
-                    x.ManufacturerId == component.ManufacturerId && x.CustomerId == component.CustomerId, cancellationToken))
+                    x.ManufacturerId == component.ManufacturerId, cancellationToken))
                 return Duplicate(component.Id);
             if (component.SubcategoryId is { } subcategory && !await context.Subcategories.AnyAsync(
                     x => x.Id == subcategory && x.CategoryId == component.CategoryId, cancellationToken))
@@ -103,19 +104,21 @@ public sealed class SqlServerComponentService(IDbContextFactory<IPartDbContext> 
             // Force an aggregate UPDATE even for relationship-only or parameter-only edits.
             saved.Version = Guid.NewGuid();
             if (existing is not null) context.Entry(saved).Property(x => x.Version).IsModified = true;
-            var operationId = Guid.NewGuid();
-            var utc = DateTimeOffset.UtcNow;
-            context.ComponentHistory.AddRange(changes.Select(change => new ComponentHistoryEntry
+            // Jeden zapis = jeden zestaw zmian (ADR-0007).
+            context.ComponentChangeSets.Add(new ComponentsChangeSet
             {
-                OperationId = operationId,
-                ComponentId = saved.Id,
+                UserId = currentUser.UserId,
                 Author = author,
-                OccurredAtUtc = utc,
-                Operation = existing is null ? HistoryOperation.Created : HistoryOperation.Updated,
-                FieldPath = change.Path,
-                PreviousValue = change.PreviousValue,
-                NewValue = change.NewValue
-            }));
+                OccurredAtUtc = DateTimeOffset.UtcNow,
+                SubjectType = nameof(Component),
+                SubjectId = saved.Id,
+                Operation = existing is null ? ChangeOperations.Created : ChangeOperations.Updated,
+                Changes = changes.Select(change => new ComponentsFieldChange
+                {
+                    ObjectType = nameof(Component), ObjectId = saved.Id, Field = change.Path,
+                    PreviousValue = change.PreviousValue, NewValue = change.NewValue
+                }).ToList()
+            });
             await context.SaveChangesAsync(cancellationToken);
             if (transaction is not null) await transaction.CommitAsync(cancellationToken);
             return new(true, saved.Id, saved.Version, SaveFailure.None, null);
@@ -161,5 +164,5 @@ public sealed class SqlServerComponentService(IDbContextFactory<IPartDbContext> 
 
     private static ComponentSaveResult Failure(Guid id, SaveFailure failure, string message) => new(false, id, null, failure, message);
     private static ComponentSaveResult Concurrent(Guid id) => Failure(id, SaveFailure.ConcurrentEdit, "Komponent został zmieniony przez innego użytkownika. Wczytaj aktualną wersję przed ponownym zapisem.");
-    private static ComponentSaveResult Duplicate(Guid id) => Failure(id, SaveFailure.DuplicateBusinessKey, "Istnieje już komponent o takim MPN, producencie i kliencie (również przy braku producenta lub klienta). Dane nie zostały scalone.");
+    private static ComponentSaveResult Duplicate(Guid id) => Failure(id, SaveFailure.DuplicateBusinessKey, "Istnieje już komponent o takim MPN i producencie (również przy braku producenta). Dane nie zostały scalone.");
 }

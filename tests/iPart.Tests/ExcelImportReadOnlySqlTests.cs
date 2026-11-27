@@ -26,10 +26,9 @@ public sealed class ExcelImportReadOnlySqlTests
         var root = new DirectoryInfo(AppContext.BaseDirectory);
         while (root is not null && !File.Exists(Path.Combine(root.FullName, "iPart.slnx"))) root = root.Parent;
         Assert.NotNull(root);
-        await using var configured = new IPartDbContextFactory().CreateDbContext(["--settings", Path.Combine(root.FullName, "src/iPart.App/appsettings.json")]);
+        await using var configured = new IPartDbContextFactory().CreateDbContext(["--settings", TestSettings.Path(root!.FullName)]);
         var settings = new SqlConnectionStringBuilder(configured.Database.GetConnectionString());
         Assert.Equal(@"(localdb)\MSSQLLocalDB", settings.DataSource);
-        Assert.Equal("dataPart", settings.InitialCatalog);
         await using var connection = new SqlConnection(settings.ConnectionString);
         await connection.OpenAsync();
         var before = await Snapshot(connection);
